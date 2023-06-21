@@ -1,17 +1,41 @@
+using System.Net;
 using System.Reflection;
 using UnityEngine;
 using static FXManager;
 
 public class Test : MonoBehaviour
 {
-    public FXParameter<float> myFloatParameter = new FXParameter<float>(0.0f);
+    public FXParameter<float>   myFloatParameter    = new FXParameter<float>(0.0f);
+    public FXParameter<int>     myIntParameter      = new FXParameter<int>(1);
+    public FXParameter<bool>    myBoolParameter     = new FXParameter<bool>(false);
+    public FXParameter<string>  myStringParameter   = new FXParameter<string>("no");
+    public FXParameter<Color>   myColorParameter    = new FXParameter<Color>(Color.black);
+
+
+    //public FXParameter<Color> myColorParameter = new FXParameter<Color>(Color.black);
+
 
     private void Start()
     {
-        AddParameters();
-        FXManager.Instance.SetFX(myFloatParameter.Address, 0.6f);
+        //AddParameters();
+        AddMethods();
+        //FXManager.Instance.SetFX(myFloatParameter.Address, 0.6f);
+        //FXManager.Instance.SetFX(myIntParameter.Address, 5);
+        //FXManager.Instance.SetFX(myBoolParameter.Address, true);
+        //FXManager.Instance.SetFX(myStringParameter.Address, "yes");
+        //FXManager.Instance.SetFX(myColorParameter.Address, Color.white);
+
+        //string add = $"/{gameObject.name}/{GetType().Name}/{methodName}";
+
+        string address = "/GameObject/Test/Test2";
+        //object[] args = new object[] { 5, 10 }; // Replace with your method arguments
+
+        FXManager.Instance.SetFX(address, 3);
+
     }
 
+
+    // move this to subclass or interface
     void AddParameters()
     {
         var fields = GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -19,14 +43,45 @@ public class Test : MonoBehaviour
         {
             if (field.FieldType.IsGenericType && field.FieldType.GetGenericTypeDefinition() == typeof(FXParameter<>))
             {
-                var fxParameter = (FXParameter<float>)field.GetValue(this);
-                if (string.IsNullOrEmpty(fxParameter.Address)) {
-                    fxParameter.Address = $"/{this.gameObject.name}/{GetType().Name}/{field.Name}";
+                var fxParameter = field.GetValue(this);
+                var addressProperty = field.FieldType.GetProperty("Address");
+                var address = (string)addressProperty.GetValue(fxParameter, null);
+                if (string.IsNullOrEmpty(address))
+                {
+                    address = $"/{gameObject.name}/{GetType().Name}/{field.Name}";
+                    addressProperty.SetValue(fxParameter, address, null);
                 }
-                FXManager.Instance.AddFXItem(fxParameter.Address, FXItemInfoType.Parameter, field,this);
-
+                FXManager.Instance.AddFXItem(address, FXItemInfoType.Parameter, field, this);
             }
         }
+    }
+
+    void AddMethods()
+    {
+        var methods = GetType().GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+        foreach (var method in methods)
+        {
+            var FXMethodAttribute = method.GetCustomAttribute<FXMethodAttribute>();
+            if (FXMethodAttribute != null)
+            {
+                if (FXMethodAttribute.Address == null)
+                {
+                    var methodName = method.Name;
+                    FXMethodAttribute.Address = $"/{gameObject.name}/{GetType().Name}/{methodName}";
+                }
+                Debug.Log($"Method name: {method.Name}");
+                Debug.Log($"Member type: {method.MemberType}");
+                Debug.Log($"Attribute address: {FXMethodAttribute.Address}");
+
+                FXManager.Instance.AddFXItem(FXMethodAttribute.Address, FXItemInfoType.Method, method, this);
+            }
+        }
+
+    }
+
+    [FXMethod]
+    void Test2(int i) {
+        Debug.Log("TEST" + i);
     }
 
     // void Start()

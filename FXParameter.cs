@@ -14,11 +14,15 @@ public class FXParameterDrawer : PropertyDrawer
         SerializedProperty valueProperty = property.FindPropertyRelative("value_");
         SerializedProperty addressProperty = property.FindPropertyRelative("address_");
 
+        // Display the address as a label with tooltip
+
+
         // Display the address as a label
         EditorGUI.LabelField(new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight), $"Address: {addressProperty.stringValue}");
 
         // Calculate the position for the value field
         Rect valuePosition = new Rect(position.x, position.y + EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing, position.width, EditorGUIUtility.singleLineHeight);
+        //Rect valuePosition = new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight);
 
         string propertyName = ObjectNames.NicifyVariableName(property.name);
         // Display the value field based on the type of the FXParameter
@@ -28,28 +32,41 @@ public class FXParameterDrawer : PropertyDrawer
                 valueProperty.floatValue = EditorGUI.FloatField(valuePosition, propertyName, valueProperty.floatValue);
                 break;
             case SerializedPropertyType.Integer:
-                valueProperty.intValue = EditorGUI.IntField(valuePosition, "Value", valueProperty.intValue);
+                valueProperty.intValue = EditorGUI.IntField(valuePosition, propertyName, valueProperty.intValue);
                 break;
             case SerializedPropertyType.Boolean:
-                valueProperty.boolValue = EditorGUI.Toggle(valuePosition, "Value", valueProperty.boolValue);
+                valueProperty.boolValue = EditorGUI.Toggle(valuePosition, propertyName, valueProperty.boolValue);
                 break;
             case SerializedPropertyType.String:
-                valueProperty.stringValue = EditorGUI.TextField(valuePosition, "Value", valueProperty.stringValue);
+                valueProperty.stringValue = EditorGUI.TextField(valuePosition, propertyName, valueProperty.stringValue);
                 break;
             case SerializedPropertyType.Color:
-                valueProperty.colorValue = EditorGUI.ColorField(valuePosition, "Value", valueProperty.colorValue);
+                valueProperty.colorValue = EditorGUI.ColorField(valuePosition, propertyName, valueProperty.colorValue);
                 break;
             default:
                 EditorGUI.LabelField(valuePosition, "Value type not supported");
                 break;
         }
-
-        EditorGUI.EndProperty();
     }
+
 
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
-        return EditorGUIUtility.singleLineHeight;
+        // Calculate the number of lines needed based on the property type
+        int lines = 1; // Default to one line
+    
+        switch (property.FindPropertyRelative("value_").propertyType)
+        {
+            case SerializedPropertyType.Float:
+            case SerializedPropertyType.Integer:
+            case SerializedPropertyType.Boolean:
+            case SerializedPropertyType.String:
+            case SerializedPropertyType.Color:
+                lines = 2; // Two lines needed for the value field
+                break;
+        }
+    
+        return EditorGUIUtility.singleLineHeight * lines + EditorGUIUtility.standardVerticalSpacing;
     }
 }
 
@@ -98,4 +115,13 @@ public class FXParameter<T>
             throw new ArgumentException("FXParameter supports only float, int, bool, string, and Color types.");
         }
     }
+
+#if UNITY_EDITOR
+    [Tooltip("Address:")]
+    public T AddressDisplay
+    {
+        get { return value_; }
+        set { }
+    }
+#endif
 }
