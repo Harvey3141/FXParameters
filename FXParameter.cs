@@ -117,12 +117,12 @@ public class FXParameter<T>
         }
     }
 
-#if UNITY_EDITOR
-    [Tooltip("Address:")]
-    public T AddressDisplay
+}
+
+public static class FXParametersExtensions
+{
+    public static void AddFXParameters(this MonoBehaviour monoBehaviour)
     {
-        get { return value_; }
-        set { }
+        // Your implementation here
     }
-#endif
 }

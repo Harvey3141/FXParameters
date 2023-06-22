@@ -12,7 +12,7 @@ public class Test : MonoBehaviour
     public FXParameter<Color>   myColorParameter    = new FXParameter<Color>(Color.black);
 
 
-    // Would be nice to find a neater method for exposing properites in the instpector
+    // Find a neater method for exposing FXProperties in the instpector
     [FXProperty]
     [field: SerializeField]
     public int IntProperty { get; set; } = 0;
@@ -20,9 +20,7 @@ public class Test : MonoBehaviour
 
     private void Start()
     {
-        //AddParameters();
-        //AddMethods();
-        AddProperties();
+        this.AddFXElements();
 
         FXManager.Instance.SetFX(myFloatParameter.Address, 0.6f);
         FXManager.Instance.SetFX(myIntParameter.Address, 5);
@@ -30,151 +28,17 @@ public class Test : MonoBehaviour
         FXManager.Instance.SetFX(myStringParameter.Address, "yes");
         FXManager.Instance.SetFX(myColorParameter.Address, Color.white);
         
-        //string add = $"/{gameObject.name}/{GetType().Name}/{methodName}";
-
         string address = "/GameObject/Test/Test2";
         //object[] args = new object[] { 5, 10 }; // Replace with your method arguments
-
         FXManager.Instance.SetFX(address, 3);
 
         FXManager.Instance.SetFX("/GameObject/Test/IntProperty", 99);
 
-
-
-
     }
-
-
-    // move this to subclass or interface
-    void AddParameters()
-    {
-        var fields = GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-        foreach (var field in fields)
-        {
-            if (field.FieldType.IsGenericType && field.FieldType.GetGenericTypeDefinition() == typeof(FXParameter<>))
-            {
-                var fxParameter = field.GetValue(this);
-                var addressProperty = field.FieldType.GetProperty("Address");
-                var address = (string)addressProperty.GetValue(fxParameter, null);
-                if (string.IsNullOrEmpty(address))
-                {
-                    address = $"/{gameObject.name}/{GetType().Name}/{field.Name}";
-                    addressProperty.SetValue(fxParameter, address, null);
-                }
-                FXManager.Instance.AddFXItem(address, FXItemInfoType.Parameter, field, this);
-            }
-        }
-    }
-
-    void AddMethods()
-    {
-        var methods = GetType().GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-        foreach (var method in methods)
-        {
-            var FXMethodAttribute = method.GetCustomAttribute<FXMethodAttribute>();
-            if (FXMethodAttribute != null)
-            {
-                if (FXMethodAttribute.Address == null)
-                {
-                    var methodName = method.Name;
-                    FXMethodAttribute.Address = $"/{gameObject.name}/{GetType().Name}/{methodName}";
-                }
-                //Debug.Log($"Method name: {method.Name}");
-                //Debug.Log($"Member type: {method.MemberType}");
-                //Debug.Log($"Method address: {FXMethodAttribute.Address}");
-
-                FXManager.Instance.AddFXItem(FXMethodAttribute.Address, FXItemInfoType.Method, method, this);
-            }
-        }
-
-    }
-
-    void AddProperties()
-    {
-        var properties = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-        foreach (var property in properties)
-        {
-            var FXPropertyAttribute = property.GetCustomAttribute<FXPropertyAttribute>();
-            if (FXPropertyAttribute != null)
-            {
-                if (FXPropertyAttribute.Address == null)
-                {
-                    var propertyName = property.Name;
-                    FXPropertyAttribute.Address = $"/{this.gameObject.name}/{GetType().Name}/{propertyName}";
-                }
-                Debug.Log("Propert name: " + property.Name);
-                Debug.Log("Property type: " + property.PropertyType);
-                Debug.Log("Memeber type: " + property.MemberType);
-                Debug.Log("Property address: " + FXPropertyAttribute.Address);
-                FXManager.Instance.AddFXItem(FXPropertyAttribute.Address, FXItemInfoType.Property, property, this);
-            }
-
-        }
-    }
-
-
-
 
     [FXMethod]
-    void Test2(int i) {
-        Debug.Log("TEST" + i);
+    public void MyTestIntMethod(int i) {
+        Debug.Log("MyTestIntMethod - value: " + i);
     }
 
-    // void Start()
-    //{
-
-
-    ////var parameter = field.GetValue(this);
-    //// dynamic parameter = field.GetValue(this);
-    //
-    //if (parameter != null)
-    //{
-    //    string address = parameter.Address;
-    //    if (address == null) {
-    //    
-    //    }
-    //    FXManager.Instance.AddFXParameter(address, field);
-    //}
-
-
-
-
-    //
-    //var methods = GetType().GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-    //foreach (var method in methods)
-    //{
-    //    var FXMethodAttribute = method.GetCustomAttribute<FXMethodAttribute>();
-    //    if (FXMethodAttribute != null)
-    //    {
-    //        if (FXMethodAttribute.Address == null)
-    //        {
-    //            var methodName = method.Name;
-    //            FXMethodAttribute.Address = $"/{gameObject.name}/{GetType().Name}/{methodName}";
-    //        }
-    //        Debug.Log($"Method name: {method.Name}");
-    //        Debug.Log($"Member type: {method.MemberType}");
-    //        Debug.Log($"Attribute address: {FXMethodAttribute.Address}");
-    //        methodsByAddress_[FXMethodAttribute.Address] = method;
-    //    }
-    //}
-    //
-    //
-    //var triggers = typeof(ITriggerable).GetMethods(BindingFlags.Public | BindingFlags.Instance);
-    //foreach (var trigger in triggers)
-    //{
-    //    var FXMethodAttribute = trigger.GetCustomAttribute<FXMethodAttribute>();
-    //    if (FXMethodAttribute != null)
-    //    {
-    //        if (FXMethodAttribute.Address == null)
-    //        {
-    //            var methodName = trigger.Name;
-    //            FXMethodAttribute.Address = $"/{gameObject.name}/{typeof(ITriggerable).Name}/{methodName}";
-    //        }
-    //        Debug.Log($"Trigger name: {trigger.Name}");
-    //        Debug.Log($"Member type: {trigger.MemberType}");
-    //        Debug.Log($"Attribute address: {FXMethodAttribute.Address}");
-    //        triggersByAddress_[FXMethodAttribute.Address] = trigger;
-    //    }
-    //}
-    // }
 }
