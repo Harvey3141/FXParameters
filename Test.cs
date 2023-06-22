@@ -17,13 +17,13 @@ public class Test : MonoBehaviour
 
     private void Start()
     {
-        //AddParameters();
+        AddParameters();
         AddMethods();
-        //FXManager.Instance.SetFX(myFloatParameter.Address, 0.6f);
-        //FXManager.Instance.SetFX(myIntParameter.Address, 5);
-        //FXManager.Instance.SetFX(myBoolParameter.Address, true);
-        //FXManager.Instance.SetFX(myStringParameter.Address, "yes");
-        //FXManager.Instance.SetFX(myColorParameter.Address, Color.white);
+        FXManager.Instance.SetFX(myFloatParameter.Address, 0.6f);
+        FXManager.Instance.SetFX(myIntParameter.Address, 5);
+        FXManager.Instance.SetFX(myBoolParameter.Address, true);
+        FXManager.Instance.SetFX(myStringParameter.Address, "yes");
+        FXManager.Instance.SetFX(myColorParameter.Address, Color.white);
 
         //string add = $"/{gameObject.name}/{GetType().Name}/{methodName}";
 

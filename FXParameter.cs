@@ -15,13 +15,11 @@ public class FXParameterDrawer : PropertyDrawer
         SerializedProperty valueProperty = property.FindPropertyRelative("value_");
         SerializedProperty addressProperty = property.FindPropertyRelative("address_");
 
-
         // Display the address as a label
         //EditorGUI.LabelField(new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight), $"Address: {addressProperty.stringValue}");
 
         // Calculate the position for the value field
-        Rect valuePosition = new Rect(position.x, position.y + EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing, position.width, EditorGUIUtility.singleLineHeight);
-        //Rect valuePosition = new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight);
+        Rect valuePosition = new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight);
 
         string propertyName = ObjectNames.NicifyVariableName(property.name);
         GUIContent valueLabel = new GUIContent(propertyName, "Test");
@@ -60,7 +58,7 @@ public class FXParameterDrawer : PropertyDrawer
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
     {
         // Calculate the number of lines needed based on the property type
-        int lines = 1; // Default to one line
+        int lines = 0; // Default to one line
     
         switch (property.FindPropertyRelative("value_").propertyType)
         {
@@ -69,11 +67,11 @@ public class FXParameterDrawer : PropertyDrawer
             case SerializedPropertyType.Boolean:
             case SerializedPropertyType.String:
             case SerializedPropertyType.Color:
-                lines = 2; // Two lines needed for the value field
+                lines = 1; // Two lines needed for the value field
                 break;
         }
     
-        return EditorGUIUtility.singleLineHeight * lines + EditorGUIUtility.standardVerticalSpacing;
+        return EditorGUIUtility.singleLineHeight;
     }
 }
 
