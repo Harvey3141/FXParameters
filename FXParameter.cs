@@ -20,10 +20,20 @@ public class FXParameterDrawer : PropertyDrawer
 
         // Calculate the position for the value field
         Rect valuePosition = new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight);
+        Rect addressPosition = new Rect(position.x, position.y + EditorGUIUtility.singleLineHeight, position.width, EditorGUIUtility.singleLineHeight);
+
 
         string propertyName = ObjectNames.NicifyVariableName(property.name);
-        GUIContent valueLabel = new GUIContent(propertyName, "Test");
+        GUIContent valueLabel = new GUIContent(propertyName, addressProperty.stringValue);
 
+        //property.isExpanded = EditorGUI.Foldout(position, property.isExpanded, label);
+        //if (property.isExpanded)
+        //{
+        //    // Indent the address field to make it clear it's a child field
+        //    EditorGUI.indentLevel++;
+        //    EditorGUI.PropertyField(addressPosition, addressProperty);
+        //    EditorGUI.indentLevel--;
+        //}
 
         // Display the value field based on the type of the FXParameter
         switch (valueProperty.propertyType)
@@ -56,21 +66,7 @@ public class FXParameterDrawer : PropertyDrawer
     }
 
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-    {
-        // Calculate the number of lines needed based on the property type
-        int lines = 0; // Default to one line
-    
-        switch (property.FindPropertyRelative("value_").propertyType)
-        {
-            case SerializedPropertyType.Float:
-            case SerializedPropertyType.Integer:
-            case SerializedPropertyType.Boolean:
-            case SerializedPropertyType.String:
-            case SerializedPropertyType.Color:
-                lines = 1; // Two lines needed for the value field
-                break;
-        }
-    
+    {    
         return EditorGUIUtility.singleLineHeight;
     }
 }
