@@ -1,7 +1,6 @@
 using System.Net;
 using System.Reflection;
 using UnityEngine;
-using static FXManager;
 
 public class Test : MonoBehaviour
 {

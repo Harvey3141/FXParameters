@@ -42,19 +42,13 @@ public class FXParameterDrawer : PropertyDrawer
                 valueProperty.floatValue = EditorGUI.FloatField(valuePosition, valueLabel, valueProperty.floatValue);
                 break;
             case SerializedPropertyType.Integer:
-                valueProperty.intValue = EditorGUI.IntField(valuePosition, valueLabel, valueProperty.intValue);
+                valueProperty.intValue  = EditorGUI.IntField(valuePosition, valueLabel, valueProperty.intValue);
                 break;
             case SerializedPropertyType.Boolean:
                 valueProperty.boolValue = EditorGUI.Toggle(valuePosition, valueLabel, valueProperty.boolValue);
                 break;
             case SerializedPropertyType.String:
-                EditorGUI.BeginChangeCheck();
-                string newValue = EditorGUI.TextField(valuePosition, valueLabel, valueProperty.stringValue);
-                if (EditorGUI.EndChangeCheck())
-                {
-                    valueProperty.stringValue = newValue;
-                }
-                //valueProperty.stringValue = EditorGUI.TextField(valuePosition, valueLabel, valueProperty.stringValue);
+                valueProperty.stringValue = EditorGUI.TextField(valuePosition, valueLabel, valueProperty.stringValue);
                 break;
             case SerializedPropertyType.Color:
                 valueProperty.colorValue = EditorGUI.ColorField(valuePosition, valueLabel, valueProperty.colorValue);
