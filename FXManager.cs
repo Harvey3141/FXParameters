@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using UnityEngine;
 
@@ -65,6 +66,11 @@ public sealed class FXManager
         }
         else
         {
+            if (type == FXItemInfoType.Parameter && !(item is IFXParameter))
+            {
+                Debug.LogError($"Item with address {address} is not implementing IFXParameter.");
+                return;
+            }
             fxItemsByAddress_.Add(address, (type, item,fxInstance));
         }
     }
@@ -246,32 +252,39 @@ public sealed class FXManager
                 return;
             }
 
-            Type parameterType = ((FieldInfo)fxItem.item).FieldType.GetGenericArguments()[0];
-            object instance = fxItem.item;
+            object parameter = fxItem.item;
+            IFXParameter iFXParameter = parameter as IFXParameter;
+            if (iFXParameter == null)
+            {
+                Debug.LogWarning($"FXParameter {address} is not an instance of IFXParameter");
+                return;
+            }
+
+            Type parameterType = iFXParameter.ObjectValue.GetType();
 
             if (parameterType == typeof(float) && arg is float fValue)
             {
-                ((FXParameter<float>)((FieldInfo)fxItem.item).GetValue(fxItem.fxInstance)).Value = fValue;
+                ((FXParameter<float>)parameter).Value = fValue;
             }
             else if (parameterType == typeof(int) && arg is int iValue)
             {
-                ((FXParameter<int>)((FieldInfo)fxItem.item).GetValue(fxItem.fxInstance)).Value = iValue;
+                ((FXParameter<int>)parameter).Value = iValue;
             }
             else if (parameterType == typeof(bool) && arg is bool bValue)
             {
-                ((FXParameter<bool>)((FieldInfo)fxItem.item).GetValue(fxItem.fxInstance)).Value = bValue;
+                ((FXParameter<bool>)parameter).Value = bValue;
             }
             else if (parameterType == typeof(string) && arg is string sValue)
             {
-                ((FXParameter<string>)((FieldInfo)fxItem.item).GetValue(fxItem.fxInstance)).Value = sValue;
+                ((FXParameter<string>)parameter).Value = sValue;
             }
             else if (parameterType == typeof(Color) && arg is Color cValue)
             {
-                ((FXParameter<Color>)((FieldInfo)fxItem.item).GetValue(fxItem.fxInstance)).Value = cValue;
+                ((FXParameter<Color>)parameter).Value = cValue;
             }
             else
             {
-                Debug.LogWarning($"FXParameter {((FieldInfo)fxItem.item).Name} has an unsupported type: {parameterType}");
+                Debug.LogWarning($"FXParameter {address} has an unsupported type: {parameterType}");
             }
         }
         else
@@ -279,6 +292,7 @@ public sealed class FXManager
             Debug.LogWarning($"No parameter found for address {address}");
         }
     }
+
 
 
     //public void SetTrigger(string address)
@@ -302,5 +316,84 @@ public sealed class FXManager
     {
         Debug.Log("Triggered");
     }
+
+
+
+
+    [System.Serializable]
+    public class FXPreset
+    {
+        public List<FXPresetParameter<string>> stringParameters = new List<FXPresetParameter<string>>();
+        public List<FXPresetParameter<int>> intParameters = new List<FXPresetParameter<int>>();
+        public List<FXPresetParameter<float>> floatParameters = new List<FXPresetParameter<float>>();
+        public List<FXPresetParameter<bool>> boolParameters = new List<FXPresetParameter<bool>>();
+        public List<FXPresetParameter<Color>> colorParameters = new List<FXPresetParameter<Color>>();
+    }
+
+    [System.Serializable]
+    public class FXPresetParameter<T>
+    {
+        public string key;
+        public T value;
+    }
+
+    public void SavePreset(string presetName)
+    {
+        FXPreset preset = new FXPreset();
+        foreach (var item in fxItemsByAddress_)
+        {
+            if (item.Value.type == FXManager.FXItemInfoType.Parameter)
+            {
+                var parameter = item.Value.item as IFXParameter;
+                string key_ = item.Key;
+                object value_ = parameter.ObjectValue;
+
+                if (value_ is string strValue)
+                    preset.stringParameters.Add(new FXPresetParameter<string> { key = key_, value = strValue });
+                else if (value_ is int intValue)
+                    preset.intParameters.Add(new FXPresetParameter<int> { key = key_, value = intValue });
+                else if (value_ is float floatValue)
+                    preset.floatParameters.Add(new FXPresetParameter<float> { key = key_, value = floatValue });
+                else if (value_ is bool boolValue)
+                    preset.boolParameters.Add(new FXPresetParameter<bool> { key = key_, value = boolValue });
+                else if (value_ is Color colorValue)
+                    preset.colorParameters.Add(new FXPresetParameter<Color> { key = key_, value = colorValue });
+            }
+        }
+
+        string json = JsonUtility.ToJson(preset);
+
+        string directoryPath = Application.streamingAssetsPath;
+        if (!Directory.Exists(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+
+        string filePath = Path.Combine(directoryPath, presetName + ".json");
+        File.WriteAllText(filePath, json);
+    }
+
+
+
+
+
+
+    //public void LoadPreset(string presetName)
+    //{
+    //    // Load json from file...
+    //    FXPreset preset = JsonUtility.FromJson<FXPreset>(json);
+    //    foreach (var pair in preset.parameters)
+    //    {
+    //        if (fxItemsByAddress_.ContainsKey(pair.Key))
+    //        {
+    //            var item = fxItemsByAddress[pair.Key];
+    //            if (item.type == FXManager.FXItemInfoType.Parameter)
+    //            {
+    //                var parameter = item.item as IFXParameter;
+    //                parameter.ObjectValue = pair.Value;
+    //            }
+    //        }
+    //    }
+    //}
 
 }

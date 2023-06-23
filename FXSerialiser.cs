@@ -11,11 +11,18 @@ public class FXSerialiser
         {
             if (item.Value.type == FXManager.FXItemInfoType.Parameter)
             {
-                FXParameterInfo fxParameterInfo = new FXParameterInfo();
-                fxParameterInfo.address = item.Key;
-                var parameter = item.Value.item as dynamic;
-                fxParameterInfo.value = parameter.Value;
-                fxParameters.Add(fxParameterInfo);
+                var parameter = item.Value.item as IFXParameter;
+                if (parameter != null)
+                {
+                    FXParameterInfo fxParameterInfo = new FXParameterInfo();
+                    fxParameterInfo.address = item.Key;
+                    fxParameterInfo.value = parameter.ObjectValue;
+                    fxParameters.Add(fxParameterInfo);
+                }
+                else
+                {
+                    Debug.LogWarning($"Item at address {item.Key} is not an FXParameter.");
+                }
             }
         }
 

@@ -33,6 +33,8 @@ public class Test : MonoBehaviour
 
         FXManager.Instance.SetFX("/GameObject/Test/IntProperty", 99);
 
+        FXManager.Instance.SavePreset("PresetOne");
+
     }
 
     [FXMethod]

@@ -65,8 +65,14 @@ public class FXParameterDrawer : PropertyDrawer
     }
 }
 
+public interface IFXParameter
+{
+    object ObjectValue { get; set; }
+    string Address { get; set; }
+}
+
 [System.Serializable]
-public class FXParameter<T>
+public class FXParameter<T> : IFXParameter
 {
     [SerializeField]
     private string address_;
@@ -89,6 +95,22 @@ public class FXParameter<T>
         set { address_ = value; }
     }
 
+    // Implement IFXParameter interface
+    object IFXParameter.ObjectValue
+    {
+        get { return Value; }
+        set
+        {
+            if (value is T tValue)
+            {
+                Value = tValue;
+            }
+            else
+            {
+                throw new ArgumentException($"Value must be of type {typeof(T).Name}");
+            }
+        }
+    }
 
     public FXParameter(T value, string address = "")
     {
@@ -110,8 +132,8 @@ public class FXParameter<T>
             throw new ArgumentException("FXParameter supports only float, int, bool, string, and Color types.");
         }
     }
-
 }
+
 
 public static class FXParametersExtensions
 {

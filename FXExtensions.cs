@@ -24,7 +24,7 @@ public static class FXExtensions
                 // Make sure the FXManager instance is not null
                 if (FXManager.Instance != null)
                 {
-                    FXManager.Instance.AddFXItem(address, FXItemInfoType.Parameter, field, monoBehaviour);
+                    FXManager.Instance.AddFXItem(address, FXItemInfoType.Parameter, fxParameter, monoBehaviour);
                 }
                 else
                 {
