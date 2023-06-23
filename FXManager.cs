@@ -373,27 +373,46 @@ public sealed class FXManager
         File.WriteAllText(filePath, json);
     }
 
+    public void LoadPreset(string presetName)
+    {
+        string directoryPath = Application.streamingAssetsPath;
+        string filePath = Path.Combine(directoryPath, presetName + ".json");
 
+        if (File.Exists(filePath))
+        {
+            string json = File.ReadAllText(filePath);
+            FXPreset preset = JsonUtility.FromJson<FXPreset>(json);
 
+            foreach (var param in preset.stringParameters)
+            {
+                SetFX(param.key, param.value);
+            }
 
+            foreach (var param in preset.intParameters)
+            {
+                SetFX(param.key, param.value);
+            }
 
+            foreach (var param in preset.floatParameters)
+            {
+                SetFX(param.key, param.value);
+            }
 
-    //public void LoadPreset(string presetName)
-    //{
-    //    // Load json from file...
-    //    FXPreset preset = JsonUtility.FromJson<FXPreset>(json);
-    //    foreach (var pair in preset.parameters)
-    //    {
-    //        if (fxItemsByAddress_.ContainsKey(pair.Key))
-    //        {
-    //            var item = fxItemsByAddress[pair.Key];
-    //            if (item.type == FXManager.FXItemInfoType.Parameter)
-    //            {
-    //                var parameter = item.item as IFXParameter;
-    //                parameter.ObjectValue = pair.Value;
-    //            }
-    //        }
-    //    }
-    //}
+            foreach (var param in preset.boolParameters)
+            {
+                SetFX(param.key, param.value);
+            }
+
+            foreach (var param in preset.colorParameters)
+            {
+                SetFX(param.key, param.value);
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"Preset {presetName} not found.");
+        }
+    }
+
 
 }
