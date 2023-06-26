@@ -1,47 +1,52 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
-public class FXSerialiser
-{
-    public string SerializeParameters(Dictionary<string, (FXManager.FXItemInfoType type, object item, object fxInstance)> fxItemsByAddress)
+namespace FX {
+    public class FXSerialiser
     {
-        var fxParameters = new List<FXParameterInfo>();
-
-        foreach (var item in fxItemsByAddress)
+        public string SerializeParameters(Dictionary<string, (FXManager.FXItemInfoType type, object item, object fxInstance)> fxItemsByAddress)
         {
-            if (item.Value.type == FXManager.FXItemInfoType.Parameter)
+            var fxParameters = new List<FXParameterInfo>();
+
+            foreach (var item in fxItemsByAddress)
             {
-                var parameter = item.Value.item as IFXParameter;
-                if (parameter != null)
+                if (item.Value.type == FXManager.FXItemInfoType.Parameter)
                 {
-                    FXParameterInfo fxParameterInfo = new FXParameterInfo();
-                    fxParameterInfo.address = item.Key;
-                    fxParameterInfo.value = parameter.ObjectValue;
-                    fxParameters.Add(fxParameterInfo);
-                }
-                else
-                {
-                    Debug.LogWarning($"Item at address {item.Key} is not an FXParameter.");
+                    var parameter = item.Value.item as IFXParameter;
+                    if (parameter != null)
+                    {
+                        FXParameterInfo fxParameterInfo = new FXParameterInfo();
+                        fxParameterInfo.address = item.Key;
+                        fxParameterInfo.value = parameter.ObjectValue;
+                        fxParameters.Add(fxParameterInfo);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Item at address {item.Key} is not an FXParameter.");
+                    }
                 }
             }
+
+            string json = JsonUtility.ToJson(new Wrapper() { fxParameters = fxParameters });
+            return json;
         }
 
-        string json = JsonUtility.ToJson(new Wrapper() { fxParameters = fxParameters });
-        return json;
+        // Add your deserialization methods here...
+
+        [System.Serializable]
+        private class Wrapper
+        {
+            public List<FXParameterInfo> fxParameters;
+        }
+
+        [System.Serializable]
+        public class FXParameterInfo
+        {
+            public string address;
+            public object value;
+        }
     }
 
-    // Add your deserialization methods here...
-
-    [System.Serializable]
-    private class Wrapper
-    {
-        public List<FXParameterInfo> fxParameters;
-    }
-
-    [System.Serializable]
-    public class FXParameterInfo
-    {
-        public string address;
-        public object value;
-    }
 }
+

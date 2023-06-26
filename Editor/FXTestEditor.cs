@@ -3,14 +3,14 @@ using NUnit.Framework.Internal;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(FXTest))]
+[CustomEditor(typeof(FXExample))]
 public class FXTestEditor : Editor
 {
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector(); // Draw the default inspector
 
-        FXTest myScript = (FXTest)target;
+        FXExample myScript = (FXExample)target;
         if (GUILayout.Button("Save Preset 1"))
         {
             myScript.SavePreset1();

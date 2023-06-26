@@ -1,352 +1,372 @@
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.UI;
+using static UnityEditor.Progress;
 
-public interface IFXTriggerable
-{
-    [FXMethod]
-    public void FXTrigger();
-}
+namespace FX {
 
-public class FXMethodAttribute : Attribute
-{
-    public string Address { get; set; }
-
-    public FXMethodAttribute(string address = null)
+    public interface IFXTriggerable
     {
-        Address = address;
+        [FXMethod]
+        public void FXTrigger();
     }
-}
 
-[SerializeField]
-[AttributeUsage(AttributeTargets.Property)]
-public class FXPropertyAttribute : Attribute
-{
+    public interface IFXEnabler
+    {
+        [FXProperty]
+        bool FXEnabled { get; set; }
+    }
+
+
+    public class FXMethodAttribute : Attribute
+    {
+        public string Address { get; set; }
+
+        public FXMethodAttribute(string address = null)
+        {
+            Address = address;
+        }
+    }
+
     [SerializeField]
-    public string Address { get; set; }
-
-    public FXPropertyAttribute(string address = null)
+    [AttributeUsage(AttributeTargets.Property)]
+    public class FXPropertyAttribute : Attribute
     {
-        Address = address;
-    }
-}
+        [SerializeField]
+        public string Address { get; set; }
 
-public sealed class FXManager
-{
-
-    private static FXManager _instance;
-    public static FXManager Instance
-    {
-        get
+        public FXPropertyAttribute(string address = null)
         {
-            if (_instance == null)
-            {
-                _instance = new FXManager();
-            }
-            return _instance;
+            Address = address;
         }
     }
 
-    public static Dictionary<string, (FXItemInfoType type, object item, object fxInstance)> fxItemsByAddress_ = new Dictionary<string, (FXItemInfoType type, object item, object fxInstance)>();
-
-    public enum FXItemInfoType
+    public sealed class FXManager
     {
-        Property,
-        Method,
-        Parameter
-    }
 
-    public void AddFXItem(string address, FXItemInfoType type, object item, object fxInstance)
-    {
-        if (fxItemsByAddress_.ContainsKey(address))
+        private static FXManager _instance;
+        public static FXManager Instance
         {
-            Debug.LogError($"An FX item with address {address} is already registered.");
-        }
-        else
-        {
-            if (type == FXItemInfoType.Parameter && !(item is IFXParameter))
+            get
             {
-                Debug.LogError($"Item with address {address} is not implementing IFXParameter.");
-                return;
-            }
-            fxItemsByAddress_.Add(address, (type, item,fxInstance));
-        }
-    }
-
-    public void SetFX(string address, object arg)
-    {
-        SetFX(address, new object[] { arg });
-    }
-
-    public void SetFX(string address, object[] args)
-    {
-        if (fxItemsByAddress_.TryGetValue(address, out var fxItem))
-        {
-            switch (fxItem.type)
-            {
-                case FXItemInfoType.Property:
-                    SetProperty(address, args[0]);
-                    break;
-                case FXItemInfoType.Method:
-                    SetMethod(address, args);
-                    break;
-                case FXItemInfoType.Parameter:
-                    SetParameter(address, args[0]);
-                    break;
+                if (_instance == null)
+                {
+                    _instance = new FXManager();
+                }
+                return _instance;
             }
         }
-        else
+
+        public static Dictionary<string, (FXItemInfoType type, object item, object fxInstance)> fxItemsByAddress_ = new Dictionary<string, (FXItemInfoType type, object item, object fxInstance)>();
+
+        public enum FXItemInfoType
         {
-            Debug.LogWarning($"No property, method, or trigger found for address {address}");
+            Property,
+            Method,
+            Parameter
         }
-    }
 
-    private void SetProperty(string address, object arg)
-    {
-        if (fxItemsByAddress_.TryGetValue(address, out var item) && item.type == FXItemInfoType.Property)
+        public void AddFXItem(string address, FXItemInfoType type, object item, object fxInstance)
         {
-            PropertyInfo property = item.Item2 as PropertyInfo;
-            if (property == null)
+            if (fxItemsByAddress_.ContainsKey(address))
             {
-                Debug.LogWarning($"FX item at address {address} is not a property.");
-                return;
-            }
-            object instance = item.fxInstance;
-
-            Type propertyType = property.PropertyType;
-
-            if (propertyType == typeof(float) && arg is float fValue)
-            {
-                property.SetValue(instance, fValue);
-            }
-            else if (propertyType == typeof(int) && arg is int iValue)
-            {
-                property.SetValue(instance, iValue);
-            }
-            else if (propertyType == typeof(bool) && arg is bool bValue)
-            {
-                property.SetValue(instance, bValue);
-            }
-            else if (propertyType == typeof(string) && arg is string sValue)
-            {
-                property.SetValue(instance, sValue);
+                Debug.LogError($"An FX item with address {address} is already registered.");
             }
             else
             {
-                Debug.LogWarning($"Property {property.Name} has an unsupported type: {propertyType}");
+                if (type == FXItemInfoType.Parameter && !(item is IFXParameter))
+                {
+                    Debug.LogError($"Item with address {address} is not implementing IFXParameter.");
+                    return;
+                }
+                fxItemsByAddress_.Add(address, (type, item, fxInstance));
             }
         }
-        else
+
+        public void SetFX(string address, object arg)
         {
-            Debug.LogWarning($"No property found for address {address}");
+            SetFX(address, new object[] { arg });
         }
-    }
 
-
-    private void SetMethod(string address, object[] args)
-    {
-        if (fxItemsByAddress_.TryGetValue(address, out var item))
+        public void SetFX(string address, object[] args)
         {
-            if (item.type != FXItemInfoType.Method)
+            if (fxItemsByAddress_.TryGetValue(address, out var fxItem))
             {
-                Debug.LogWarning($"Item at address {address} is not a method");
-                return;
+                switch (fxItem.type)
+                {
+                    case FXItemInfoType.Property:
+                        SetProperty(address, args[0]);
+                        break;
+                    case FXItemInfoType.Method:
+                        SetMethod(address, args);
+                        break;
+                    case FXItemInfoType.Parameter:
+                        SetParameter(address, args[0]);
+                        break;
+                }
             }
-
-            var method = (MethodInfo)item.item;
-            var instance = item.fxInstance;
-
-            var parameters = method.GetParameters();
-            if (parameters.Length != args.Length)
+            else
             {
-                Debug.LogWarning($"Method {method.Name} expects {parameters.Length} arguments but {args.Length} were provided");
-                return;
+                Debug.LogWarning($"No property, method, or trigger found for address {address}");
             }
+        }
 
-            object[] convertedArgs = new object[args.Length];
-            for (int i = 0; i < args.Length; i++)
+        private void SetProperty(string address, object arg)
+        {
+            if (fxItemsByAddress_.TryGetValue(address, out var item) && item.type == FXItemInfoType.Property)
             {
-                Type expectedType = parameters[i].ParameterType;
-                object arg = args[i];
+                PropertyInfo property = item.Item2 as PropertyInfo;
+                if (property == null)
+                {
+                    Debug.LogWarning($"FX item at address {address} is not a property.");
+                    return;
+                }
+                object instance = item.fxInstance;
 
-                if (expectedType == typeof(float))
+                Type propertyType = property.PropertyType;
+
+                if (propertyType == typeof(float) && arg is float fValue)
                 {
-                    if (arg is float)
-                    {
-                        convertedArgs[i] = arg;
-                    }
-                    else if (arg is int)
-                    {
-                        convertedArgs[i] = (float)(int)arg;
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"Argument {i} of method {method.Name} is expected to be float but is {arg.GetType().Name}");
-                        return;
-                    }
+                    property.SetValue(instance, fValue);
                 }
-                else if (expectedType == typeof(int))
+                else if (propertyType == typeof(int) && arg is int iValue)
                 {
-                    if (arg is int)
-                    {
-                        convertedArgs[i] = arg;
-                    }
-                    else if (arg is float)
-                    {
-                        convertedArgs[i] = (int)(float)arg;
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"Argument {i} of method {method.Name} is expected to be int but is {arg.GetType().Name}");
-                        return;
-                    }
+                    property.SetValue(instance, iValue);
                 }
-                else if (expectedType == typeof(bool))
+                else if (propertyType == typeof(bool) && arg is bool bValue)
                 {
-                    if (arg is bool)
-                    {
-                        convertedArgs[i] = arg;
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"Argument {i} of method {method.Name} is expected to be bool but is {arg.GetType().Name}");
-                        return;
-                    }
+                    property.SetValue(instance, bValue);
                 }
-                else if (expectedType == typeof(string))
+                else if (propertyType == typeof(string) && arg is string sValue)
                 {
-                    if (arg is string)
-                    {
-                        convertedArgs[i] = arg;
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"Argument {i} of method {method.Name} is expected to be string but is {arg.GetType().Name}");
-                        return;
-                    }
+                    property.SetValue(instance, sValue);
                 }
                 else
                 {
-                    Debug.LogWarning($"Method {method.Name} has an unsupported argument type: {expectedType}");
-                    return;
+                    Debug.LogWarning($"Property {property.Name} has an unsupported type: {propertyType}");
                 }
-            }
-
-            method.Invoke(instance, convertedArgs);
-        }
-        else
-        {
-            Debug.LogWarning($"No method found for address {address}");
-        }
-    }
-
-    private void SetParameter(string address, object arg)
-    {
-        if (fxItemsByAddress_.TryGetValue(address, out var fxItem))
-        {
-            if (fxItem.type != FXItemInfoType.Parameter)
-            {
-                Debug.LogWarning($"FX item at address {address} is not a parameter.");
-                return;
-            }
-
-            object parameter = fxItem.item;
-            IFXParameter iFXParameter = parameter as IFXParameter;
-            if (iFXParameter == null)
-            {
-                Debug.LogWarning($"FXParameter {address} is not an instance of IFXParameter");
-                return;
-            }
-
-            Type parameterType = iFXParameter.ObjectValue.GetType();
-
-            if (parameterType == typeof(float) && arg is float fValue)
-            {
-                ((FXParameter<float>)parameter).Value = fValue;
-            }
-            else if (parameterType == typeof(int) && arg is int iValue)
-            {
-                ((FXParameter<int>)parameter).Value = iValue;
-            }
-            else if (parameterType == typeof(bool) && arg is bool bValue)
-            {
-                ((FXParameter<bool>)parameter).Value = bValue;
-            }
-            else if (parameterType == typeof(string) && arg is string sValue)
-            {
-                ((FXParameter<string>)parameter).Value = sValue;
-            }
-            else if (parameterType == typeof(Color) && arg is Color cValue)
-            {
-                ((FXParameter<Color>)parameter).Value = cValue;
             }
             else
             {
-                Debug.LogWarning($"FXParameter {address} has an unsupported type: {parameterType}");
+                Debug.LogWarning($"No property found for address {address}");
             }
         }
-        else
+
+
+        private void SetMethod(string address, object[] args)
         {
-            Debug.LogWarning($"No parameter found for address {address}");
-        }
-    }
-
-
-
-    //public void SetTrigger(string address)
-    //{
-    //    if (triggersByAddress_.TryGetValue(address, out var trigger))
-    //    {
-    //        trigger.Item1.Invoke(trigger.Item2, null);
-    //    }
-    //}
-    //
-
-
-    [FXMethod()]
-    private void MyFunction(float arg1, int arg2)
-    {
-        Debug.Log($"MyFunction triggered with args: {arg1}, {arg2}");
-    }
-
-
-    public void Trigger()
-    {
-        Debug.Log("Triggered");
-    }
-
-
-
-
-    [System.Serializable]
-    public class FXPreset
-    {
-        public List<FXPresetParameter<string>> stringParameters = new List<FXPresetParameter<string>>();
-        public List<FXPresetParameter<int>> intParameters = new List<FXPresetParameter<int>>();
-        public List<FXPresetParameter<float>> floatParameters = new List<FXPresetParameter<float>>();
-        public List<FXPresetParameter<bool>> boolParameters = new List<FXPresetParameter<bool>>();
-        public List<FXPresetParameter<Color>> colorParameters = new List<FXPresetParameter<Color>>();
-    }
-
-    [System.Serializable]
-    public class FXPresetParameter<T>
-    {
-        public string key;
-        public T value;
-    }
-
-    public void SavePreset(string presetName)
-    {
-        FXPreset preset = new FXPreset();
-        foreach (var item in fxItemsByAddress_)
-        {
-            if (item.Value.type == FXManager.FXItemInfoType.Parameter)
+            if (fxItemsByAddress_.TryGetValue(address, out var item))
             {
-                var parameter = item.Value.item as IFXParameter;
+                if (item.type != FXItemInfoType.Method)
+                {
+                    Debug.LogWarning($"Item at address {address} is not a method");
+                    return;
+                }
+
+                var method = (MethodInfo)item.item;
+                var instance = item.fxInstance;
+
+                var parameters = method.GetParameters();
+                if (parameters.Length != args.Length)
+                {
+                    Debug.LogWarning($"Method {method.Name} expects {parameters.Length} arguments but {args.Length} were provided");
+                    return;
+                }
+
+                object[] convertedArgs = new object[args.Length];
+                for (int i = 0; i < args.Length; i++)
+                {
+                    Type expectedType = parameters[i].ParameterType;
+                    object arg = args[i];
+
+                    if (expectedType == typeof(float))
+                    {
+                        if (arg is float)
+                        {
+                            convertedArgs[i] = arg;
+                        }
+                        else if (arg is int)
+                        {
+                            convertedArgs[i] = (float)(int)arg;
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"Argument {i} of method {method.Name} is expected to be float but is {arg.GetType().Name}");
+                            return;
+                        }
+                    }
+                    else if (expectedType == typeof(int))
+                    {
+                        if (arg is int)
+                        {
+                            convertedArgs[i] = arg;
+                        }
+                        else if (arg is float)
+                        {
+                            convertedArgs[i] = (int)(float)arg;
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"Argument {i} of method {method.Name} is expected to be int but is {arg.GetType().Name}");
+                            return;
+                        }
+                    }
+                    else if (expectedType == typeof(bool))
+                    {
+                        if (arg is bool)
+                        {
+                            convertedArgs[i] = arg;
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"Argument {i} of method {method.Name} is expected to be bool but is {arg.GetType().Name}");
+                            return;
+                        }
+                    }
+                    else if (expectedType == typeof(string))
+                    {
+                        if (arg is string)
+                        {
+                            convertedArgs[i] = arg;
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"Argument {i} of method {method.Name} is expected to be string but is {arg.GetType().Name}");
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Method {method.Name} has an unsupported argument type: {expectedType}");
+                        return;
+                    }
+                }
+
+                method.Invoke(instance, convertedArgs);
+            }
+            else
+            {
+                Debug.LogWarning($"No method found for address {address}");
+            }
+        }
+
+        private void SetParameter(string address, object arg)
+        {
+            if (fxItemsByAddress_.TryGetValue(address, out var fxItem))
+            {
+                if (fxItem.type != FXItemInfoType.Parameter)
+                {
+                    Debug.LogWarning($"FX item at address {address} is not a parameter.");
+                    return;
+                }
+
+                object parameter = fxItem.item;
+                IFXParameter iFXParameter = parameter as IFXParameter;
+                if (iFXParameter == null)
+                {
+                    Debug.LogWarning($"FXParameter {address} is not an instance of IFXParameter");
+                    return;
+                }
+
+                Type parameterType = iFXParameter.ObjectValue.GetType();
+
+                if (parameterType == typeof(float) && arg is float fValue)
+                {
+                    ((FXParameter<float>)parameter).Value = fValue;
+                }
+                else if (parameterType == typeof(int) && arg is int iValue)
+                {
+                    ((FXParameter<int>)parameter).Value = iValue;
+                }
+                else if (parameterType == typeof(bool) && arg is bool bValue)
+                {
+                    ((FXParameter<bool>)parameter).Value = bValue;
+                }
+                else if (parameterType == typeof(string) && arg is string sValue)
+                {
+                    ((FXParameter<string>)parameter).Value = sValue;
+                }
+                else if (parameterType == typeof(Color) && arg is Color cValue)
+                {
+                    ((FXParameter<Color>)parameter).Value = cValue;
+                }
+                else
+                {
+                    Debug.LogWarning($"FXParameter {address} has an unsupported type: {parameterType}");
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"No parameter found for address {address}");
+            }
+        }
+
+
+
+        //public void SetTrigger(string address)
+        //{
+        //    if (triggersByAddress_.TryGetValue(address, out var trigger))
+        //    {
+        //        trigger.Item1.Invoke(trigger.Item2, null);
+        //    }
+        //}
+        //
+
+
+        [FXMethod()]
+        private void MyFunction(float arg1, int arg2)
+        {
+            Debug.Log($"MyFunction triggered with args: {arg1}, {arg2}");
+        }
+
+
+        public void Trigger()
+        {
+            Debug.Log("Triggered");
+        }
+
+
+        [System.Serializable]
+        public class FXPreset
+        {
+            public List<FXPresetParameter<string>> stringParameters = new List<FXPresetParameter<string>>();
+            public List<FXPresetParameter<int>> intParameters = new List<FXPresetParameter<int>>();
+            public List<FXPresetParameter<float>> floatParameters = new List<FXPresetParameter<float>>();
+            public List<FXPresetParameter<bool>> boolParameters = new List<FXPresetParameter<bool>>();
+            public List<FXPresetParameter<Color>> colorParameters = new List<FXPresetParameter<Color>>();
+        }
+
+        [System.Serializable]
+        public class FXPresetParameter<T>
+        {
+            public string key;
+            public T value;
+        }
+
+        public void SavePreset(string presetName)
+        {
+            FXPreset preset = new FXPreset();
+
+            foreach (var item in fxItemsByAddress_)
+            {
                 string key_ = item.Key;
-                object value_ = parameter.ObjectValue;
+                object value_ = null;
+
+                if (item.Value.type == FXItemInfoType.Parameter)
+                {
+                    var parameter = item.Value.item as IFXParameter;
+                    value_ = parameter.ObjectValue;
+                }
+                else if (item.Value.type == FXItemInfoType.Property)
+                {
+                    var property = item.Value.item as PropertyInfo;
+                    object instance = item.Value.fxInstance;
+                    value_ = property.GetValue(instance);
+                }
 
                 if (value_ is string strValue)
                     preset.stringParameters.Add(new FXPresetParameter<string> { key = key_, value = strValue });
@@ -359,60 +379,61 @@ public sealed class FXManager
                 else if (value_ is Color colorValue)
                     preset.colorParameters.Add(new FXPresetParameter<Color> { key = key_, value = colorValue });
             }
+
+            string json = JsonUtility.ToJson(preset);
+
+            string directoryPath = Application.streamingAssetsPath;
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            string filePath = Path.Combine(directoryPath, presetName + ".json");
+            File.WriteAllText(filePath, json);
         }
 
-        string json = JsonUtility.ToJson(preset);
-
-        string directoryPath = Application.streamingAssetsPath;
-        if (!Directory.Exists(directoryPath))
+        public void LoadPreset(string presetName)
         {
-            Directory.CreateDirectory(directoryPath);
-        }
+            string directoryPath = Application.streamingAssetsPath;
+            string filePath = Path.Combine(directoryPath, presetName + ".json");
 
-        string filePath = Path.Combine(directoryPath, presetName + ".json");
-        File.WriteAllText(filePath, json);
+            if (File.Exists(filePath))
+            {
+                string json = File.ReadAllText(filePath);
+                FXPreset preset = JsonUtility.FromJson<FXPreset>(json);
+
+                foreach (var param in preset.stringParameters)
+                {
+                    SetFX(param.key, param.value);
+                }
+
+                foreach (var param in preset.intParameters)
+                {
+                    SetFX(param.key, param.value);
+                }
+
+                foreach (var param in preset.floatParameters)
+                {
+                    SetFX(param.key, param.value);
+                }
+
+                foreach (var param in preset.boolParameters)
+                {
+                    SetFX(param.key, param.value);
+                }
+
+                foreach (var param in preset.colorParameters)
+                {
+                    SetFX(param.key, param.value);
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"Preset {presetName} not found.");
+            }
+        }
     }
-
-    public void LoadPreset(string presetName)
-    {
-        string directoryPath = Application.streamingAssetsPath;
-        string filePath = Path.Combine(directoryPath, presetName + ".json");
-
-        if (File.Exists(filePath))
-        {
-            string json = File.ReadAllText(filePath);
-            FXPreset preset = JsonUtility.FromJson<FXPreset>(json);
-
-            foreach (var param in preset.stringParameters)
-            {
-                SetFX(param.key, param.value);
-            }
-
-            foreach (var param in preset.intParameters)
-            {
-                SetFX(param.key, param.value);
-            }
-
-            foreach (var param in preset.floatParameters)
-            {
-                SetFX(param.key, param.value);
-            }
-
-            foreach (var param in preset.boolParameters)
-            {
-                SetFX(param.key, param.value);
-            }
-
-            foreach (var param in preset.colorParameters)
-            {
-                SetFX(param.key, param.value);
-            }
-        }
-        else
-        {
-            Debug.LogWarning($"Preset {presetName} not found.");
-        }
-    }
-
 
 }
+
+
