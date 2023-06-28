@@ -15,13 +15,6 @@ namespace FX {
         public void FXTrigger();
     }
 
-    public interface IFXEnabler
-    {
-        [FXProperty]
-        bool FXEnabled { get; set; }
-    }
-
-
     public class FXMethodAttribute : Attribute
     {
         public string Address { get; set; }

@@ -5,7 +5,7 @@ using FX;
 // This class is an example of how to integrate FXManager with MonoBehaviour.
 // It implements both IFXTriggerable and IFXEnabler interfaces, indicating it has methods that can be triggered by the FX system,
 // and it has an 'enabled' state that can be controlled by the FX system.
-public class FXExample : MonoBehaviour, IFXTriggerable, IFXEnabler
+public class FXExample : MonoBehaviour, IFXTriggerable
 {
 
     // FXParameters are used to expose parameters to the FX system. They can be manipulated through the FX system
@@ -18,18 +18,15 @@ public class FXExample : MonoBehaviour, IFXTriggerable, IFXEnabler
 
     public FXParameter<float> myFloatParameterWithEvent = new FXParameter<float>(0.0f);
 
+    // FXEnabledParameter represents the enabled state of the FX system.
+    public FXEnabledParameter fxEnabled = new FXEnabledParameter(true);
+
 
     //// Not working - DO NOT USE
     //// FXProperty attribute marks a property to be managed by the FX system. The FX system will automatically assign an address to it.
     //[FXProperty]
     //[field: SerializeField] // Exposes the FXProperty in the inspector
     //public int IntProperty { get; set; } = 0;
-
-    // The FXEnabled property is required when implementing the IFXEnabler interface. 
-    // This property indicates the enabled state of the component and can be manipulated through the FX system.
-    [FXProperty]
-    [field: SerializeField] // Exposes the FXProperty in the inspector
-    public bool FXEnabled { get; set; } = false;
 
 
     // These methods save and load presets. Presets store the current values of all FXParameters and FXProperties managed by the FX system.
@@ -46,7 +43,12 @@ public class FXExample : MonoBehaviour, IFXTriggerable, IFXEnabler
         // Adds all FXElements (FXParameters, FXProperties, FXMethods) of this MonoBehaviour to the FX system.
         this.AddFXElements();
 
+        // Optionall register event handlers for FXParameters
         myFloatParameterWithEvent.OnValueChanged += HandleFloatValueChanged;
+
+        // Register event handler for FXEnabledParameter
+        fxEnabled.OnValueChanged += FXOnEnabled;
+
 
         // Here we use the FX system to set the values of the FXParameters.
         FXManager.Instance.SetFX(myFloatParameter.Address, 0.6f);
@@ -60,6 +62,8 @@ public class FXExample : MonoBehaviour, IFXTriggerable, IFXEnabler
         // Here we use the FX system to call an FXMethod and to set the value of an FXProperty.
         string methodAddress = $"/{gameObject.name}/{GetType().Name}/{nameof(MyTestIntMethod)}";
         FXManager.Instance.SetFX(methodAddress, 3);
+        
+        FXManager.Instance.SetFX(fxEnabled.Address, false);
 
         //// Not working - DO NOT USE
         //string propertyAddress = $"/{gameObject.name}/{GetType().Name}/{nameof(IntProperty)}";
@@ -71,6 +75,11 @@ public class FXExample : MonoBehaviour, IFXTriggerable, IFXEnabler
     public void MyTestIntMethod(int i)
     {
         Debug.Log("MyTestIntMethod - value: " + i);
+    }
+
+    public void FXOnEnabled(bool value)
+    {
+        Debug.Log($"Enabled value changed: {value}");
     }
 
     private void HandleFloatValueChanged(float newValue)

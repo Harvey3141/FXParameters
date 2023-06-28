@@ -79,6 +79,36 @@ namespace FX
 
     }
 
+    [CustomPropertyDrawer(typeof(FXEnabledParameter))]
+    public class FXEnabledParameterDrawer : PropertyDrawer
+    {
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        {
+            EditorGUI.BeginProperty(position, label, property);
+
+            // Get the value SerializedProperty
+            SerializedProperty valueProperty = property.FindPropertyRelative("value_");
+
+            // Display the value field
+            switch (valueProperty.propertyType)
+            {
+                case SerializedPropertyType.Boolean:
+                    valueProperty.boolValue = EditorGUI.Toggle(position, label, valueProperty.boolValue);
+                    break;
+                default:
+                    EditorGUI.LabelField(position, "Value type not supported");
+                    break;
+            }
+
+            EditorGUI.EndProperty();
+        }
+
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        {
+            return EditorGUIUtility.singleLineHeight;
+        }
+    }
+
     public interface IFXParameter
     {
         object ObjectValue { get; set; }
@@ -95,7 +125,7 @@ namespace FX
 
         public event Action<T> OnValueChanged; // Event triggered when the value changes
 
-        public T Value
+        public virtual T Value
         {
             get { return value_; }
             set
@@ -153,6 +183,34 @@ namespace FX
             }
         }
     }
+
+    [System.Serializable]
+    public class FXEnabledParameter : FXParameter<bool>
+    {
+        public FXEnabledParameter(bool value) : base(value)
+        {
+        }
+
+        public override bool Value
+        {
+            get { return base.Value; }
+            set
+            {
+                if (base.Value != value)
+                {
+                    base.Value = value;
+                    OnEnabledChanged(value); // Invoke the custom enabled changed handler
+                }
+            }
+        }
+
+        private void OnEnabledChanged(bool isEnabled)
+        {
+            // Handle the enabled state change here
+            Debug.Log($"Enabled value changed: {isEnabled}");
+        }
+    }
+
 
 
 }
