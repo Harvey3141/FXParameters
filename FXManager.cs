@@ -2,6 +2,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
@@ -53,6 +54,25 @@ namespace FX {
                 return _instance;
             }
         }
+
+
+        public string[] GetAddresses()
+        {
+            string[] addresses = fxItemsByAddress_.Keys.ToArray();
+
+            // Remove the leading "/" character from each string in the array.
+            for (int i = 0; i < addresses.Length; i++)
+            {
+                if (addresses[i].StartsWith("/"))
+                {
+                    addresses[i] = addresses[i].Substring(1);
+                }
+            }
+
+            return addresses;
+        }
+
+
 
         public static Dictionary<string, (FXItemInfoType type, object item, object fxInstance)> fxItemsByAddress_ = new Dictionary<string, (FXItemInfoType type, object item, object fxInstance)>();
 

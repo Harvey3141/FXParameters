@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using UnityEditor;
+using UnityEditorInternal;
 using UnityEngine;
 
 namespace FX
@@ -8,66 +10,60 @@ namespace FX
     public class FXGroupControllerEditor : Editor
     {
         private SerializedProperty fxAddressesProperty;
-        private string[] paramPopupValues = new string[] { "Param1", "Param2", "Param3" };
+        private ReorderableList reorderableList;
+        private string[]  paramPopupValues = new string[] { "Test 1", "Test 2", "Test 3" }; // Test array
 
-        private void OnEnable()
+    private void OnEnable()
         {
             fxAddressesProperty = serializedObject.FindProperty("fxAddresses");
+
+            reorderableList = new ReorderableList(serializedObject, fxAddressesProperty, true, true, true, true);
+
+            reorderableList.drawElementCallback = DrawListItems;
+            reorderableList.elementHeightCallback = (index) => EditorGUIUtility.singleLineHeight * 1.5f;
+            reorderableList.drawHeaderCallback = DrawHeader;
+        }
+
+        private void DrawHeader(Rect rect)
+        {
+            EditorGUI.LabelField(rect, "FX Addresses");
+        }
+
+        private void DrawListItems(Rect rect, int index, bool isActive, bool isFocused)
+        {
+            if (Application.isPlaying)
+            {
+                SerializedProperty element = reorderableList.serializedProperty.GetArrayElementAtIndex(index);
+
+                rect.y += 2;
+
+                EditorGUI.BeginDisabledGroup(true);
+                EditorGUI.PropertyField(new Rect(rect.x, rect.y, rect.width - 100, EditorGUIUtility.singleLineHeight), element, GUIContent.none);
+                EditorGUI.EndDisabledGroup();
+
+                int selectedParamIndex = Mathf.Max(Array.IndexOf(paramPopupValues, element.stringValue), 0);
+                selectedParamIndex = EditorGUI.Popup(new Rect(rect.width + rect.x - 90, rect.y, 90, EditorGUIUtility.singleLineHeight), selectedParamIndex, paramPopupValues);
+                element.stringValue = paramPopupValues[selectedParamIndex];
+            }
         }
 
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
 
+            UpdateParamPopupValues(); // Call this here
+
             EditorGUILayout.LabelField("Connections");
 
-            DrawFXAddressesList();
+            reorderableList.DoLayoutList();
 
             serializedObject.ApplyModifiedProperties();
         }
 
-        private void DrawFXAddressesList()
+        private void UpdateParamPopupValues()
         {
-            EditorGUILayout.LabelField("FX Addresses");
+            paramPopupValues = FXManager.Instance.GetAddresses();
 
-            int count = fxAddressesProperty.arraySize;
-
-            // Draw the list elements
-            for (int i = 0; i < count; i++)
-            {
-                EditorGUILayout.BeginHorizontal();
-
-                SerializedProperty addressProperty = fxAddressesProperty.GetArrayElementAtIndex(i);
-
-                // Draw the address field as read-only
-                EditorGUI.BeginDisabledGroup(true);
-                EditorGUILayout.PropertyField(addressProperty, GUIContent.none);
-                EditorGUI.EndDisabledGroup();
-
-                // Find the index of the current address in the paramPopupValues array
-                int selectedParamIndex = Mathf.Max(Array.IndexOf(paramPopupValues, addressProperty.stringValue), 0);
-
-                // Draw the param popup
-                selectedParamIndex = EditorGUILayout.Popup(selectedParamIndex, paramPopupValues, GUILayout.Width(100f));
-
-                // Update the address property with the selected param value
-                addressProperty.stringValue = paramPopupValues[selectedParamIndex];
-
-                // Draw the remove button
-                if (GUILayout.Button("-", GUILayout.Width(20f)))
-                {
-                    fxAddressesProperty.DeleteArrayElementAtIndex(i);
-                    break;
-                }
-
-                EditorGUILayout.EndHorizontal();
-            }
-
-            // Draw the add button
-            if (GUILayout.Button("Add FX Address"))
-            {
-                fxAddressesProperty.InsertArrayElementAtIndex(count);
-            }
         }
     }
 }
