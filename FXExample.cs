@@ -22,13 +22,6 @@ public class FXExample : MonoBehaviour, IFXTriggerable
     public FXEnabledParameter fxEnabled = new FXEnabledParameter(true);
 
 
-    //// Not working - DO NOT USE
-    //// FXProperty attribute marks a property to be managed by the FX system. The FX system will automatically assign an address to it.
-    //[FXProperty]
-    //[field: SerializeField] // Exposes the FXProperty in the inspector
-    //public int IntProperty { get; set; } = 0;
-
-
     // These methods save and load presets. Presets store the current values of all FXParameters and FXProperties managed by the FX system.
     public void SavePreset1() { FXManager.Instance.SavePreset("Preset1"); }
 
@@ -79,6 +72,12 @@ public class FXExample : MonoBehaviour, IFXTriggerable
     public void MyTestIntMethod(int i)
     {
         Debug.Log("MyTestIntMethod - value: " + i);
+    }
+
+    [FXMethod]
+    public void MyTestStringMethod(string s)
+    {
+        Debug.Log("MyTestStringMethod - value: " + s);
     }
 
     public void FXOnEnabled(bool value)

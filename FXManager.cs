@@ -173,6 +173,10 @@ namespace FX {
                         {
                             convertedArgs[i] = arg;
                         }
+                        else if (arg is float)
+                        {
+                            convertedArgs[i] = (int)(float)arg;
+                        }
                         else
                         {
                             Debug.LogWarning($"Argument {i} of method {method.Name} is expected to be bool but is {arg.GetType().Name}");
@@ -271,30 +275,6 @@ namespace FX {
             {
                 Debug.LogWarning($"No parameter found for address {address}");
             }
-        }
-
-
-
-        //public void SetTrigger(string address)
-        //{
-        //    if (triggersByAddress_.TryGetValue(address, out var trigger))
-        //    {
-        //        trigger.Item1.Invoke(trigger.Item2, null);
-        //    }
-        //}
-        //
-
-
-        [FXMethod()]
-        private void MyFunction(float arg1, int arg2)
-        {
-            Debug.Log($"MyFunction triggered with args: {arg1}, {arg2}");
-        }
-
-
-        public void Trigger()
-        {
-            Debug.Log("Triggered");
         }
 
 

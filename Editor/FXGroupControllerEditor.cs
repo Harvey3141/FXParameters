@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -108,6 +109,28 @@ namespace FX
                         addressList.Add(address);
                     }
                 }
+                else if (kvp.Value.type == FXManager.FXItemInfoType.Method)
+                {
+                    MethodInfo method = kvp.Value.item as MethodInfo;
+                    ParameterInfo[] parameters = method.GetParameters();
+
+                    // Check if the method has at least one parameter and if the first parameter is of type float, int, or bool.
+                    if (parameters.Length > 0 &&
+                        (parameters[0].ParameterType == typeof(float) ||
+                         parameters[0].ParameterType == typeof(int) ||
+                         parameters[0].ParameterType == typeof(bool)))
+                    {
+                        string address = kvp.Key;
+
+                        // Remove the leading "/" character from each string.
+                        if (address.StartsWith("/"))
+                        {
+                            address = address.Substring(1);
+                        }
+
+                        addressList.Add(address);
+                    }
+                }
             }
 
             if (addressList.Count > 0)
@@ -119,6 +142,7 @@ namespace FX
                 Debug.LogError("No addresses matching the criteria found.");
             }
         }
+
 
     }
 }
