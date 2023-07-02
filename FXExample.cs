@@ -38,6 +38,14 @@ public class FXExample : MonoBehaviour, IFXTriggerable
 
     public void LoadPreset2() { FXManager.Instance.LoadPreset("Preset2"); }
 
+    [SerializeField]
+    private int targetFrameRate = 60;
+
+    private void Awake()
+    {
+        Application.targetFrameRate = targetFrameRate;
+    }
+
     private void Start()
     {
         // Adds all FXElements (FXParameters, FXProperties, FXMethods) of this MonoBehaviour to the FX system.
@@ -64,10 +72,6 @@ public class FXExample : MonoBehaviour, IFXTriggerable
         FXManager.Instance.SetFX(methodAddress, 3);
         
         FXManager.Instance.SetFX(fxEnabled.Address, false);
-
-        //// Not working - DO NOT USE
-        //string propertyAddress = $"/{gameObject.name}/{GetType().Name}/{nameof(IntProperty)}";
-        //FXManager.Instance.SetFX(propertyAddress, 99);
     }
 
     // This method is marked with the FXMethod attribute, so it can be triggered by the FX system.

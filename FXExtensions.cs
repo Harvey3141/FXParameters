@@ -79,22 +79,6 @@ namespace FX
                 }
             }
 
-            // Add FXProperties
-            var properties = monoBehaviour.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-            foreach (var property in properties)
-            {
-                var FXPropertyAttribute = property.GetCustomAttribute<FXPropertyAttribute>();
-                if (FXPropertyAttribute != null)
-                {
-                    if (FXPropertyAttribute.Address == null)
-                    {
-                        var propertyName = property.Name;
-                        FXPropertyAttribute.Address = $"/{monoBehaviour.gameObject.name}/{monoBehaviour.GetType().Name}/{propertyName}";
-                    }
-
-                    FXManager.Instance.AddFXItem(FXPropertyAttribute.Address, FXItemInfoType.Property, property, monoBehaviour);
-                }
-            }
         }
     }
 }

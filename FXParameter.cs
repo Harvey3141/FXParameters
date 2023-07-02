@@ -133,7 +133,7 @@ namespace FX
                 if (!EqualityComparer<T>.Default.Equals(value_, value)) // Only trigger event if the value has changed
                 {
                     value_ = value;
-                    Debug.Log($"New value set: {value_}");
+                    //Debug.Log($"New value set: {value_}");
                     OnValueChanged?.Invoke(value_); // Trigger the event
                 }
             }

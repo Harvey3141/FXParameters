@@ -55,30 +55,12 @@ namespace FX {
             }
         }
 
-
-        public string[] GetAddresses()
-        {
-            string[] addresses = fxItemsByAddress_.Keys.ToArray();
-
-            // Remove the leading "/" character from each string in the array.
-            for (int i = 0; i < addresses.Length; i++)
-            {
-                if (addresses[i].StartsWith("/"))
-                {
-                    addresses[i] = addresses[i].Substring(1);
-                }
-            }
-
-            return addresses;
-        }
-
-
+        public event Action OnFXItemAdded;
 
         public static Dictionary<string, (FXItemInfoType type, object item, object fxInstance)> fxItemsByAddress_ = new Dictionary<string, (FXItemInfoType type, object item, object fxInstance)>();
 
         public enum FXItemInfoType
         {
-            Property,
             Method,
             Parameter
         }
@@ -97,6 +79,8 @@ namespace FX {
                     return;
                 }
                 fxItemsByAddress_.Add(address, (type, item, fxInstance));
+
+                OnFXItemAdded?.Invoke();
             }
         }
 
@@ -111,9 +95,6 @@ namespace FX {
             {
                 switch (fxItem.type)
                 {
-                    case FXItemInfoType.Property:
-                        SetProperty(address, args[0]);
-                        break;
                     case FXItemInfoType.Method:
                         SetMethod(address, args);
                         break;
@@ -127,48 +108,6 @@ namespace FX {
                 Debug.LogWarning($"No property, method, or trigger found for address {address}");
             }
         }
-
-        private void SetProperty(string address, object arg)
-        {
-            if (fxItemsByAddress_.TryGetValue(address, out var item) && item.type == FXItemInfoType.Property)
-            {
-                PropertyInfo property = item.Item2 as PropertyInfo;
-                if (property == null)
-                {
-                    Debug.LogWarning($"FX item at address {address} is not a property.");
-                    return;
-                }
-                object instance = item.fxInstance;
-
-                Type propertyType = property.PropertyType;
-
-                if (propertyType == typeof(float) && arg is float fValue)
-                {
-                    property.SetValue(instance, fValue);
-                }
-                else if (propertyType == typeof(int) && arg is int iValue)
-                {
-                    property.SetValue(instance, iValue);
-                }
-                else if (propertyType == typeof(bool) && arg is bool bValue)
-                {
-                    property.SetValue(instance, bValue);
-                }
-                else if (propertyType == typeof(string) && arg is string sValue)
-                {
-                    property.SetValue(instance, sValue);
-                }
-                else
-                {
-                    Debug.LogWarning($"Property {property.Name} has an unsupported type: {propertyType}");
-                }
-            }
-            else
-            {
-                Debug.LogWarning($"No property found for address {address}");
-            }
-        }
-
 
         private void SetMethod(string address, object[] args)
         {
@@ -287,17 +226,31 @@ namespace FX {
 
                 Type parameterType = iFXParameter.ObjectValue.GetType();
 
-                if (parameterType == typeof(float) && arg is float fValue)
+                if (parameterType == typeof(float) && arg is float fValueFloat)
                 {
-                    ((FXParameter<float>)parameter).Value = fValue;
+                    ((FXParameter<float>)parameter).Value = fValueFloat;
                 }
-                else if (parameterType == typeof(int) && arg is int iValue)
+                else if (parameterType == typeof(int))
                 {
-                    ((FXParameter<int>)parameter).Value = iValue;
+                    if (arg is int iValue)
+                    {
+                        ((FXParameter<int>)parameter).Value = iValue;
+                    }
+                    else if (arg is float fValueInt)
+                    {
+                        ((FXParameter<int>)parameter).Value = Mathf.RoundToInt(fValueInt);
+                    }
                 }
-                else if (parameterType == typeof(bool) && arg is bool bValue)
+                else if (parameterType == typeof(bool))
                 {
-                    ((FXParameter<bool>)parameter).Value = bValue;
+                    if (arg is bool bValue)
+                    {
+                        ((FXParameter<bool>)parameter).Value = bValue;
+                    }
+                    else if (arg is float fValueBool)
+                    {
+                        ((FXParameter<bool>)parameter).Value = (fValueBool != 0f);
+                    }
                 }
                 else if (parameterType == typeof(string) && arg is string sValue)
                 {
@@ -311,6 +264,8 @@ namespace FX {
                 {
                     Debug.LogWarning($"FXParameter {address} has an unsupported type: {parameterType}");
                 }
+
+
             }
             else
             {
@@ -373,12 +328,6 @@ namespace FX {
                 {
                     var parameter = item.Value.item as IFXParameter;
                     value_ = parameter.ObjectValue;
-                }
-                else if (item.Value.type == FXItemInfoType.Property)
-                {
-                    var property = item.Value.item as PropertyInfo;
-                    object instance = item.Value.fxInstance;
-                    value_ = property.GetValue(instance);
                 }
 
                 if (value_ is string strValue)

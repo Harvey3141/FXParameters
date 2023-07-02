@@ -9,12 +9,22 @@ namespace FX
         [SerializeField]
         public List<string> fxAddresses;
 
+        [SerializeField]
+        public FXParameter<float> value = new FXParameter<float>(0.0f,"Group1/value");
+
+        public void Start()
+        {
+            value.OnValueChanged += SetValue;
+        }
+
         public void SetValue(float value)
         {
             foreach (string address in fxAddresses)
             {
-                FXManager.Instance.SetFX(address, value);
+                string formattedAddress = address.StartsWith("/") ? address : "/" + address;
+                FXManager.Instance.SetFX(formattedAddress, value);
             }
         }
+
     }
 }
