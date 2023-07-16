@@ -18,12 +18,26 @@ namespace FX
         [SerializeField]
         public FXParameter<float> value = new FXParameter<float>(0.0f, "", false);
 
+
+        public enum SignalSource { Default, Pattern, Audio };
+        SignalSource signalSource = SignalSource.Default;
+        public enum PatternType {Tap, Oscillator, Arpeggiator};
+        PatternType patternType= PatternType.Tap;
+
+        public PatternBase pattern;
+
         public bool presetLoaded = false;
 
         public void Start()
         {
             this.AddFXElements(address);         
             value.OnValueChanged += SetValue;
+        }
+
+        void Update () {
+            if (signalSource == SignalSource.Pattern) {
+                if (pattern) SetValue(pattern._currentValue);
+            }           
         }
 
         public void SetValue(float value)
