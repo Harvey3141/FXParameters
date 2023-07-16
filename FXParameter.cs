@@ -113,6 +113,7 @@ namespace FX
     {
         object ObjectValue { get; set; }
         string Address { get; set; }
+        bool ShouldSave { get; set; }
     }
 
     [System.Serializable]
@@ -122,6 +123,8 @@ namespace FX
         private string address_;
         [SerializeField]
         private T value_;
+        [SerializeField]
+        private bool shouldSave_ = true;
 
         public event Action<T> OnValueChanged; // Event triggered when the value changes
 
@@ -162,11 +165,18 @@ namespace FX
             set { address_ = value; }
         }
 
-        public FXParameter(T value, string address = "")
+        public bool ShouldSave
+        {
+            get { return shouldSave_; }
+            set { shouldSave_ = value; }
+        }
+
+        public FXParameter(T value, string address = "", bool shouldSave = true)
         {
             if (typeof(T) == typeof(float) || typeof(T) == typeof(int) || typeof(T) == typeof(bool) || typeof(T) == typeof(string) || typeof(T) == typeof(Color))
             {
                 Value = value;
+                ShouldSave = shouldSave;
 
                 if (string.IsNullOrEmpty(address))
                 {
@@ -182,6 +192,7 @@ namespace FX
                 throw new ArgumentException("FXParameter supports only float, int, bool, string, and Color types.");
             }
         }
+
     }
 
     [System.Serializable]

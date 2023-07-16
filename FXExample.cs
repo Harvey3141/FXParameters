@@ -42,7 +42,7 @@ public class FXExample : MonoBehaviour, IFXTriggerable
     private void Start()
     {
         // Adds all FXElements (FXParameters, FXProperties, FXMethods) of this MonoBehaviour to the FX system.
-        this.AddFXElements();
+        this.AddFXElements("example");
 
         // Optionall register event handlers for FXParameters
         myFloatParameterWithEvent.OnValueChanged += HandleFloatValueChanged;
@@ -61,7 +61,7 @@ public class FXExample : MonoBehaviour, IFXTriggerable
         FXManager.Instance.SetFX(myFloatParameterWithEvent.Address, 99.0f);
 
         // Here we use the FX system to call an FXMethod and to set the value of an FXProperty.
-        string methodAddress = $"/{gameObject.name}/{GetType().Name}/{nameof(MyTestIntMethod)}";
+        string methodAddress = $"/example/{nameof(MyTestIntMethod)}";
         FXManager.Instance.SetFX(methodAddress, 3);
         
         FXManager.Instance.SetFX(fxEnabled.Address, false);
@@ -92,6 +92,7 @@ public class FXExample : MonoBehaviour, IFXTriggerable
     }
 
     // This method is required by the IFXTriggerable interface. It can be triggered by the FX system.
+    [FXMethod]
     public void FXTrigger()
     {
         Debug.Log("FXTrigger Triggered");

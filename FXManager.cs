@@ -84,6 +84,11 @@ namespace FX {
             }
         }
 
+        public void SetFX(string address)
+        {
+            SetFX(address, new object[0]);
+        }
+
         public void SetFX(string address, object arg)
         {
             SetFX(address, new object[] { arg });
@@ -242,7 +247,7 @@ namespace FX {
                     }
                     else if (arg is float fValueInt)
                     {
-                        ((FXParameter<int>)parameter).Value = Mathf.RoundToInt(fValueInt);
+                        ((FXParameter<int>)parameter).Value = Mathf.CeilToInt(fValueInt);
                     }
                 }
                 else if (parameterType == typeof(bool))
@@ -286,6 +291,9 @@ namespace FX {
             public List<FXPresetParameter<float>> floatParameters = new List<FXPresetParameter<float>>();
             public List<FXPresetParameter<bool>> boolParameters = new List<FXPresetParameter<bool>>();
             public List<FXPresetParameter<Color>> colorParameters = new List<FXPresetParameter<Color>>();
+
+            public List<FXGroupPreset> fxGroupPresets = new List<FXGroupPreset>();
+
         }
 
         [System.Serializable]
@@ -295,31 +303,53 @@ namespace FX {
             public T value;
         }
 
+        [System.Serializable]
+        public class FXGroupPreset
+        {
+            public string address;
+            public FXManager.FXItemInfoType fxType;
+            public List<string> fxAddresses = new List<string>();
+        }
+
         public void SavePreset(string presetName)
         {
             FXPreset preset = new FXPreset();
 
             foreach (var item in fxItemsByAddress_)
             {
-                string key_ = item.Key;
-                object value_ = null;
-
                 if (item.Value.type == FXItemInfoType.Parameter)
                 {
                     var parameter = item.Value.item as IFXParameter;
-                    value_ = parameter.ObjectValue;
-                }
 
-                if (value_ is string strValue)
-                    preset.stringParameters.Add(new FXPresetParameter<string> { key = key_, value = strValue });
-                else if (value_ is int intValue)
-                    preset.intParameters.Add(new FXPresetParameter<int> { key = key_, value = intValue });
-                else if (value_ is float floatValue)
-                    preset.floatParameters.Add(new FXPresetParameter<float> { key = key_, value = floatValue });
-                else if (value_ is bool boolValue)
-                    preset.boolParameters.Add(new FXPresetParameter<bool> { key = key_, value = boolValue });
-                else if (value_ is Color colorValue)
-                    preset.colorParameters.Add(new FXPresetParameter<Color> { key = key_, value = colorValue });
+                    if (parameter.ShouldSave)
+                    {
+                        string key_ = item.Key;
+                        object value_ = parameter.ObjectValue;
+
+                        if (value_ is string strValue)
+                            preset.stringParameters.Add(new FXPresetParameter<string> { key = key_, value = strValue });
+                        else if (value_ is int intValue)
+                            preset.intParameters.Add(new FXPresetParameter<int> { key = key_, value = intValue });
+                        else if (value_ is float floatValue)
+                            preset.floatParameters.Add(new FXPresetParameter<float> { key = key_, value = floatValue });
+                        else if (value_ is bool boolValue)
+                            preset.boolParameters.Add(new FXPresetParameter<bool> { key = key_, value = boolValue });
+                        else if (value_ is Color colorValue)
+                            preset.colorParameters.Add(new FXPresetParameter<Color> { key = key_, value = colorValue });
+                    }
+                }
+            }
+
+            // Save group presets
+            FXGroupController[] allFXGroups = GameObject.FindObjectsOfType<FXGroupController>();
+            foreach (var group in allFXGroups)
+            {
+                FXGroupPreset groupPreset = new FXGroupPreset();
+                groupPreset.address = group.address;
+                groupPreset.fxAddresses = group.fxAddresses;
+                groupPreset.fxType = group.fxType;
+
+                preset.fxGroupPresets.Add(groupPreset);
             }
 
             string json = JsonUtility.ToJson(preset);
@@ -333,6 +363,7 @@ namespace FX {
             string filePath = Path.Combine(directoryPath, presetName + ".json");
             File.WriteAllText(filePath, json);
         }
+
 
         public void LoadPreset(string presetName)
         {
@@ -368,6 +399,21 @@ namespace FX {
                 {
                     SetFX(param.key, param.value);
                 }
+
+
+                Dictionary<string, FXGroupPreset> fxGroupPresets = preset.fxGroupPresets.ToDictionary(p => p.address, p => p);
+
+                FXGroupController[] allFXGroups = GameObject.FindObjectsOfType<FXGroupController>();
+                foreach (var group in allFXGroups)
+                {
+                    if (fxGroupPresets.TryGetValue(group.address, out var groupPreset))
+                    {
+                        group.fxType = groupPreset.fxType;
+                        group.fxAddresses = groupPreset.fxAddresses;
+                        group.presetLoaded = true;
+                    }
+                }
+               
             }
             else
             {

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using UnityEngine;
 using static FX.FXManager;
@@ -8,7 +9,7 @@ namespace FX
 {
     public static class FXExtensions
     {
-        public static void AddFXElements(this MonoBehaviour monoBehaviour)
+        public static void AddFXElements(this MonoBehaviour monoBehaviour, string adressPrefix = "")
         {
             // Add FXParameters
             var fields = monoBehaviour.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -21,7 +22,11 @@ namespace FX
                     var address = (string)addressProperty.GetValue(fxParameter, null);
                     if (string.IsNullOrEmpty(address))
                     {
-                        address = $"/{monoBehaviour.gameObject.name}/{monoBehaviour.GetType().Name}/{field.Name}";
+                        if (string.IsNullOrEmpty(adressPrefix)) address = $"/{monoBehaviour.gameObject.name}/{monoBehaviour.GetType().Name}/{field.Name}";
+                        else {
+                            if (adressPrefix.StartsWith("/")) adressPrefix = adressPrefix.Substring(1); ;                           
+                            address = $"/{adressPrefix}/{field.Name}";
+                        }                                   
                         addressProperty.SetValue(fxParameter, address, null);
                     }
 
@@ -48,7 +53,12 @@ namespace FX
                 var address = (string)addressProperty.GetValue(fxEnabledParameter);
                 if (string.IsNullOrEmpty(address))
                 {
-                    address = $"/{monoBehaviour.gameObject.name}/{monoBehaviour.GetType().Name}/FXEnabled";
+                    if (string.IsNullOrEmpty(adressPrefix)) address = $"/{monoBehaviour.gameObject.name}/{monoBehaviour.GetType().Name}/FXEnabled";
+                    else
+                    {
+                        if (adressPrefix.StartsWith("/")) adressPrefix = adressPrefix.Substring(1); ;
+                        address = $"/{adressPrefix}/FXEnabled";
+                    }
                     addressProperty.SetValue(fxEnabledParameter, address);
                 }
 
@@ -72,7 +82,12 @@ namespace FX
                     if (FXMethodAttribute.Address == null)
                     {
                         var methodName = method.Name;
-                        FXMethodAttribute.Address = $"/{monoBehaviour.gameObject.name}/{monoBehaviour.GetType().Name}/{methodName}";
+                        if (string.IsNullOrEmpty(adressPrefix)) FXMethodAttribute.Address = $"/{monoBehaviour.gameObject.name}/{monoBehaviour.GetType().Name}/{methodName}";
+                        else
+                        {
+                            if (adressPrefix.StartsWith("/")) adressPrefix = adressPrefix.Substring(1); ;
+                            FXMethodAttribute.Address = $"/{adressPrefix}/{methodName}";
+                        }                       
                     }
 
                     FXManager.Instance.AddFXItem(FXMethodAttribute.Address, FXItemInfoType.Method, method, monoBehaviour);

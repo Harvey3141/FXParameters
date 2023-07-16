@@ -11,10 +11,14 @@ namespace FX
     [CustomEditor(typeof(FXGroupController))]
     public class FXGroupControllerEditor : Editor
     {
-        private SerializedProperty fxAddressesProperty;
         private ReorderableList reorderableList;
-        private string[]  paramPopupValues = new string[] { "Test 1", "Test 2", "Test 3" }; // Test array
+        private string[] paramPopupValues = new string[] {};
+        
+        private SerializedProperty fxAddressesProperty;
         private SerializedProperty valueProperty;
+        private SerializedProperty addressProperty;
+        private SerializedProperty fxTypeProperty;
+
         FXGroupController controller;
 
 
@@ -24,7 +28,9 @@ namespace FX
 
             controller = (FXGroupController)target;
             fxAddressesProperty = serializedObject.FindProperty("fxAddresses");
-            valueProperty = serializedObject.FindProperty("value"); 
+            valueProperty = serializedObject.FindProperty("value");
+            addressProperty = serializedObject.FindProperty("address");
+            fxTypeProperty = serializedObject.FindProperty("fxType");
 
 
             reorderableList = new ReorderableList(serializedObject, fxAddressesProperty, true, true, true, true);
@@ -66,18 +72,46 @@ namespace FX
 
         public override void OnInspectorGUI()
         {
+            if (paramPopupValues.Length == 0 || controller.presetLoaded) {
+                UpdateParamPopupValues();
+                if (controller.presetLoaded) controller.presetLoaded = false;
+            } 
+
             serializedObject.Update();
 
             EditorGUI.BeginChangeCheck();
-            EditorGUI.BeginChangeCheck();
-            float value = EditorGUILayout.Slider(new GUIContent("value"), controller.value.Value, 0, 1);
-            if (EditorGUI.EndChangeCheck())
+            EditorGUILayout.PropertyField(addressProperty, new GUIContent("Address"));
+            EditorGUILayout.PropertyField(fxTypeProperty);
+
+            FXManager.FXItemInfoType currentFXType = (FXManager.FXItemInfoType)fxTypeProperty.enumValueIndex;
+            if (currentFXType != controller.fxType)
             {
-                controller.value.Value = value;
-                controller.SetValue(value);
+                controller.fxType = currentFXType;
+                SerializedProperty fxAddressesArrayProperty = serializedObject.FindProperty("fxAddresses");
+                fxAddressesArrayProperty.ClearArray();
+                serializedObject.ApplyModifiedProperties();
+                UpdateParamPopupValues();
+                return;
             }
 
-            //UpdateParamPopupValues(); 
+            switch (currentFXType)
+            {
+                case FXManager.FXItemInfoType.Method:
+                    if (GUILayout.Button("Trigger"))
+                    {
+                        controller.FXTrigger();
+                    }
+                    break;
+                case FXManager.FXItemInfoType.Parameter:
+                    float value = EditorGUILayout.Slider(new GUIContent("value"), controller.value.Value, 0, 1);
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        controller.value.Value = value;
+                        controller.SetValue(value);
+                    }
+                    break;
+            }
+
 
             EditorGUILayout.LabelField("Connections");
 
@@ -90,48 +124,83 @@ namespace FX
         {
             List<string> addressList = new List<string>();
 
-            foreach (var kvp in FXManager.fxItemsByAddress_)
+            FXManager.FXItemInfoType currentFXType = (FXManager.FXItemInfoType)fxTypeProperty.enumValueIndex;
+
+            switch (currentFXType)
             {
-                if (kvp.Value.type == FXManager.FXItemInfoType.Parameter)
-                {
-                    if (kvp.Value.item is FXParameter<float> ||
-                        kvp.Value.item is FXParameter<bool> ||
-                        kvp.Value.item is FXParameter<int>)
+                case FXManager.FXItemInfoType.Method:
+                    foreach (var kvp in FXManager.fxItemsByAddress_)
                     {
-                        string address = kvp.Key;
-
-                        // Remove the leading "/" character from each string.
-                        if (address.StartsWith("/"))
+                        if (kvp.Value.type == FXManager.FXItemInfoType.Method)
                         {
-                            address = address.Substring(1);
+                            MethodInfo method = kvp.Value.item as MethodInfo;
+                            ParameterInfo[] parameters = method.GetParameters();
+
+                            if (parameters.Length == 0)
+                            {
+                                string address = kvp.Key;
+
+                                // Remove the leading "/" character from each string.
+                                if (address.StartsWith("/"))
+                                {
+                                    address = address.Substring(1);
+                                }
+
+                                addressList.Add(address);
+                            }
                         }
-
-                        addressList.Add(address);
                     }
-                }
-                else if (kvp.Value.type == FXManager.FXItemInfoType.Method)
-                {
-                    MethodInfo method = kvp.Value.item as MethodInfo;
-                    ParameterInfo[] parameters = method.GetParameters();
-
-                    // Check if the method has at least one parameter and if the first parameter is of type float, int, or bool.
-                    if (parameters.Length > 0 &&
-                        (parameters[0].ParameterType == typeof(float) ||
-                         parameters[0].ParameterType == typeof(int) ||
-                         parameters[0].ParameterType == typeof(bool)))
+                    break;
+                case FXManager.FXItemInfoType.Parameter:
+                    foreach (var kvp in FXManager.fxItemsByAddress_)
                     {
-                        string address = kvp.Key;
-
-                        // Remove the leading "/" character from each string.
-                        if (address.StartsWith("/"))
+                        if (kvp.Value.type == FXManager.FXItemInfoType.Parameter)
                         {
-                            address = address.Substring(1);
-                        }
+                            if (kvp.Value.item is FXParameter<float> ||
+                                kvp.Value.item is FXParameter<bool> ||
+                                kvp.Value.item is FXParameter<int>)
+                            {
+                                string address = kvp.Key;
 
-                        addressList.Add(address);
+                                // Remove the leading "/" character from each string.
+                                if (address.StartsWith("/"))
+                                {
+                                    address = address.Substring(1);
+                                }
+
+                                addressList.Add(address);
+                            }
+                        }
+                        else if (kvp.Value.type == FXManager.FXItemInfoType.Method)
+                        {
+                            MethodInfo method = kvp.Value.item as MethodInfo;
+                            ParameterInfo[] parameters = method.GetParameters();
+
+                            // Check if the method has at least one parameter and if the first parameter is of type float, int, or bool.
+                            if (parameters.Length > 0 &&
+                                (parameters[0].ParameterType == typeof(float) ||
+                                 parameters[0].ParameterType == typeof(int) ||
+                                 parameters[0].ParameterType == typeof(bool)))
+                            {
+                                string address = kvp.Key;
+
+                                // Remove the leading "/" character from each string.
+                                if (address.StartsWith("/"))
+                                {
+                                    address = address.Substring(1);
+                                }
+
+                                addressList.Add(address);
+                            }
+                        }
                     }
-                }
+                    break;
+                default:
+
+                    break;
             }
+
+
 
             if (addressList.Count > 0)
             {
@@ -139,7 +208,7 @@ namespace FX
             }
             else
             {
-                Debug.LogError("No addresses matching the criteria found.");
+                //Debug.LogWarning("No addresses matching the criteria found.");
             }
         }
 
