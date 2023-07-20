@@ -5,6 +5,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
+using static FX.FXGroupController;
 
 namespace FX
 {
@@ -18,6 +19,9 @@ namespace FX
         private SerializedProperty valueProperty;
         private SerializedProperty addressProperty;
         private SerializedProperty fxTypeProperty;
+        private SerializedProperty signalSourcePropery;
+        private SerializedProperty patternTypeProperty;
+
 
         FXGroupController controller;
 
@@ -26,11 +30,13 @@ namespace FX
         {
             FXManager.Instance.OnFXItemAdded += UpdateParamPopupValues;
 
-            controller = (FXGroupController)target;
-            fxAddressesProperty = serializedObject.FindProperty("fxAddresses");
-            valueProperty = serializedObject.FindProperty("value");
-            addressProperty = serializedObject.FindProperty("address");
-            fxTypeProperty = serializedObject.FindProperty("fxType");
+            controller           = (FXGroupController)target;
+            fxAddressesProperty  = serializedObject.FindProperty("fxAddresses");
+            valueProperty        = serializedObject.FindProperty("value");
+            addressProperty      = serializedObject.FindProperty("address");
+            fxTypeProperty       = serializedObject.FindProperty("fxType");
+            signalSourcePropery  = serializedObject.FindProperty("signalSource");
+            patternTypeProperty  = serializedObject.FindProperty("patternType");
 
 
             reorderableList = new ReorderableList(serializedObject, fxAddressesProperty, true, true, true, true);
@@ -81,8 +87,27 @@ namespace FX
 
             EditorGUI.BeginChangeCheck();
             EditorGUILayout.PropertyField(addressProperty, new GUIContent("Address"));
-            EditorGUILayout.PropertyField(fxTypeProperty);
 
+            EditorGUILayout.PropertyField(signalSourcePropery);
+            SignalSource currentSignalSource = (SignalSource)signalSourcePropery.enumValueIndex;
+            switch (currentSignalSource) {
+                case SignalSource.Default:
+                    break;
+                case SignalSource.Pattern:
+                    EditorGUILayout.PropertyField(patternTypeProperty);
+                    PatternType currentPatternType = (PatternType)patternTypeProperty.enumValueIndex;
+                    if (currentPatternType != controller.patternType)
+                    {
+                        controller.SetPatternType(currentPatternType);
+                        serializedObject.Update();
+                    }
+                    break;
+                case SignalSource.Audio:
+                    break;
+            }
+
+
+            EditorGUILayout.PropertyField(fxTypeProperty);
             FXManager.FXItemInfoType currentFXType = (FXManager.FXItemInfoType)fxTypeProperty.enumValueIndex;
             if (currentFXType != controller.fxType)
             {
@@ -93,7 +118,6 @@ namespace FX
                 UpdateParamPopupValues();
                 return;
             }
-
             switch (currentFXType)
             {
                 case FXManager.FXItemInfoType.Method:
@@ -111,7 +135,6 @@ namespace FX
                     }
                     break;
             }
-
 
             EditorGUILayout.LabelField("Connections");
 

@@ -7,8 +7,6 @@ using Codice.Client.BaseCommands;
 [CustomEditor(typeof(ArpeggiatorPattern))]
 public class ArpeggiatorPatternEditor : Editor
 {
-    private float lastRepaintTime;
-    private const float repaintInterval = 0.00f; // Repaint interval in seconds
     public List<float> values = new List<float>();
 
     private int[] bars = { 1, 4, 8, 16 };
@@ -56,12 +54,11 @@ public class ArpeggiatorPatternEditor : Editor
         Rect graphPosition = GUILayoutUtility.GetRect(0, EditorGUIUtility.singleLineHeight * 3);
         DrawGraph(graphPosition, script);
 
-        // Force a repaint of the inspector if enough time has passed since the last repaint
-        if (Time.realtimeSinceStartup - lastRepaintTime > repaintInterval)
-        {
-            lastRepaintTime = Time.realtimeSinceStartup;
-            //Repaint();
-        }
+    }
+
+    public override bool RequiresConstantRepaint()
+    {
+        return true;
     }
 
     private void DrawGraph(Rect position, ArpeggiatorPattern script)

@@ -7,8 +7,6 @@ using Codice.Client.BaseCommands;
 [CustomEditor(typeof(TapPattern))]
 public class TapPatternEditor : Editor
 {
-    private float lastRepaintTime;
-    private const float repaintInterval = 0.0f; // Repaint interval in seconds
     public List<float> values = new List<float>();
 
     private int[] bars = { 1, 4, 8, 16 };
@@ -61,14 +59,11 @@ public class TapPatternEditor : Editor
         if (Event.current.type == EventType.MouseDown && Event.current.button == 0 && graphPosition.Contains(Event.current.mousePosition)) script.AddTriggerAtCurrentTime();
         if (Event.current.type == EventType.MouseDown && Event.current.button == 1 && graphPosition.Contains(Event.current.mousePosition)) script.ClearTriggers();
 
+    }
 
-
-        // Force a repaint of the inspector if enough time has passed since the last repaint
-        if (Time.realtimeSinceStartup - lastRepaintTime > repaintInterval)
-        {
-            lastRepaintTime = Time.realtimeSinceStartup;
-            Repaint();
-        }
+    public override bool RequiresConstantRepaint()
+    {
+        return true;
     }
 
     private void DrawGraph(Rect position, TapPattern script)

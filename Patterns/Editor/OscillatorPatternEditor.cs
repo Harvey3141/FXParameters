@@ -5,8 +5,6 @@ using System.Collections.Generic;
 [CustomEditor(typeof(OscillatorPattern))]
 public class OscillatorPatternEditor : Editor
 {
-    private float lastRepaintTime;
-    private const float repaintInterval = 0.00f; // Repaint interval in seconds
 
     public override void OnInspectorGUI()
     {
@@ -63,13 +61,11 @@ public class OscillatorPatternEditor : Editor
         // Draw the graph
         Rect graphPosition = GUILayoutUtility.GetRect(0, EditorGUIUtility.singleLineHeight * 3);
         DrawGraph(graphPosition, script);
+    }
 
-        // Force a repaint of the inspector if enough time has passed since the last repaint
-        if (Time.realtimeSinceStartup - lastRepaintTime > repaintInterval)
-        {
-            lastRepaintTime = Time.realtimeSinceStartup;
-            Repaint();
-        }
+    public override bool RequiresConstantRepaint()
+    {
+        return true;
     }
 
     private void DrawGraph(Rect position, OscillatorPattern script)
