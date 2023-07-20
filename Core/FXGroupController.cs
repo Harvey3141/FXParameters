@@ -8,9 +8,6 @@ namespace FX
     public class FXGroupController : MonoBehaviour, IFXTriggerable
     {
         [SerializeField]
-        public FXManager.FXItemInfoType fxType = FXManager.FXItemInfoType.Method;
-
-        [SerializeField]
         public string address; 
 
         [SerializeField]
@@ -46,7 +43,7 @@ namespace FX
         void Update () {
             if (signalSource == SignalSource.Pattern) {
                 if (pattern) {
-                    //SetValue(pattern._currentValue);
+                    SetValue(pattern._currentValue);
                 }              
             }           
         }
@@ -62,20 +59,21 @@ namespace FX
 
         public void FXTrigger()
         {
-            foreach (string address in fxAddresses)
+            foreach (string address in fxTriggerAddresses)
             {
                 string formattedAddress = address.StartsWith("/") ? address : "/" + address;
-                //FXManager.Instance.SetFX(formattedAddress);
+                FXManager.Instance.SetFX(formattedAddress);
             }
         }
 
         public void ClearFXAdresses() { 
             fxAddresses.Clear();
+            fxTriggerAddresses.Clear();
         }
 
         public void LoadPreset(FXGroupPreset preset) {
-            fxType       = preset.fxType;
-            fxAddresses  = preset.fxAddresses;
+            fxAddresses        = preset.fxAddresses;
+            fxTriggerAddresses = preset.fxTriggerAddresses;
             SetPatternType(preset.patternType);
             presetLoaded = true;
         }

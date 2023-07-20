@@ -308,9 +308,9 @@ namespace FX {
         public class FXGroupPreset
         {
             public string address;
-            public FXManager.FXItemInfoType fxType;
             public PatternType patternType;
             public List<string> fxAddresses = new List<string>();
+            public List<string> fxTriggerAddresses = new List<string>();
         }
 
         public void SavePreset(string presetName)
@@ -349,7 +349,7 @@ namespace FX {
                 FXGroupPreset groupPreset    = new FXGroupPreset();
                 groupPreset.address          = group.address;
                 groupPreset.fxAddresses      = group.fxAddresses;
-                groupPreset.fxType           = group.fxType;
+                groupPreset.fxTriggerAddresses = group.fxTriggerAddresses;
                 groupPreset.patternType      = group.patternType; 
 
                 preset.fxGroupPresets.Add(groupPreset);
