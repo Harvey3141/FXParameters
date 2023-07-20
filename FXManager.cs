@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
+using static FX.FXGroupController;
 using static UnityEditor.Progress;
 
 namespace FX {
@@ -308,6 +309,7 @@ namespace FX {
         {
             public string address;
             public FXManager.FXItemInfoType fxType;
+            public PatternType patternType;
             public List<string> fxAddresses = new List<string>();
         }
 
@@ -344,10 +346,11 @@ namespace FX {
             FXGroupController[] allFXGroups = GameObject.FindObjectsOfType<FXGroupController>();
             foreach (var group in allFXGroups)
             {
-                FXGroupPreset groupPreset = new FXGroupPreset();
-                groupPreset.address = group.address;
-                groupPreset.fxAddresses = group.fxAddresses;
-                groupPreset.fxType = group.fxType;
+                FXGroupPreset groupPreset    = new FXGroupPreset();
+                groupPreset.address          = group.address;
+                groupPreset.fxAddresses      = group.fxAddresses;
+                groupPreset.fxType           = group.fxType;
+                groupPreset.patternType      = group.patternType; 
 
                 preset.fxGroupPresets.Add(groupPreset);
             }
@@ -408,9 +411,7 @@ namespace FX {
                 {
                     if (fxGroupPresets.TryGetValue(group.address, out var groupPreset))
                     {
-                        group.fxType = groupPreset.fxType;
-                        group.fxAddresses = groupPreset.fxAddresses;
-                        group.presetLoaded = true;
+                        group.LoadPreset(groupPreset);
                     }
                 }
                

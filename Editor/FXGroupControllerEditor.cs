@@ -92,6 +92,8 @@ namespace FX
             SignalSource currentSignalSource = (SignalSource)signalSourcePropery.enumValueIndex;
             switch (currentSignalSource) {
                 case SignalSource.Default:
+                    controller.SetPatternType(PatternType.None);
+                    //serializedObject.Update();
                     break;
                 case SignalSource.Pattern:
                     EditorGUILayout.PropertyField(patternTypeProperty);
@@ -103,6 +105,8 @@ namespace FX
                     }
                     break;
                 case SignalSource.Audio:
+                    controller.SetPatternType(PatternType.None);
+                    //serializedObject.Update();
                     break;
             }
 

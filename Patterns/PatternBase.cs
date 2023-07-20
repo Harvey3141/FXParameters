@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -14,6 +16,8 @@ public class PatternBase : MonoBehaviour
 
     [HideInInspector]
     public int _numBeats = 1;
+
+    public event Action OnTrigger;
     public int NumBeats
     {
         get { return _numBeats; }
@@ -22,6 +26,11 @@ public class PatternBase : MonoBehaviour
             _numBeats = value;
             GeneratePattern();
         }
+    }
+
+    public void Trigger()
+    {
+        OnTrigger.Invoke();
     }
 
 

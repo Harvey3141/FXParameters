@@ -31,16 +31,14 @@ public class FXExample : MonoBehaviour, IFXTriggerable
 
     public void LoadPreset2() { FXManager.Instance.LoadPreset("Preset2"); }
 
-    [SerializeField]
-    private int targetFrameRate = 60;
-
-    private void Awake()
-    {
-        Application.targetFrameRate = targetFrameRate;
-    }
+    //[SerializeField]
+    //private int targetFrameRate = 60;
 
     private void Start()
     {
+        //QualitySettings.vSyncCount = 1;  // VSync must be disabled
+        //Application.targetFrameRate = targetFrameRate;
+
         // Adds all FXElements (FXParameters, FXProperties, FXMethods) of this MonoBehaviour to the FX system.
         this.AddFXElements("example");
 
