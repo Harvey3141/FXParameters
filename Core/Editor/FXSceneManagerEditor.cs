@@ -8,7 +8,7 @@ namespace FX
     public class FXSceneManagerEditor : Editor
     {
         private FXSceneManager fxSceneManager;
-        private int selectedPresetIndex = 0;
+        private Vector2 scrollPosition;
 
         private void OnEnable()
         {
@@ -37,19 +37,39 @@ namespace FX
             GUILayout.Space(20);
 
             // Load Preset Section
-            GUILayout.Label("Load Preset", EditorStyles.boldLabel);
+            GUILayout.Label("Presets", EditorStyles.boldLabel);
+
+            // Display the presets in a scrollable list box
+            scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, GUILayout.MaxHeight(EditorGUIUtility.singleLineHeight * 10));
+
             if (fxSceneManager.presets.Count > 0)
             {
-                selectedPresetIndex = EditorGUILayout.Popup("Select Preset", selectedPresetIndex, fxSceneManager.presets.ToArray());
-                if (GUILayout.Button("Load", GUILayout.Width(70)))
+                for (int i = 0; i < fxSceneManager.presets.Count; i++)
                 {
-                    LoadPreset();
+                    GUILayout.BeginHorizontal();
+
+                    string presetName = fxSceneManager.presets[i];
+
+                    if (GUILayout.Button(presetName))
+                    {
+                        LoadPreset(presetName);
+                    }
+
+                    // Add a remove button for each preset
+                    if (GUILayout.Button("Remove", GUILayout.Width(70)))
+                    {
+                        RemovePreset(presetName);
+                    }
+
+                    GUILayout.EndHorizontal();
                 }
             }
             else
             {
                 EditorGUILayout.HelpBox("No presets found.", MessageType.Info);
             }
+
+            EditorGUILayout.EndScrollView();
         }
 
         private void SavePreset()
@@ -61,19 +81,18 @@ namespace FX
             }
 
             FXManager.Instance.SavePreset(fxSceneManager.currentPresetName);
+            fxSceneManager.PopulatePresetsList(); // Refresh the list after saving
         }
 
-        private void LoadPreset()
+        private void LoadPreset(string presetName)
         {
-            if (selectedPresetIndex < 0 || selectedPresetIndex >= fxSceneManager.presets.Count)
-            {
-                Debug.LogError("Invalid preset selection.");
-                return;
-            }
+            fxSceneManager.LoadPreset(presetName);
+            fxSceneManager.currentPresetName = presetName;
+        }
 
-            string selectedPresetName = fxSceneManager.presets[selectedPresetIndex];            
-            fxSceneManager.LoadPreset(selectedPresetName);
-            fxSceneManager.currentPresetName = selectedPresetName;
+        private void RemovePreset(string presetName)
+        {
+            fxSceneManager.RemovePreset(presetName);
         }
     }
 }
