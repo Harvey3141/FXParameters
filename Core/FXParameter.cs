@@ -29,16 +29,6 @@ namespace FX
             string propertyName = ObjectNames.NicifyVariableName(property.name);
             GUIContent valueLabel = new GUIContent(propertyName, addressProperty.stringValue);
 
-            //property.isExpanded = EditorGUI.Foldout(position, property.isExpanded, label);
-            //if (property.isExpanded)
-            //{
-            //    // Indent the address field to make it clear it's a child field
-            //    EditorGUI.indentLevel++;
-            //    EditorGUI.PropertyField(addressPosition, addressProperty);
-            //    EditorGUI.indentLevel--;
-            //}
-
-
             // Display the value field based on the type of the FXParameter
             switch (valueProperty.propertyType)
             {
@@ -125,6 +115,7 @@ namespace FX
         private T value_;
         [SerializeField]
         private bool shouldSave_ = true;
+        //private bool valueAt0 = true;
 
         public event Action<T> OnValueChanged; // Event triggered when the value changes
 
@@ -221,8 +212,5 @@ namespace FX
             Debug.Log($"Enabled value changed: {isEnabled}");
         }
     }
-
-
-
 }
 

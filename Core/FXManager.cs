@@ -308,7 +308,9 @@ namespace FX {
         public class FXGroupPreset
         {
             public string address;
+            public SignalSource signalSource;
             public PatternType patternType;
+            public AudioFrequency audioFrequency;
             public List<string> fxAddresses = new List<string>();
             public List<string> fxTriggerAddresses = new List<string>();
         }
@@ -350,7 +352,9 @@ namespace FX {
                 groupPreset.address          = group.address;
                 groupPreset.fxAddresses      = group.fxAddresses;
                 groupPreset.fxTriggerAddresses = group.fxTriggerAddresses;
+                groupPreset.signalSource = group.signalSource; 
                 groupPreset.patternType      = group.patternType; 
+                groupPreset.audioFrequency = group.audioFrequency;
 
                 preset.fxGroupPresets.Add(groupPreset);
             }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor.UI;
 using UnityEngine;
 using static FX.FXManager;
@@ -19,6 +20,8 @@ namespace FX
         [SerializeField]
         public FXParameter<float> value = new FXParameter<float>(0.0f, "", false);
 
+        private AudioManager audioManager;
+
 
         public enum SignalSource { Default, Pattern, Audio };
         [SerializeField]
@@ -26,6 +29,9 @@ namespace FX
         public enum PatternType {None, Tap, Oscillator, Arpeggiator};
         [SerializeField]
         public PatternType patternType= PatternType.None;
+
+        public enum AudioFrequency {Low, Mid, High }
+        public AudioFrequency audioFrequency = AudioFrequency.Low;
 
         public PatternBase pattern;
 
@@ -37,14 +43,38 @@ namespace FX
             this.AddFXElements(address);         
             value.OnValueChanged += SetValue;
 
-            if (signalSource == SignalSource.Pattern) SetPatternType(patternType);
+            SetPatternType(patternType);
+
+            audioManager = FindObjectOfType<FX.AudioManager>();
         }
 
         void Update () {
+            switch (signalSource) { 
+                case SignalSource.Default:
+                    break;
+                case SignalSource.Pattern:
+                    if (pattern)
+                    {
+                        value.Value= pattern._currentValue;
+                    }
+                    break;
+                case SignalSource.Audio:
+                    switch (audioFrequency) {
+                        case AudioFrequency.Low:
+                            value.Value = audioManager.Low;
+                            break;
+                        case AudioFrequency.Mid:
+                            value.Value = audioManager.Low;
+                            break;
+                        case AudioFrequency.High:
+                            value.Value = audioManager.Low;                            
+                            break;
+                    }
+                    break;
+            }
+
             if (signalSource == SignalSource.Pattern) {
-                if (pattern) {
-                    SetValue(pattern._currentValue);
-                }              
+            
             }           
         }
 
@@ -74,7 +104,11 @@ namespace FX
         public void LoadPreset(FXGroupPreset preset) {
             fxAddresses        = preset.fxAddresses;
             fxTriggerAddresses = preset.fxTriggerAddresses;
+            signalSource = preset.signalSource;
+            audioFrequency = preset.audioFrequency;
+
             SetPatternType(preset.patternType);
+            
             presetLoaded = true;
         }
 
@@ -108,9 +142,6 @@ namespace FX
                     break;
             }
         }
-
-
-
 
     }
 }

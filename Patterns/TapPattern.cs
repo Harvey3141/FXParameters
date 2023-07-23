@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class TapPattern : PatternBase
 {
-    public float _triggerSpeed = 1.0f;
+    public float _triggerSpeed = 100.0f;
     private bool _isLerping = false;
     private bool _isIncreasing = true;
 

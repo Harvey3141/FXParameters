@@ -26,6 +26,8 @@ namespace FX
         private SerializedProperty fxTypeProperty;
         private SerializedProperty signalSourcePropery;
         private SerializedProperty patternTypeProperty;
+        private SerializedProperty frequencyProperty;
+
 
 
         FXGroupController controller;
@@ -42,6 +44,8 @@ namespace FX
             fxTypeProperty       = serializedObject.FindProperty("fxType");
             signalSourcePropery  = serializedObject.FindProperty("signalSource");
             patternTypeProperty  = serializedObject.FindProperty("patternType");
+            frequencyProperty    = serializedObject.FindProperty("audioFrequency");
+
             fxTriggerAddressesProperty = serializedObject.FindProperty("fxTriggerAddresses");
 
             reorderableList = new ReorderableList(serializedObject, fxAddressesProperty, true, true, true, true);
@@ -123,8 +127,9 @@ namespace FX
 
             EditorGUI.BeginChangeCheck();
             EditorGUILayout.PropertyField(addressProperty, new GUIContent("Address"));
-
+            GUILayout.Space(10);
             EditorGUILayout.PropertyField(signalSourcePropery);
+            GUILayout.Space(10);
             SignalSource currentSignalSource = (SignalSource)signalSourcePropery.enumValueIndex;
             switch (currentSignalSource) {
                 case SignalSource.Default:
@@ -141,24 +146,32 @@ namespace FX
                     break;
                 case SignalSource.Audio:
                     controller.SetPatternType(PatternType.None);
+                    EditorGUILayout.PropertyField(frequencyProperty);
                     break;
             }
-
-            if (GUILayout.Button("Trigger"))
-            {
-                controller.FXTrigger();
-            }
-            float value = EditorGUILayout.Slider(new GUIContent("value"), controller.value.Value, 0, 1);
-            if (EditorGUI.EndChangeCheck())
-            {
-                controller.value.Value = value;
-                controller.SetValue(value);
-            }
-
             EditorGUILayout.LabelField("Connections");
 
-            reorderableList.DoLayoutList();
-            reorderableListTrigger.DoLayoutList();
+            using (var verticalScope = new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
+            {
+                reorderableList.DoLayoutList();
+                GUILayout.Space(10);
+                float value = EditorGUILayout.Slider(new GUIContent("Value"), controller.value.Value, 0, 1);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    controller.value.Value = value;
+                    controller.SetValue(value);
+                }
+            }
+
+            using (var verticalScope = new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
+            {
+                reorderableListTrigger.DoLayoutList();
+                GUILayout.Space(10); 
+                if (GUILayout.Button("Trigger"))
+                {
+                    controller.FXTrigger();
+                }
+            }
 
             serializedObject.ApplyModifiedProperties();
         }
