@@ -352,16 +352,16 @@ namespace FX {
                 groupPreset.address          = group.address;
                 groupPreset.fxAddresses      = group.fxAddresses;
                 groupPreset.fxTriggerAddresses = group.fxTriggerAddresses;
-                groupPreset.signalSource = group.signalSource; 
+                groupPreset.signalSource     = group.signalSource; 
                 groupPreset.patternType      = group.patternType; 
-                groupPreset.audioFrequency = group.audioFrequency;
+                groupPreset.audioFrequency   = group.audioFrequency;
 
                 preset.fxGroupPresets.Add(groupPreset);
             }
 
             string json = JsonUtility.ToJson(preset);
 
-            string directoryPath = Application.streamingAssetsPath;
+            string directoryPath = Path.Combine(Application.streamingAssetsPath, "FX Presets");
             if (!Directory.Exists(directoryPath))
             {
                 Directory.CreateDirectory(directoryPath);
@@ -372,9 +372,9 @@ namespace FX {
         }
 
 
-        public void LoadPreset(string presetName)
+        public bool LoadPreset(string presetName)
         {
-            string directoryPath = Application.streamingAssetsPath;
+            string directoryPath = Path.Combine(Application.streamingAssetsPath, "FX Presets"); ;
             string filePath = Path.Combine(directoryPath, presetName + ".json");
 
             if (File.Exists(filePath))
@@ -418,11 +418,14 @@ namespace FX {
                         group.LoadPreset(groupPreset);
                     }
                 }
+
+                return true;
                
             }
             else
             {
                 Debug.LogWarning($"Preset {presetName} not found.");
+                return false;
             }
         }
     }
