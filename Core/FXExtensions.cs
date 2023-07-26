@@ -15,19 +15,24 @@ namespace FX
             var fields = monoBehaviour.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (var field in fields)
             {
-                if (field.FieldType.IsGenericType && field.FieldType.GetGenericTypeDefinition() == typeof(FXParameter<>))
+                var fieldType = field.FieldType;
+                var fieldInstance = field.GetValue(monoBehaviour);
+
+                if (fieldType.IsGenericType && (fieldType.GetGenericTypeDefinition() == typeof(FXParameter<>) || fieldType.Name.StartsWith("FXScaledParameter")))
                 {
-                    var fxParameter = field.GetValue(monoBehaviour);
-                    var addressProperty = field.FieldType.GetProperty("Address");
-                    var address = (string)addressProperty.GetValue(fxParameter, null);
+                    var fxParameter = (IFXParameter)fieldInstance;
+                    var address = fxParameter.Address;
                     if (string.IsNullOrEmpty(address))
                     {
-                        if (string.IsNullOrEmpty(adressPrefix)) address = $"/{monoBehaviour.gameObject.name}/{monoBehaviour.GetType().Name}/{field.Name}";
-                        else {
-                            if (adressPrefix.StartsWith("/")) adressPrefix = adressPrefix.Substring(1); ;                           
+                        if (string.IsNullOrEmpty(adressPrefix))
+                            address = $"/{monoBehaviour.gameObject.name}/{monoBehaviour.GetType().Name}/{field.Name}";
+                        else
+                        {
+                            if (adressPrefix.StartsWith("/"))
+                                adressPrefix = adressPrefix.Substring(1);
                             address = $"/{adressPrefix}/{field.Name}";
-                        }                                   
-                        addressProperty.SetValue(fxParameter, address, null);
+                        }
+                        fxParameter.Address = address;
                     }
 
                     // Make sure the FXManager instance is not null
@@ -41,6 +46,7 @@ namespace FX
                     }
                 }
             }
+
 
             // Add FXEnabledParameter
             var fxEnabledField = monoBehaviour.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)

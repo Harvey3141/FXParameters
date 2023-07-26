@@ -16,6 +16,11 @@ public class FXExample : MonoBehaviour, IFXTriggerable
     public FXParameter<string>  myStringParameter    = new FXParameter<string>("no");
     public FXParameter<Color>   myColorParameter     = new FXParameter<Color>(Color.black);
 
+    public FXScaledParameter<Color> colorParam = new FXScaledParameter<Color>(0.5f, Color.red, Color.blue);
+    public FXScaledParameter<float> floatParam = new FXScaledParameter<float>(0.5f, 0.0f, 10.0f);
+
+
+
     public FXParameter<float> myFloatParameterWithEvent = new FXParameter<float>(0.0f);
 
     // FXEnabledParameter represents the enabled state of the FX system.

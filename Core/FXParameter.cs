@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
@@ -68,6 +69,72 @@ namespace FX
         }
 
     }
+
+    [CustomPropertyDrawer(typeof(FXScaledParameter<>))]
+    public class FXScaledParameterDrawer : PropertyDrawer
+    {
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        {
+            EditorGUI.BeginProperty(position, label, property);
+
+            // Draw a box around the property
+            EditorGUI.HelpBox(position, "", MessageType.None);
+
+            // Get the scaledValue, valueAtZero_, and valueAtOne_ SerializedProperties
+            SerializedProperty scaledValueProperty = property.FindPropertyRelative("scaledValue_");
+            SerializedProperty valueAtZeroProperty = property.FindPropertyRelative("valueAtZero_");
+            SerializedProperty valueAtOneProperty = property.FindPropertyRelative("valueAtOne_");
+
+            // Add a small padding to the positions to fit inside the box
+            float padding = 4f;  // Change this value to adjust the padding
+            Rect paddedPosition = new Rect(position.x + padding, position.y + padding, position.width - 2 * padding, position.height - 2 * padding);
+
+            // Calculate the positions for the scaledValue, valueAtZero_, and valueAtOne_ fields
+            Rect scaledValuePosition = new Rect(paddedPosition.x, paddedPosition.y, paddedPosition.width, EditorGUIUtility.singleLineHeight);
+
+            // Create the GUIContent for each field
+            GUIContent valueAtZeroLabel = new GUIContent("Value At Zero");
+            GUIContent valueAtOneLabel = new GUIContent("Value At One");
+
+            // Display the label for the property in bold and make it a foldout
+            property.isExpanded = EditorGUI.Foldout(scaledValuePosition, property.isExpanded, property.displayName, true, EditorStyles.boldLabel);
+
+            // Offset the position of the scaledValueProperty to not overlap with the label
+            scaledValuePosition = new Rect(scaledValuePosition.x + EditorGUIUtility.labelWidth, scaledValuePosition.y, scaledValuePosition.width - EditorGUIUtility.labelWidth, scaledValuePosition.height);
+
+
+            // Display the fields
+            EditorGUI.PropertyField(scaledValuePosition, scaledValueProperty, GUIContent.none);  // Display the property without a label
+
+            // Display the other fields only if the property is expanded
+            if (property.isExpanded)
+            {
+                Rect valueAtZeroPosition = new Rect(paddedPosition.x, paddedPosition.y + EditorGUIUtility.singleLineHeight + padding, paddedPosition.width, EditorGUIUtility.singleLineHeight);
+                Rect valueAtOnePosition = new Rect(paddedPosition.x, paddedPosition.y + 2 * (EditorGUIUtility.singleLineHeight + padding), paddedPosition.width, EditorGUIUtility.singleLineHeight);
+
+                EditorGUI.PropertyField(valueAtZeroPosition, valueAtZeroProperty, valueAtZeroLabel);
+                EditorGUI.PropertyField(valueAtOnePosition, valueAtOneProperty, valueAtOneLabel);
+            }
+
+            EditorGUI.EndProperty();
+        }
+
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        {
+            // The height is 1 line if the property is collapsed
+            // The height is 3 lines for scaledValue, valueAtZero_, and valueAtOne_ plus padding for the box if the property is expanded
+            int lineCount = property.isExpanded ? 3 : 1;
+
+            // Multiply the number of lines by the height of a single line, add spacing for each line, and add extra padding for the box.
+            return (lineCount * EditorGUIUtility.singleLineHeight) + ((lineCount + 1) * EditorGUIUtility.standardVerticalSpacing) + 2f * 4f; // additional 2f*padding for the top and bottom padding of the box
+        }
+    }
+
+
+
+
+
+
 
     [CustomPropertyDrawer(typeof(FXEnabledParameter))]
     public class FXEnabledParameterDrawer : PropertyDrawer
@@ -185,6 +252,93 @@ namespace FX
         }
 
     }
+
+    [System.Serializable]
+    public class FXScaledParameter<T> : FXParameter<float>
+    {
+        [SerializeField]
+        private T valueAtZero_;
+        [SerializeField]
+        private T valueAtOne_;
+        [SerializeField]
+        private T scaledValue_;
+
+        public event Action<T> OnScaledValueChanged; // Event triggered when the value changes
+
+        public FXScaledParameter(float value, T valueAtZero, T valueAtOne, string address = "", bool shouldSave = true)
+            : base(value, address, shouldSave)
+        {
+            valueAtZero_ = valueAtZero;
+            valueAtOne_ = valueAtOne;
+            UpdateScaledValue();
+        }
+
+        public override float Value
+        {
+            get { return base.Value; }
+            set
+            {
+                base.Value = value;
+                UpdateScaledValue();
+                OnScaledValueChanged?.Invoke(scaledValue_);
+            }
+        }
+
+        public T ScaledValue
+        {
+            get { return scaledValue_; }
+            private set { scaledValue_ = value; }
+        }
+
+        private void UpdateScaledValue()
+        {
+            if (valueAtZero_ != null && valueAtOne_ != null)
+            {
+                if (typeof(T) == typeof(Color))
+                {
+                    Color zeroColor = (Color)Convert.ChangeType(valueAtZero_, typeof(Color));
+                    Color oneColor = (Color)Convert.ChangeType(valueAtOne_, typeof(Color));
+
+                    float r = Mathf.Lerp(zeroColor.r, oneColor.r, Value);
+                    float g = Mathf.Lerp(zeroColor.g, oneColor.g, Value);
+                    float b = Mathf.Lerp(zeroColor.b, oneColor.b, Value);
+                    float a = Mathf.Lerp(zeroColor.a, oneColor.a, Value);
+
+                    scaledValue_ = (T)(object)new Color(r, g, b, a);
+                }
+                else if (typeof(T) == typeof(float))
+                {
+                    float zeroValue = (float)Convert.ChangeType(valueAtZero_, typeof(float));
+                    float oneValue = (float)Convert.ChangeType(valueAtOne_, typeof(float));
+                    scaledValue_ = (T)(object)Mathf.Lerp(zeroValue, oneValue, Value);
+                }
+                else if (typeof(T) == typeof(int))
+                {
+                    float zeroValue = (float)Convert.ChangeType(valueAtZero_, typeof(int));
+                    float oneValue = (float)Convert.ChangeType(valueAtOne_, typeof(int));
+                    float lerpedValue = Mathf.Lerp(zeroValue, oneValue, Value);
+                    scaledValue_ = (T)(object)Mathf.RoundToInt(lerpedValue);
+                }
+                else if (typeof(T) == typeof(Vector3))
+                {
+                    Vector3 zeroVector = (Vector3)Convert.ChangeType(valueAtZero_, typeof(Vector3));
+                    Vector3 oneVector = (Vector3)Convert.ChangeType(valueAtOne_, typeof(Vector3));
+
+                    float x = Mathf.Lerp(zeroVector.x, oneVector.x, Value);
+                    float y = Mathf.Lerp(zeroVector.y, oneVector.y, Value);
+                    float z = Mathf.Lerp(zeroVector.z, oneVector.z, Value);
+
+                    scaledValue_ = (T)(object)new Vector3(x, y, z);
+                }
+                else
+                {
+                    throw new ArgumentException($"FXScaledParameter does not support scaling for type {typeof(T).Name}");
+                }
+            }
+        }
+    }
+
+
 
     [System.Serializable]
     public class FXEnabledParameter : FXParameter<bool>
