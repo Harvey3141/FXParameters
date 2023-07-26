@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3394097895994228320
+--- !u!1 &7291552875006989122
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,11 +8,11 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3394097895994228322}
-  - component: {fileID: 3394097895994228326}
-  - component: {fileID: 3394097895994228325}
-  - component: {fileID: 3394097895994228327}
-  - component: {fileID: 3394097895994228324}
+  - component: {fileID: 7291552875006989120}
+  - component: {fileID: 7291552875006989124}
+  - component: {fileID: 7291552875006989127}
+  - component: {fileID: 7291552875006989125}
+  - component: {fileID: 7291552875006989126}
   m_Layer: 0
   m_Name: FXAudio
   m_TagString: Untagged
@@ -20,43 +20,43 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3394097895994228322
+--- !u!4 &7291552875006989120
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3394097895994228320}
+  m_GameObject: {fileID: 7291552875006989122}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.3407726, y: -1.9932963, z: -0.8359629}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 7291552875103804437}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3394097895994228326
+--- !u!114 &7291552875006989124
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3394097895994228320}
+  m_GameObject: {fileID: 7291552875006989122}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0f216aa4f7f4b744ea5fc939b5f066ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioLow: {fileID: 3394097895994228325}
-  audioMid: {fileID: 3394097895994228327}
-  audioHigh: {fileID: 3394097895994228324}
---- !u!114 &3394097895994228325
+  audioLow: {fileID: 7291552875006989127}
+  audioMid: {fileID: 7291552875006989125}
+  audioHigh: {fileID: 7291552875006989126}
+--- !u!114 &7291552875006989127
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3394097895994228320}
+  m_GameObject: {fileID: 7291552875006989122}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 74c3e183ec27ba64d83e010bf18edb92, type: 3}
@@ -80,19 +80,19 @@ MonoBehaviour:
       type: {class: FloatPropertyBinder, ns: Lasp, asm: Lasp.Runtime}
       data:
         Enabled: 1
-        Target: {fileID: 3394097895994228326}
+        Target: {fileID: 7291552875006989124}
         PropertyName: Low
         _propertyType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
         Value0: 0
         Value1: 1
---- !u!114 &3394097895994228327
+--- !u!114 &7291552875006989125
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3394097895994228320}
+  m_GameObject: {fileID: 7291552875006989122}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 74c3e183ec27ba64d83e010bf18edb92, type: 3}
@@ -116,19 +116,19 @@ MonoBehaviour:
       type: {class: FloatPropertyBinder, ns: Lasp, asm: Lasp.Runtime}
       data:
         Enabled: 1
-        Target: {fileID: 3394097895994228326}
+        Target: {fileID: 7291552875006989124}
         PropertyName: Mid
         _propertyType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
         Value0: 0
         Value1: 1
---- !u!114 &3394097895994228324
+--- !u!114 &7291552875006989126
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3394097895994228320}
+  m_GameObject: {fileID: 7291552875006989122}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 74c3e183ec27ba64d83e010bf18edb92, type: 3}
@@ -152,9 +152,56 @@ MonoBehaviour:
       type: {class: FloatPropertyBinder, ns: Lasp, asm: Lasp.Runtime}
       data:
         Enabled: 1
-        Target: {fileID: 3394097895994228326}
+        Target: {fileID: 7291552875006989124}
         PropertyName: High
         _propertyType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
         Value0: 0
         Value1: 1
+--- !u!1 &7291552875103804439
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7291552875103804437}
+  - component: {fileID: 7291552875103804438}
+  m_Layer: 0
+  m_Name: FXSceneManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7291552875103804437
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7291552875103804439}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 7291552875006989120}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7291552875103804438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7291552875103804439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61cb1c861e398894098d8dc567f0636f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  presets: []
+  currentPresetName: 
