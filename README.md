@@ -6,25 +6,65 @@ FXParameters is a tool that allows developers to expose and manipulate parameter
 
 Checkoiut the `FXExample` class which demonstrates the use of FXManager in Unity. The class implements the IFXTriggerable interface which provides methods that can be triggered by the FX system. It also maintains a state that can be controlled by the FX system.
 
-### FXParameters
-
-In `FXExample`, `FXParameter` instances expose parameters to the FX system. These parameters can be manipulated through the FX system and their current values can be stored and retrieved via the FX system. Parameters are defined for different data types such as `float`, `int`, `bool`, `string`, and `Color`.
-
 ### FXScaledParameter
 
-`FXScaledParameter` instances represent parameters with values scaled between two limits. In `FXExample`, these are represented by `colorParam` and `floatParam`.
+FXScaledParameter instances represent parameters with values scaled between two limits. In the `FXExample` class, these are represented by `colorParam` and `floatParam`.
+
+```csharp
+public FXScaledParameter<Color> colorParam = new FXScaledParameter<Color>(0.5f, Color.red, Color.blue);
+public FXScaledParameter<float> floatParam = new FXScaledParameter<float>(0.5f, 0.0f, 10.0f);
+```
 
 ### FXParameter with Event Handling
 
-In `FXExample`, an `FXParameter` with event handling is demonstrated with `myFloatParameterWithEvent`. This parameter triggers an event handler, `HandleFloatValueChanged`, whenever its value changes.
+In the `FXExample` class, an `FXParameter` with event handling is demonstrated with `myFloatParameterWithEvent`. This parameter triggers an event handler, `HandleFloatValueChanged`, whenever its value changes.
+
+```csharp
+public FXParameter<float> myFloatParameterWithEvent = new FXParameter<float>(0.0f);
+
+// In the Start() method
+myFloatParameterWithEvent.OnValueChanged += HandleFloatValueChanged;
+
+private void HandleFloatValueChanged(float newValue)
+{
+    // Handle the value change here
+    Debug.Log($"Float value changed: {newValue}");
+}
+```
 
 ### FXEnabledParameter
 
 The `FXEnabledParameter` instance, `fxEnabled`, represents the enabled state of the FX system. The `FXOnEnabled` method is registered as an event handler that is triggered whenever the enabled state changes.
 
+```csharp
+public FXEnabledParameter fxEnabled = new FXEnabledParameter(true);
+
+// In the Start() method
+fxEnabled.OnValueChanged += FXOnEnabled;
+
+public void FXOnEnabled(bool value)
+{
+    Debug.Log($"Enabled value changed: {value}");
+}
+```
+
 ### FXMethod
 
 `FXMethod` is a custom attribute that marks methods which can be triggered by the FX system. In `FXExample`, the `MyTestIntMethod` and `MyTestStringMethod` are marked with this attribute.
+
+```csharp
+[FXMethod]
+public void MyTestIntMethod(int i)
+{
+    Debug.Log("MyTestIntMethod - value: " + i);
+}
+
+[FXMethod]
+public void MyTestStringMethod(string s)
+{
+    Debug.Log("MyTestStringMethod - value: " + s);
+}
+```
 
 ### IFXTriggerable
 
