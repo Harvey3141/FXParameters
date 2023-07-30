@@ -26,16 +26,6 @@ public class FXExample : MonoBehaviour, IFXTriggerable
     // FXEnabledParameter represents the enabled state of the FX system.
     public FXEnabledParameter fxEnabled = new FXEnabledParameter(true);
 
-
-    // These methods save and load presets. Presets store the current values of all FXParameters and FXProperties managed by the FX system.
-    public void SavePreset1() { FXManager.Instance.SavePreset("Preset1"); }
-
-    public void LoadPreset1() { FXManager.Instance.LoadPreset("Preset1"); }
-
-    public void SavePreset2() { FXManager.Instance.SavePreset("Preset2"); }
-
-    public void LoadPreset2() { FXManager.Instance.LoadPreset("Preset2"); }
-
     //[SerializeField]
     //private int targetFrameRate = 60;
 

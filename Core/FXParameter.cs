@@ -5,6 +5,7 @@ using System.Reflection;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace FX
 {
@@ -73,6 +74,12 @@ namespace FX
     [CustomPropertyDrawer(typeof(FXScaledParameter<>))]
     public class FXScaledParameterDrawer : PropertyDrawer
     {
+        bool foundParam = false;
+        private FXScaledParameter<float>    fxScaledParamF;
+        private FXScaledParameter<Color>    fxScaledParamC;
+        private FXScaledParameter<int>      fxScaledParamI;
+        private FXScaledParameter<Vector3>  fxScaledParamv3;
+
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             EditorGUI.BeginProperty(position, label, property);
@@ -80,37 +87,72 @@ namespace FX
             // Draw a box around the property
             EditorGUI.HelpBox(position, "", MessageType.None);
 
-            // Get the scaledValue, valueAtZero_, and valueAtOne_ SerializedProperties
+            // Get the scaledValue, valueAtZero_, valueAtOne_, and value SerializedProperties
             SerializedProperty scaledValueProperty = property.FindPropertyRelative("scaledValue_");
             SerializedProperty valueAtZeroProperty = property.FindPropertyRelative("valueAtZero_");
             SerializedProperty valueAtOneProperty = property.FindPropertyRelative("valueAtOne_");
+            SerializedProperty valueProperty = property.FindPropertyRelative("value_");
 
             // Add a small padding to the positions to fit inside the box
             float padding = 4f;  // Change this value to adjust the padding
             Rect paddedPosition = new Rect(position.x + padding, position.y + padding, position.width - 2 * padding, position.height - 2 * padding);
 
             // Calculate the positions for the scaledValue, valueAtZero_, and valueAtOne_ fields
-            Rect scaledValuePosition = new Rect(paddedPosition.x, paddedPosition.y, paddedPosition.width, EditorGUIUtility.singleLineHeight);
+            Rect labelPosition = new Rect(paddedPosition.x, paddedPosition.y, EditorGUIUtility.labelWidth, EditorGUIUtility.singleLineHeight);
+            Rect scaledValuePosition = new Rect(paddedPosition.x + EditorGUIUtility.labelWidth, paddedPosition.y, paddedPosition.width - EditorGUIUtility.labelWidth, EditorGUIUtility.singleLineHeight);
 
-            // Create the GUIContent for each field
-            GUIContent valueAtZeroLabel = new GUIContent("Value At Zero");
-            GUIContent valueAtOneLabel = new GUIContent("Value At One");
+            // Display the foldout
+            property.isExpanded = EditorGUI.Foldout(labelPosition, property.isExpanded, "   " +property.displayName, true, EditorStyles.boldLabel);
 
-            // Display the label for the property in bold and make it a foldout
-            property.isExpanded = EditorGUI.Foldout(scaledValuePosition, property.isExpanded, property.displayName, true, EditorStyles.boldLabel);
-
-            // Offset the position of the scaledValueProperty to not overlap with the label
-            scaledValuePosition = new Rect(scaledValuePosition.x + EditorGUIUtility.labelWidth, scaledValuePosition.y, scaledValuePosition.width - EditorGUIUtility.labelWidth, scaledValuePosition.height);
-
-
-            // Display the fields
-            EditorGUI.PropertyField(scaledValuePosition, scaledValueProperty, GUIContent.none);  // Display the property without a label
+            // Display the Scaled Value Property
+            EditorGUI.PropertyField(scaledValuePosition, scaledValueProperty, GUIContent.none);
 
             // Display the other fields only if the property is expanded
             if (property.isExpanded)
             {
-                Rect valueAtZeroPosition = new Rect(paddedPosition.x, paddedPosition.y + EditorGUIUtility.singleLineHeight + padding, paddedPosition.width, EditorGUIUtility.singleLineHeight);
-                Rect valueAtOnePosition = new Rect(paddedPosition.x, paddedPosition.y + 2 * (EditorGUIUtility.singleLineHeight + padding), paddedPosition.width, EditorGUIUtility.singleLineHeight);
+                GUIContent valueLabel = new GUIContent("Value");
+                GUIContent valueAtZeroLabel = new GUIContent("Value at zero");
+                GUIContent valueAtOneLabel = new GUIContent("Value at one");
+
+                Rect valuePosition = new Rect(paddedPosition.x, paddedPosition.y + EditorGUIUtility.singleLineHeight + padding, paddedPosition.width, EditorGUIUtility.singleLineHeight);
+                Rect valueAtZeroPosition = new Rect(paddedPosition.x, paddedPosition.y + 2 * (EditorGUIUtility.singleLineHeight + padding), paddedPosition.width, EditorGUIUtility.singleLineHeight);
+                Rect valueAtOnePosition = new Rect(paddedPosition.x, paddedPosition.y + 3 * (EditorGUIUtility.singleLineHeight + padding), paddedPosition.width, EditorGUIUtility.singleLineHeight);
+
+                if (!foundParam)
+                {
+                    object target = fieldInfo.GetValue(property.serializedObject.targetObject);
+
+                    if (target is FXScaledParameter<Color>)
+                    {
+                        fxScaledParamC = (FXScaledParameter<Color>)target;
+                        foundParam = true;
+                    }
+                    else if (target is FXScaledParameter<float>)
+                    {
+                        fxScaledParamF = (FXScaledParameter<float>)target;
+                        foundParam = true;
+                    }
+                    else if (target is FXScaledParameter<int>)
+                    {
+                        fxScaledParamI = (FXScaledParameter<int>)target;
+                        foundParam = true;
+                    }
+                    else if (target is FXScaledParameter<Vector3>)
+                    {
+                        fxScaledParamv3 = (FXScaledParameter<Vector3>)target;
+                        foundParam = true;
+                    }
+                }
+
+                float newValue = EditorGUI.Slider(valuePosition, valueLabel, valueProperty.floatValue, 0f, 1f);
+
+                if (foundParam)
+                {
+                    if (fxScaledParamC != null) fxScaledParamC.Value = newValue;
+                    else if (fxScaledParamF != null) fxScaledParamF.Value = newValue;
+                    else if (fxScaledParamI != null) fxScaledParamI.Value = newValue;
+                    else if (fxScaledParamv3 != null) fxScaledParamv3.Value = newValue;
+                }
 
                 EditorGUI.PropertyField(valueAtZeroPosition, valueAtZeroProperty, valueAtZeroLabel);
                 EditorGUI.PropertyField(valueAtOnePosition, valueAtOneProperty, valueAtOneLabel);
@@ -122,18 +164,14 @@ namespace FX
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             // The height is 1 line if the property is collapsed
-            // The height is 3 lines for scaledValue, valueAtZero_, and valueAtOne_ plus padding for the box if the property is expanded
-            int lineCount = property.isExpanded ? 3 : 1;
+            // The height is 4 lines for scaledValue, value, valueAtZero_, and valueAtOne_ plus padding for the box if the property is expanded
+            int lineCount = property.isExpanded ? 4 : 1;
 
             // Multiply the number of lines by the height of a single line, add spacing for each line, and add extra padding for the box.
             return (lineCount * EditorGUIUtility.singleLineHeight) + ((lineCount + 1) * EditorGUIUtility.standardVerticalSpacing) + 2f * 4f; // additional 2f*padding for the top and bottom padding of the box
         }
+
     }
-
-
-
-
-
 
 
     [CustomPropertyDrawer(typeof(FXEnabledParameter))]
@@ -250,6 +288,7 @@ namespace FX
                 throw new ArgumentException("FXParameter supports only float, int, bool, string, and Color types.");
             }
         }
+
 
     }
 
