@@ -1,79 +1,189 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEditor;
-using UnityEditor.UIElements;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace FX
 {
-    [CustomPropertyDrawer(typeof(FXParameter<>))]
+
+    [CustomPropertyDrawer(typeof(FXParameter<>), true)]
     public class FXParameterDrawer : PropertyDrawer
     {
+        private Dictionary<string, IFXParameter> fxParameterCache = new Dictionary<string, IFXParameter>();
+
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             EditorGUI.BeginProperty(position, label, property);
 
-            // Get the value and address SerializedProperties
-            SerializedProperty valueProperty    = property.FindPropertyRelative("value_");
-            SerializedProperty addressProperty  = property.FindPropertyRelative("address_");
+            IFXParameter fxParam = GetFXParameterFromProperty(property);
 
-            // Display the address as a label
-            //EditorGUI.LabelField(new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight), $"Address: {addressProperty.stringValue}");
-
-            // Calculate the position for the value field
-            Rect valuePosition = new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight);
-            Rect addressPosition = new Rect(position.x, position.y + EditorGUIUtility.singleLineHeight, position.width, EditorGUIUtility.singleLineHeight);
-
-
-            string propertyName = ObjectNames.NicifyVariableName(property.name);
-            GUIContent valueLabel = new GUIContent(propertyName, addressProperty.stringValue);
-
-            // Display the value field based on the type of the FXParameter
-            switch (valueProperty.propertyType)
+            if (fxParam is FXParameter<float> floatParam)
             {
-                case SerializedPropertyType.Float:
-                    valueProperty.floatValue = EditorGUI.FloatField(valuePosition, valueLabel, valueProperty.floatValue);
-                    break;
-                case SerializedPropertyType.Integer:
-                    valueProperty.intValue = EditorGUI.IntField(valuePosition, valueLabel, valueProperty.intValue);
-                    break;
-                case SerializedPropertyType.Boolean:
-                    valueProperty.boolValue = EditorGUI.Toggle(valuePosition, valueLabel, valueProperty.boolValue);
-                    break;
-                case SerializedPropertyType.String:
-                    valueProperty.stringValue = EditorGUI.TextField(valuePosition, valueLabel, valueProperty.stringValue);
-                    break;
-                case SerializedPropertyType.Color:
-                    valueProperty.colorValue = EditorGUI.ColorField(valuePosition, valueLabel, valueProperty.colorValue);
-                    break;
-                default:
-                    EditorGUI.LabelField(valuePosition, "Value type not supported");
-                    break;
+                float newValue = EditorGUI.FloatField(position, label, floatParam.Value);
+                if (newValue != floatParam.Value)
+                    floatParam.Value = newValue;
             }
+            else if (fxParam is FXParameter<bool> boolParam)
+            {
+                bool newValue = EditorGUI.Toggle(position, label, boolParam.Value);
+                if (newValue != boolParam.Value)
+                    boolParam.Value = newValue;                                 
+            }
+            else if (fxParam is FXParameter<int> intParam)
+            {
+                int newValue = EditorGUI.IntField(position, label, intParam.Value);
+                if (newValue != intParam.Value)
+                    intParam.Value = newValue;
+            }
+            else if (fxParam is FXParameter<string> stringParam)
+            {
+                string newValue = EditorGUI.TextField(position, label, stringParam.Value);
+                if (newValue != stringParam.Value)
+                    stringParam.Value = newValue;
+            }
+            else if (fxParam is FXParameter<Color> colorParam)
+            {
+                Color newValue = EditorGUI.ColorField(position, label, colorParam.Value);
+                if (newValue != colorParam.Value)
+                    colorParam.Value = newValue;
+            }
+            else
+            {
+                EditorGUI.LabelField(position, label, new GUIContent("Unsupported FXParameter type"));
+            }
+            EditorGUI.EndProperty();
+
         }
+
+        private IFXParameter GetFXParameterFromProperty(SerializedProperty property)
+        {
+            string propertyPath = property.propertyPath;
+
+            if (fxParameterCache.TryGetValue(propertyPath, out var cachedParam))
+            {
+                return cachedParam;
+            }
+
+            object targetObject = property.serializedObject.targetObject;
+            IFXParameter fxParam = fieldInfo.GetValue(targetObject) as IFXParameter;
+            fxParameterCache[propertyPath] = fxParam;
+
+            return fxParam;
+        }
+
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            // The default height is 1 line.
-            int lineCount = 1;
-
-            // When the property is expanded and Show Addresses is enabled, we display two fields, hence 2 lines.
-            if (property.isExpanded)
-            {
-                lineCount = 2;
-            }
-
-            // Multiply the number of lines by the height of a single line and add a small padding.
-            return lineCount * EditorGUIUtility.singleLineHeight + (lineCount - 1) * EditorGUIUtility.standardVerticalSpacing;
+            return EditorGUIUtility.singleLineHeight;
         }
-
     }
 
-    [CustomPropertyDrawer(typeof(FXScaledParameter<>))]
+    //[CustomPropertyDrawer(typeof(FXParameter<>))]
+    //public class FXParameterDrawer : PropertyDrawer
+    //{
+    //
+    //    bool foundParam = false;
+    //    private FXParameter<float> fxParamF;
+    //    private FXParameter<Color> fxParamC;
+    //    private FXParameter<int> fxParamI;
+    //    private FXParameter<Vector3> fxParamv3;
+    //    private FXParameter<bool> fxParamBool;
+    //
+    //
+    //    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    //    {
+    //
+    //
+    //        EditorGUI.BeginProperty(position, label, property);
+    //
+    //        // Get the value and address SerializedProperties
+    //        SerializedProperty valueProperty    = property.FindPropertyRelative("value_");
+    //        SerializedProperty addressProperty  = property.FindPropertyRelative("address_");
+    //
+    //        // Display the address as a label
+    //        //EditorGUI.LabelField(new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight), $"Address: {addressProperty.stringValue}");
+    //
+    //        // Calculate the position for the value field
+    //        Rect valuePosition = new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight);
+    //        Rect addressPosition = new Rect(position.x, position.y + EditorGUIUtility.singleLineHeight, position.width, EditorGUIUtility.singleLineHeight);
+    //
+    //
+    //        string propertyName = ObjectNames.NicifyVariableName(property.name);
+    //        GUIContent valueLabel = new GUIContent(propertyName, addressProperty.stringValue);
+    //
+    //        IFXParameter fxParam = GetFXParameterFromProperty(property);
+    //
+    //        if (fxParam is FXParameter<float> floatParam)
+    //        {
+    //            floatParam.Value = EditorGUI.FloatField(position, label, floatParam.Value);
+    //        }
+    //
+    //
+    //        // Display the value field based on the type of the FXParameter
+    //        switch (valueProperty.propertyType)
+    //        {
+    //            case SerializedPropertyType.Float:
+    //                //FXParameter<float> fxParameterInstance = (FXParameter<float>)fxParameter;
+    //                //float floatValue = EditorGUI.FloatField(valuePosition, valueLabel, valueProperty.floatValue);
+    //                //if (floatValue != valueProperty.floatValue)
+    //                //{
+    //                //    fxParameterInstance.Value = (float)(object)floatValue;
+    //                //    valueProperty.floatValue = floatValue;
+    //                //}
+    //                valueProperty.floatValue = EditorGUI.FloatField(valuePosition, valueLabel, valueProperty.floatValue);
+    //                break;
+    //            case SerializedPropertyType.Integer:
+    //
+    //                valueProperty.intValue = EditorGUI.IntField(valuePosition, valueLabel, valueProperty.intValue);
+    //                break;
+    //            case SerializedPropertyType.Boolean:
+    //                if (!foundParam)
+    //                {
+    //                    Debug.Log("1");
+    //                    object target = fieldInfo.GetValue(property.serializedObject.targetObject);
+    //                    fxParamBool = (FXParameter<bool>)target;
+    //                    foundParam = true;
+    //                }
+    //                bool boolValue = EditorGUI.Toggle(valuePosition, valueLabel, valueProperty.boolValue);
+    //                if (boolValue != valueProperty.boolValue && foundParam)
+    //                {
+    //                    fxParamBool.Value = (bool)(object)boolValue;                       
+    //                }
+    //                valueProperty.boolValue = boolValue;
+    //                //valueProperty.boolValue = EditorGUI.Toggle(valuePosition, valueLabel, valueProperty.boolValue);
+    //                break;
+    //            case SerializedPropertyType.String:
+    //                valueProperty.stringValue = EditorGUI.TextField(valuePosition, valueLabel, valueProperty.stringValue);
+    //                break;
+    //            case SerializedPropertyType.Color:
+    //                valueProperty.colorValue = EditorGUI.ColorField(valuePosition, valueLabel, valueProperty.colorValue);
+    //                break;
+    //            default:
+    //                EditorGUI.LabelField(valuePosition, "Value type not supported");
+    //                break;
+    //        }
+    //    }
+    //    public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+    //    {
+    //        // The default height is 1 line.
+    //        int lineCount = 1;
+    //
+    //        // When the property is expanded and Show Addresses is enabled, we display two fields, hence 2 lines.
+    //        if (property.isExpanded)
+    //        {
+    //            lineCount = 2;
+    //        }
+    //
+    //        // Multiply the number of lines by the height of a single line and add a small padding.
+    //        return lineCount * EditorGUIUtility.singleLineHeight + (lineCount - 1) * EditorGUIUtility.standardVerticalSpacing;
+    //    }
+    //}
+
+
+    [CustomPropertyDrawer(typeof(FXScaledParameter<>), true)]
     public class FXScaledParameterDrawer : PropertyDrawer
     {
+        // TODO:
+        // Consider using a Dictionary<Type, object> to store the different FXScaledParameter<T> instances.
         bool foundParam = false;
         private FXScaledParameter<float>    fxScaledParamF;
         private FXScaledParameter<Color>    fxScaledParamC;
@@ -144,9 +254,10 @@ namespace FX
                     }
                 }
 
+                float oldValue = valueProperty.floatValue;
                 float newValue = EditorGUI.Slider(valuePosition, valueLabel, valueProperty.floatValue, 0f, 1f);
 
-                if (foundParam)
+                if (oldValue != newValue && foundParam)
                 {
                     if (fxScaledParamC != null) fxScaledParamC.Value = newValue;
                     else if (fxScaledParamF != null) fxScaledParamF.Value = newValue;
@@ -174,35 +285,35 @@ namespace FX
     }
 
 
-    [CustomPropertyDrawer(typeof(FXEnabledParameter))]
-    public class FXEnabledParameterDrawer : PropertyDrawer
-    {
-        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
-        {
-            EditorGUI.BeginProperty(position, label, property);
-
-            // Get the value SerializedProperty
-            SerializedProperty valueProperty = property.FindPropertyRelative("value_");
-
-            // Display the value field
-            switch (valueProperty.propertyType)
-            {
-                case SerializedPropertyType.Boolean:
-                    valueProperty.boolValue = EditorGUI.Toggle(position, label, valueProperty.boolValue);
-                    break;
-                default:
-                    EditorGUI.LabelField(position, "Value type not supported");
-                    break;
-            }
-
-            EditorGUI.EndProperty();
-        }
-
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-        {
-            return EditorGUIUtility.singleLineHeight;
-        }
-    }
+   // [CustomPropertyDrawer(typeof(FXEnabledParameter))]
+   // public class FXEnabledParameterDrawer : PropertyDrawer
+   // {
+   //     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+   //     {
+   //         EditorGUI.BeginProperty(position, label, property);
+   //
+   //         // Get the value SerializedProperty
+   //         SerializedProperty valueProperty = property.FindPropertyRelative("value_");
+   //
+   //         // Display the value field
+   //         switch (valueProperty.propertyType)
+   //         {
+   //             case SerializedPropertyType.Boolean:
+   //                 valueProperty.boolValue = EditorGUI.Toggle(position, label, valueProperty.boolValue);
+   //                 break;
+   //             default:
+   //                 EditorGUI.LabelField(position, "Value type not supported");
+   //                 break;
+   //         }
+   //
+   //         EditorGUI.EndProperty();
+   //     }
+   //
+   //     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+   //     {
+   //         return EditorGUIUtility.singleLineHeight;
+   //     }
+   // }
 
     public interface IFXParameter
     {
@@ -220,7 +331,6 @@ namespace FX
         private T value_;
         [SerializeField]
         private bool shouldSave_ = true;
-        //private bool valueAt0 = true;
 
         public event Action<T> OnValueChanged; // Event triggered when the value changes
 

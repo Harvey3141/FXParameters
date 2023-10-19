@@ -44,6 +44,7 @@ public class PatternBase : MonoBehaviour
         TapBpm tapBpm = FindObjectOfType<TapBpm>();
         tapBpm.OnBpmChangeEvent += HandleBpmChange;
         tapBpm.OnResetPhase += HandleResetPhase;
+
     }
 
     public virtual void GeneratePattern() { }

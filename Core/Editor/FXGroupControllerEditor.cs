@@ -32,6 +32,10 @@ namespace FX
 
         FXGroupController controller;
 
+        public override bool RequiresConstantRepaint()
+        {
+            return true;
+        }
 
         private void OnEnable()
         {
@@ -112,7 +116,16 @@ namespace FX
             {
                 int selectedParamIndex = Mathf.Max(Array.IndexOf(triggerParamPopupValues, element.stringValue), 0);
                 selectedParamIndex = EditorGUI.Popup(new Rect(rect.width + rect.x - 90, rect.y, 90, EditorGUIUtility.singleLineHeight), selectedParamIndex, triggerParamPopupValues);
-                element.stringValue = triggerParamPopupValues[selectedParamIndex];
+
+                if (selectedParamIndex >= 0 && selectedParamIndex < triggerParamPopupValues.Length)
+                {
+                    element.stringValue = triggerParamPopupValues[selectedParamIndex];
+                }
+                else
+                {
+                    // Log a warning or handle the situation appropriately
+                    Debug.LogWarning($"selectedParamIndex ({selectedParamIndex}) out of bounds. Array length: {triggerParamPopupValues.Length}");
+                }
             }
         }
 

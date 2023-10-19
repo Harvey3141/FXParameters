@@ -2,93 +2,99 @@ using System.Reflection;
 using UnityEngine;
 using FX;
 
-// This class is an example of how to integrate FXManager with MonoBehaviour.
-// It implements both IFXTriggerable and IFXEnabler interfaces, indicating it has methods that can be triggered by the FX system,
-// and it has an 'enabled' state that can be controlled by the FX system.
+/// <summary>
+/// This class demonstrates the integration of FXManager with MonoBehaviour by implementing the IFXTriggerable interface.
+/// It showcases methods that can be triggered by the FX system and holds a state that can be controlled by the same system.
+/// </summary>
 public class FXExample : MonoBehaviour, IFXTriggerable
 {
-
-    // FXParameters are used to expose parameters to the FX system. They can be manipulated through the FX system
-    // and their current values are stored and retrieved via the FX system.
-    public FXParameter<float>   myFloatParameter     = new FXParameter<float>(0.0f);
-    public FXParameter<int>     myIntParameter       = new FXParameter<int>(1);
-    public FXParameter<bool>    myBoolParameter      = new FXParameter<bool>(false);
-    public FXParameter<string>  myStringParameter    = new FXParameter<string>("no");
-    public FXParameter<Color>   myColorParameter     = new FXParameter<Color>(Color.black);
+    /// <summary>
+    /// FXParameters are used to expose parameters to the FX system. They can be manipulated through the FX system,
+    /// and their current values are stored and retrieved via the FX system.
+    /// </summary>
+    public FXParameter<float> myFloatParameter = new FXParameter<float>(0.0f);
+    public FXParameter<int> myIntParameter = new FXParameter<int>(1);
+    public FXParameter<bool> myBoolParameter = new FXParameter<bool>(false);
+    public FXParameter<string> myStringParameter = new FXParameter<string>("no");
+    public FXParameter<Color> myColorParameter = new FXParameter<Color>(Color.black);
 
     public FXScaledParameter<Color> colorParam = new FXScaledParameter<Color>(0.5f, Color.red, Color.blue);
     public FXScaledParameter<float> floatParam = new FXScaledParameter<float>(0.5f, 0.0f, 10.0f);
 
-
-
+    /// <summary>
+    /// FXParameter with event handler that gets triggered on value change.
+    /// </summary>
     public FXParameter<float> myFloatParameterWithEvent = new FXParameter<float>(0.0f);
 
-    // FXEnabledParameter represents the enabled state of the FX system.
+    /// <summary>
+    /// FXEnabledParameter represents the enabled state of the FX system.
+    /// </summary>
     public FXEnabledParameter fxEnabled = new FXEnabledParameter(true);
-
-    //[SerializeField]
-    //private int targetFrameRate = 60;
 
     private void Start()
     {
-        //QualitySettings.vSyncCount = 1;  // VSync must be disabled
-        //Application.targetFrameRate = targetFrameRate;
-
         // Adds all FXElements (FXParameters, FXProperties, FXMethods) of this MonoBehaviour to the FX system.
         this.AddFXElements("example");
 
-        // Optionall register event handlers for FXParameters
+        // Register event handlers for FXParameters and FXEnabledParameter
         myFloatParameterWithEvent.OnValueChanged += HandleFloatValueChanged;
-
-        // Register event handler for FXEnabledParameter
         fxEnabled.OnValueChanged += FXOnEnabled;
 
-
-        // Here we use the FX system to set the values of the FXParameters.
+        // Setting the values of the FXParameters through the FX system.
         FXManager.Instance.SetFX(myFloatParameter.Address, 0.6f);
         FXManager.Instance.SetFX(myIntParameter.Address, 5);
         FXManager.Instance.SetFX(myBoolParameter.Address, true);
         FXManager.Instance.SetFX(myStringParameter.Address, "yes");
         FXManager.Instance.SetFX(myColorParameter.Address, Color.white);
-
         FXManager.Instance.SetFX(myFloatParameterWithEvent.Address, 99.0f);
 
-        // Here we use the FX system to call an FXMethod and to set the value of an FXProperty.
+        // Triggering an FXMethod and setting the value of an FXProperty using the FX system.
         string methodAddress = $"/example/{nameof(MyTestIntMethod)}";
         FXManager.Instance.SetFX(methodAddress, 3);
-        
+
         FXManager.Instance.SetFX(fxEnabled.Address, false);
     }
 
-    // This method is marked with the FXMethod attribute, so it can be triggered by the FX system.
+    /// <summary>
+    /// FXMethod that can be triggered by the FX system. Takes an integer as parameter.
+    /// </summary>
     [FXMethod]
     public void MyTestIntMethod(int i)
     {
         Debug.Log("MyTestIntMethod - value: " + i);
     }
 
+    /// <summary>
+    /// FXMethod that can be triggered by the FX system. Takes a string as parameter.
+    /// </summary>
     [FXMethod]
     public void MyTestStringMethod(string s)
     {
         Debug.Log("MyTestStringMethod - value: " + s);
     }
 
+    /// <summary>
+    /// Handles the value change event of the FXEnabledParameter.
+    /// </summary>
     public void FXOnEnabled(bool value)
     {
         Debug.Log($"Enabled value changed: {value}");
     }
 
+    /// <summary>
+    /// Handles the value change event of the myFloatParameterWithEvent.
+    /// </summary>
     private void HandleFloatValueChanged(float newValue)
     {
-        // Handle the value change here
         Debug.Log($"Float value changed: {newValue}");
     }
 
-    // This method is required by the IFXTriggerable interface. It can be triggered by the FX system.
+    /// <summary>
+    /// Required by the IFXTriggerable interface. Can be triggered by the FX system.
+    /// </summary>
     [FXMethod]
     public void FXTrigger()
     {
         Debug.Log("FXTrigger Triggered");
     }
-
 }

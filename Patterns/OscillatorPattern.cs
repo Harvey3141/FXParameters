@@ -1,10 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
+
 
 public class OscillatorPattern : PatternBase
 {
@@ -33,6 +29,7 @@ public class OscillatorPattern : PatternBase
     {
         base.Start();
         GeneratePattern();
+
     }
 
     public override void GeneratePattern()
@@ -86,6 +83,12 @@ public class OscillatorPattern : PatternBase
     public float Map(float value, float inputMin, float inputMax, float outputMin, float outputMax)
     {
         return (value - inputMin) * (outputMax - outputMin) / (inputMax - inputMin) + outputMin;
+    }
+
+    public override void HandleBpmChange(int number)
+    {
+        base.HandleBpmChange(number);
+        _beatDuration = 60f / _bpm;
     }
 
 
