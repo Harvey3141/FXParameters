@@ -64,18 +64,14 @@ namespace FX
                             value.Value = audioManager.Low;
                             break;
                         case AudioFrequency.Mid:
-                            value.Value = audioManager.Low;
+                            value.Value = audioManager.Mid;
                             break;
                         case AudioFrequency.High:
-                            value.Value = audioManager.Low;                            
+                            value.Value = audioManager.High;                            
                             break;
                     }
                     break;
-            }
-
-            if (signalSource == SignalSource.Pattern) {
-            
-            }           
+            }     
         }
 
         public void SetValue(float value)
