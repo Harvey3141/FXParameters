@@ -7,12 +7,11 @@ public class FXChasingLights : FXBase, IFXTriggerable
     public enum LightPattern { SineWave, EveryOther, MiddleOut }
     public LightPattern currentPattern = LightPattern.SineWave;
 
-    public FXParameter<float> spanProportion = new FXParameter<float>(0.5f);
-    public FXScaledParameter<float> chaseSpeed = new FXScaledParameter<float>(1.0f, 0.1f, 10.0f);
+    public FXScaledParameter<float> spanProportion = new FXScaledParameter<float>(0.5f,0.0f,0.99f);
+    public FXScaledParameter<float> chaseSpeed = new FXScaledParameter<float>(1.0f, 0.0f, 10.0f);
     public FXParameter<bool> forwardDirection = new FXParameter<bool>(true);
     public FXScaledParameter<float> fadeSpeed = new FXScaledParameter<float>(0.05f, 1.0f, 100.0f);
     public FXScaledParameter<float> targetIntensity = new FXScaledParameter<float>(0.5f, 0.0f, 2.0f);
-
 
     private int currentLeadIndex = 0;
     private float timeSinceLastTrigger = 0; 
@@ -92,7 +91,7 @@ public class FXChasingLights : FXBase, IFXTriggerable
                 for (int i = 0; i < lightsArray.Length; i++)
                 {
                     float sinValue = 0.5f * Mathf.Sin(frequency * (i + currentLeadIndex)) + 0.5f;
-                    targetIntensities[i] = sinValue > spanProportion.Value ? targetIntensity.ScaledValue : 0f;
+                    targetIntensities[i] = sinValue > spanProportion.ScaledValue ? targetIntensity.ScaledValue : 0f;
                 }
                 break;
 

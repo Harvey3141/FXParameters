@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor.UI;
@@ -21,6 +22,8 @@ namespace FX
         public FXParameter<float> value = new FXParameter<float>(0.0f, "", false);
 
         private AudioManager audioManager;
+        private bool isAboveAudioThreshold = false;
+        public float audioThreshold = 0.8f;
 
 
         public enum SignalSource { Default, Pattern, Audio };
@@ -62,12 +65,42 @@ namespace FX
                     switch (audioFrequency) {
                         case AudioFrequency.Low:
                             value.Value = audioManager.Low;
+                            if (!isAboveAudioThreshold && audioManager.Low > audioThreshold)
+                            {
+                                isAboveAudioThreshold = true;
+                                FXTrigger();
+
+                            }
+                            else if (isAboveAudioThreshold && audioManager.Low < audioThreshold)
+                            {
+                                isAboveAudioThreshold = false; 
+                            }
                             break;
                         case AudioFrequency.Mid:
                             value.Value = audioManager.Mid;
+                            if (!isAboveAudioThreshold && audioManager.Mid > audioThreshold)
+                            {
+                                isAboveAudioThreshold = true;
+                                FXTrigger();
+
+                            }
+                            else if (isAboveAudioThreshold && audioManager.Mid < audioThreshold)
+                            {
+                                isAboveAudioThreshold = false;
+                            }
                             break;
                         case AudioFrequency.High:
-                            value.Value = audioManager.High;                            
+                            value.Value = audioManager.High;
+                            if (!isAboveAudioThreshold && audioManager.High > audioThreshold)
+                            {
+                                isAboveAudioThreshold = true;
+                                FXTrigger();
+
+                            }
+                            else if (isAboveAudioThreshold && audioManager.High < audioThreshold)
+                            {
+                                isAboveAudioThreshold = false;
+                            }
                             break;
                     }
                     break;
