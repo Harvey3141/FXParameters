@@ -1,9 +1,7 @@
-using System;
-using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor.UI;
 using UnityEngine;
+using System.Collections.Generic;
 using static FX.FXManager;
+using System;
 
 namespace FX
 {
@@ -25,6 +23,7 @@ namespace FX
         private bool isAboveAudioThreshold = false;
         public float audioThreshold = 0.8f;
 
+        public event Action OnFXTriggered; //used by FXGroupControllerEditor
 
         public enum SignalSource { Default, Pattern, Audio };
         [SerializeField]
@@ -123,6 +122,7 @@ namespace FX
                 string formattedAddress = address.StartsWith("/") ? address : "/" + address;
                 FXManager.Instance.SetFX(formattedAddress);
             }
+            OnFXTriggered?.Invoke();
         }
 
         public void ClearFXAdresses() { 

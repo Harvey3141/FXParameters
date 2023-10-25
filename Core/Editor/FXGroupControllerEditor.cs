@@ -28,7 +28,9 @@ namespace FX
         private SerializedProperty patternTypeProperty;
         private SerializedProperty frequencyProperty;
 
-
+        private bool isIndicatorOn = false;
+        private float indicatorDuration = 0.05f; 
+        private float timeSinceTriggered = 0f;
 
         FXGroupController controller;
 
@@ -40,8 +42,9 @@ namespace FX
         private void OnEnable()
         {
             FXManager.Instance.OnFXItemAdded += UpdateParamPopupValues;
-
+            
             controller           = (FXGroupController)target;
+            controller.OnFXTriggered += HandleFXTriggered;
             fxAddressesProperty  = serializedObject.FindProperty("fxAddresses");
             valueProperty        = serializedObject.FindProperty("value");
             addressProperty      = serializedObject.FindProperty("address");
@@ -68,6 +71,13 @@ namespace FX
         private void OnDisable()
         {
             FXManager.Instance.OnFXItemAdded -= UpdateParamPopupValues;
+            controller.OnFXTriggered -= HandleFXTriggered;
+        }
+
+        private void HandleFXTriggered()
+        {
+            isIndicatorOn = true;
+            timeSinceTriggered = 0f;
         }
 
         private void DrawHeader(Rect rect)
@@ -183,6 +193,18 @@ namespace FX
                 if (GUILayout.Button("Trigger"))
                 {
                     controller.FXTrigger();
+                }
+                Rect lightRect = GUILayoutUtility.GetRect(20, 20);
+                EditorGUI.DrawRect(lightRect, isIndicatorOn ? Color.white : Color.gray);
+            }
+
+            if (isIndicatorOn)
+            {
+                timeSinceTriggered += Time.deltaTime;
+                if (timeSinceTriggered >= indicatorDuration)
+                {
+                    isIndicatorOn = false;
+                    Repaint();
                 }
             }
 
