@@ -91,6 +91,13 @@ public class TapPattern : PatternBase
         triggers.Add(_phase, false);
         TriggerLerp();
     }
+
+    public void AddTriggers(int n) {
+        if (triggers == null) return;
+        for (int i = 0; i < n; i++) {
+            triggers.Add((1.0f / n) * i, false);
+        }
+    }
     public void ClearTriggers()
     {
         if (triggers == null) return;

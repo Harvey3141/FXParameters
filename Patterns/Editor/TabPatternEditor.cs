@@ -36,15 +36,36 @@ public class TapPatternEditor : Editor
 
         GUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
-        if (GUILayout.Button("1", GUILayout.Width(30), GUILayout.Height(20))) script.NumBeats = 1;
+        if (GUILayout.Button("1", GUILayout.Width(30), GUILayout.Height(20))) {
+            script.NumBeats = 1;
+            script.ClearTriggers();
+            script.AddTriggers(1);
+        } 
         GUILayout.Space(10);
-        if (GUILayout.Button("2", GUILayout.Width(30), GUILayout.Height(20))) script.NumBeats = 2;
+        if (GUILayout.Button("2", GUILayout.Width(30), GUILayout.Height(20))) {
+            script.NumBeats = 2;
+            script.ClearTriggers();
+            script.AddTriggers(2);
+        }
         GUILayout.Space(10);
-        if (GUILayout.Button("4", GUILayout.Width(30), GUILayout.Height(20))) script.NumBeats = 4;        
+        if (GUILayout.Button("4", GUILayout.Width(30), GUILayout.Height(20))) {
+            script.NumBeats = 4;
+            script.ClearTriggers();
+            script.AddTriggers(4);
+        }         
         GUILayout.Space(10);
-        if (GUILayout.Button("8", GUILayout.Width(30), GUILayout.Height(20)))script.NumBeats = 8;        
+        if (GUILayout.Button("8", GUILayout.Width(30), GUILayout.Height(20))) {
+            script.NumBeats = 8;
+            script.ClearTriggers();
+            script.AddTriggers(8);
+        }
+
         GUILayout.Space(10);
-        if (GUILayout.Button("16", GUILayout.Width(30), GUILayout.Height(20)))script.NumBeats = 16;        
+        if (GUILayout.Button("16", GUILayout.Width(30), GUILayout.Height(20))) {
+            script.NumBeats = 16;
+            script.ClearTriggers();
+            script.AddTriggers(16);
+        }
         GUILayout.FlexibleSpace();
         GUILayout.EndHorizontal();
 
