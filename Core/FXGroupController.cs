@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using static FX.FXManager;
 using System;
+using FX.Patterns;
 
 namespace FX
 {

@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
+using FX.Patterns;
 
 [CustomEditor(typeof(OscillatorPattern))]
 public class OscillatorPatternEditor : Editor

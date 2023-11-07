@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using FX.Patterns;
 
 [CustomEditor(typeof(TapBpm))]
 public class TapBpmEditor : Editor

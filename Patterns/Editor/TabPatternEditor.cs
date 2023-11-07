@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 using System.Linq;
-using Codice.Client.BaseCommands;
+using FX.Patterns;
 
 [CustomEditor(typeof(TapPattern))]
 public class TapPatternEditor : Editor
