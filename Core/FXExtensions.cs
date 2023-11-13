@@ -9,7 +9,7 @@ namespace FX
 {
     public static class FXExtensions
     {
-        public static void AddFXElements(this MonoBehaviour monoBehaviour, string adressPrefix = "")
+        public static string AddFXElements(this MonoBehaviour monoBehaviour, string adressPrefix = "")
         {
             // Add FXParameters
             var fields = monoBehaviour.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -35,7 +35,6 @@ namespace FX
                         fxParameter.Address = address;
                     }
 
-                    // Make sure the FXManager instance is not null
                     if (FXManager.Instance != null)
                     {
                         FXManager.Instance.AddFXItem(address, FXItemInfoType.Parameter, fxParameter, monoBehaviour);
@@ -99,6 +98,13 @@ namespace FX
                     FXManager.Instance.AddFXItem(FXMethodAttribute.Address, FXItemInfoType.Method, method, monoBehaviour);
                 }
             }
+
+            string computedAddressPrefix = adressPrefix;
+            if (string.IsNullOrEmpty(computedAddressPrefix))
+            {
+                computedAddressPrefix = $"/{monoBehaviour.gameObject.name}/{monoBehaviour.GetType().Name}";
+            }
+            return computedAddressPrefix;
 
         }
     }

@@ -8,7 +8,7 @@ public abstract class FXBase : MonoBehaviour
 
     protected virtual void Awake()
     {
-        this.AddFXElements(fxAddress);
+        fxAddress = this.AddFXElements(fxAddress);
         fxEnabled.OnValueChanged += OnFXEnabled;
     }
 

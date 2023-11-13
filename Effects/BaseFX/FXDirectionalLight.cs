@@ -1,8 +1,12 @@
 using UnityEngine;
 using FX;
+using UnityEngine.Rendering.HighDefinition; 
 
-public class FXDirectionalLight : FXBase
+
+public class FXDirectionalLight : FXBase, IFXTriggerable
 {
+    private HDAdditionalLightData lightData; 
+
     public FXScaledParameter<float> intensity = new FXScaledParameter<float>(0.0f, 0.0f, 2.0f);
     public FXParameter<Color> color = new FXParameter<Color>(Color.white);
 
@@ -33,7 +37,10 @@ public class FXDirectionalLight : FXBase
         {
             lightComp = gameObject.AddComponent<Light>();
             lightComp.type = LightType.Directional;
+            
+
         }
+        lightData = gameObject.GetComponent<HDAdditionalLightData>();
 
     }
 
@@ -64,12 +71,11 @@ public class FXDirectionalLight : FXBase
 
     void SetIntensity(float value)
     {
-        lightComp.intensity = value;
+        lightData.intensity = value;
     }
 
     void SetLightColour(Color colour)
     {
-        color.Value = colour;
         lightComp.color = colour;
     }
 
@@ -85,5 +91,11 @@ public class FXDirectionalLight : FXBase
         Vector3 currentRotation = transform.rotation.eulerAngles;
         currentRotation.y = value;
         transform.rotation = Quaternion.Euler(currentRotation);
+    }
+
+    [FXMethod]
+    public void FXTrigger() {
+        rotationX.Value = (Random.Range(0, clampX));
+        rotationY.Value = (Random.Range(0, clampY));
     }
 }

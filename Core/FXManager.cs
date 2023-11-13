@@ -234,6 +234,11 @@ namespace FX {
                     return;
                 }
 
+                if (!iFXParameter.ShouldSave) {
+                    Debug.LogWarning($"FXParameter {address}, should save is set to false therefore param will not be set");
+                    return;
+                }
+
                 Type parameterType = iFXParameter.ObjectValue.GetType();
 
                 if (parameterType == typeof(float) && arg is float fValueFloat)
