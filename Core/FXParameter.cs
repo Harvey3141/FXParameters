@@ -100,15 +100,15 @@ namespace FX
             // Get the scaledValue, valueAtZero_, valueAtOne_, and value SerializedProperties
             SerializedProperty scaledValueProperty = property.FindPropertyRelative("scaledValue_");
             SerializedProperty valueAtZeroProperty = property.FindPropertyRelative("valueAtZero_");
-            SerializedProperty valueAtOneProperty = property.FindPropertyRelative("valueAtOne_");
-            SerializedProperty valueProperty = property.FindPropertyRelative("value_");
+            SerializedProperty valueAtOneProperty  = property.FindPropertyRelative("valueAtOne_");
+            SerializedProperty valueProperty       = property.FindPropertyRelative("value_");
 
             // Add a small padding to the positions to fit inside the box
-            float padding = 4f;  // Change this value to adjust the padding
+            float padding       = 4f;  // Change this value to adjust the padding
             Rect paddedPosition = new Rect(position.x + padding, position.y + padding, position.width - 2 * padding, position.height - 2 * padding);
 
             // Calculate the positions for the scaledValue, valueAtZero_, and valueAtOne_ fields
-            Rect labelPosition = new Rect(paddedPosition.x, paddedPosition.y, EditorGUIUtility.labelWidth, EditorGUIUtility.singleLineHeight);
+            Rect labelPosition       = new Rect(paddedPosition.x, paddedPosition.y, EditorGUIUtility.labelWidth, EditorGUIUtility.singleLineHeight);
             Rect scaledValuePosition = new Rect(paddedPosition.x + EditorGUIUtility.labelWidth, paddedPosition.y, paddedPosition.width - EditorGUIUtility.labelWidth, EditorGUIUtility.singleLineHeight);
 
             // Display the foldout
@@ -120,13 +120,13 @@ namespace FX
             // Display the other fields only if the property is expanded
             if (property.isExpanded)
             {
-                GUIContent valueLabel = new GUIContent("Value");
+                GUIContent valueLabel       = new GUIContent("Value");
                 GUIContent valueAtZeroLabel = new GUIContent("Value at zero");
-                GUIContent valueAtOneLabel = new GUIContent("Value at one");
+                GUIContent valueAtOneLabel  = new GUIContent("Value at one");
 
-                Rect valuePosition = new Rect(paddedPosition.x, paddedPosition.y + EditorGUIUtility.singleLineHeight + padding, paddedPosition.width, EditorGUIUtility.singleLineHeight);
+                Rect valuePosition       = new Rect(paddedPosition.x, paddedPosition.y + EditorGUIUtility.singleLineHeight + padding, paddedPosition.width, EditorGUIUtility.singleLineHeight);
                 Rect valueAtZeroPosition = new Rect(paddedPosition.x, paddedPosition.y + 2 * (EditorGUIUtility.singleLineHeight + padding), paddedPosition.width, EditorGUIUtility.singleLineHeight);
-                Rect valueAtOnePosition = new Rect(paddedPosition.x, paddedPosition.y + 3 * (EditorGUIUtility.singleLineHeight + padding), paddedPosition.width, EditorGUIUtility.singleLineHeight);
+                Rect valueAtOnePosition  = new Rect(paddedPosition.x, paddedPosition.y + 3 * (EditorGUIUtility.singleLineHeight + padding), paddedPosition.width, EditorGUIUtility.singleLineHeight);
 
                 if (!foundParam)
                 {
@@ -159,7 +159,7 @@ namespace FX
 
                 if (oldValue != newValue && foundParam)
                 {
-                    if (fxScaledParamC != null) fxScaledParamC.Value = newValue;
+                    if      (fxScaledParamC != null) fxScaledParamC.Value = newValue;
                     else if (fxScaledParamF != null) fxScaledParamF.Value = newValue;
                     else if (fxScaledParamI != null) fxScaledParamI.Value = newValue;
                     else if (fxScaledParamv3 != null) fxScaledParamv3.Value = newValue;
@@ -315,7 +315,7 @@ namespace FX
                 if (typeof(T) == typeof(Color))
                 {
                     Color zeroColor = (Color)Convert.ChangeType(valueAtZero_, typeof(Color));
-                    Color oneColor = (Color)Convert.ChangeType(valueAtOne_, typeof(Color));
+                    Color oneColor  = (Color)Convert.ChangeType(valueAtOne_, typeof(Color));
 
                     float r = Mathf.Lerp(zeroColor.r, oneColor.r, Value);
                     float g = Mathf.Lerp(zeroColor.g, oneColor.g, Value);
@@ -327,20 +327,20 @@ namespace FX
                 else if (typeof(T) == typeof(float))
                 {
                     float zeroValue = (float)Convert.ChangeType(valueAtZero_, typeof(float));
-                    float oneValue = (float)Convert.ChangeType(valueAtOne_, typeof(float));
-                    scaledValue_ = (T)(object)Mathf.Lerp(zeroValue, oneValue, Value);
+                    float oneValue  = (float)Convert.ChangeType(valueAtOne_, typeof(float));
+                    scaledValue_    = (T)(object)Mathf.Lerp(zeroValue, oneValue, Value);
                 }
                 else if (typeof(T) == typeof(int))
                 {
-                    float zeroValue = (float)Convert.ChangeType(valueAtZero_, typeof(int));
-                    float oneValue = (float)Convert.ChangeType(valueAtOne_, typeof(int));
+                    float zeroValue   = (float)Convert.ChangeType(valueAtZero_, typeof(int));
+                    float oneValue    = (float)Convert.ChangeType(valueAtOne_, typeof(int));
                     float lerpedValue = Mathf.Lerp(zeroValue, oneValue, Value);
-                    scaledValue_ = (T)(object)Mathf.RoundToInt(lerpedValue);
+                    scaledValue_      = (T)(object)Mathf.RoundToInt(lerpedValue);
                 }
                 else if (typeof(T) == typeof(Vector3))
                 {
                     Vector3 zeroVector = (Vector3)Convert.ChangeType(valueAtZero_, typeof(Vector3));
-                    Vector3 oneVector = (Vector3)Convert.ChangeType(valueAtOne_, typeof(Vector3));
+                    Vector3 oneVector  = (Vector3)Convert.ChangeType(valueAtOne_, typeof(Vector3));
 
                     float x = Mathf.Lerp(zeroVector.x, oneVector.x, Value);
                     float y = Mathf.Lerp(zeroVector.y, oneVector.y, Value);

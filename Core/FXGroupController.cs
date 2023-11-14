@@ -132,6 +132,7 @@ namespace FX
         }
 
         public void LoadPreset(FXGroupPreset preset) {
+            ClearFXAdresses();
             fxAddresses        = preset.fxAddresses;
             fxTriggerAddresses = preset.fxTriggerAddresses;
             signalSource = preset.signalSource;

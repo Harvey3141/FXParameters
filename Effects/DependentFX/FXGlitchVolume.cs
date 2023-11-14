@@ -36,11 +36,11 @@ public class FXGlitchVolume : FXBase
             Debug.LogError("Glitch effect not found in the Volume profile");
         }
 
-        block.OnScaledValueChanged  += SetBlock;
-        drift.OnScaledValueChanged  += SetDrift;
-        jitter.OnScaledValueChanged += SetJitter;
-        jump.OnScaledValueChanged   += SetJump;
-        shake.OnScaledValueChanged  += SetShake;
+        block .OnScaledValueChanged   += SetBlock;
+        drift .OnScaledValueChanged   += SetDrift;
+        jitter.OnScaledValueChanged   += SetJitter;
+        jump  .OnScaledValueChanged   += SetJump;
+        shake .OnScaledValueChanged   += SetShake;
     }
 
     private void SetBlock(float value)
@@ -74,7 +74,6 @@ public class FXGlitchVolume : FXBase
             glitchEffect.jump.value = value;
         }
     }
-
     private void SetShake(float value)
     {
         if (glitchEffect != null)

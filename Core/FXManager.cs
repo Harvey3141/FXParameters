@@ -292,13 +292,13 @@ namespace FX {
         [System.Serializable]
         public class FXPreset
         {
-            public List<FXPresetParameter<string>> stringParameters = new List<FXPresetParameter<string>>();
-            public List<FXPresetParameter<int>> intParameters = new List<FXPresetParameter<int>>();
-            public List<FXPresetParameter<float>> floatParameters = new List<FXPresetParameter<float>>();
-            public List<FXPresetParameter<bool>> boolParameters = new List<FXPresetParameter<bool>>();
-            public List<FXPresetParameter<Color>> colorParameters = new List<FXPresetParameter<Color>>();
+            public List<FXPresetParameter<string>>  stringParameters    = new List<FXPresetParameter<string>>();
+            public List<FXPresetParameter<int>>     intParameters       = new List<FXPresetParameter<int>>();
+            public List<FXPresetParameter<float>>   floatParameters     = new List<FXPresetParameter<float>>();
+            public List<FXPresetParameter<bool>>    boolParameters      = new List<FXPresetParameter<bool>>();
+            public List<FXPresetParameter<Color>>   colorParameters     = new List<FXPresetParameter<Color>>();
 
-            public List<FXGroupPreset> fxGroupPresets = new List<FXGroupPreset>();
+            public List<FXGroupPreset> fxGroupPresets               = new List<FXGroupPreset>();
 
         }
 
@@ -316,7 +316,7 @@ namespace FX {
             public SignalSource signalSource;
             public PatternType patternType;
             public AudioFrequency audioFrequency;
-            public List<string> fxAddresses = new List<string>();
+            public List<string> fxAddresses        = new List<string>();
             public List<string> fxTriggerAddresses = new List<string>();
         }
 
@@ -332,19 +332,19 @@ namespace FX {
 
                     if (parameter.ShouldSave)
                     {
-                        string key_ = item.Key;
+                        string key_   = item.Key;
                         object value_ = parameter.ObjectValue;
 
                         if (value_ is string strValue)
                             preset.stringParameters.Add(new FXPresetParameter<string> { key = key_, value = strValue });
                         else if (value_ is int intValue)
-                            preset.intParameters.Add(new FXPresetParameter<int> { key = key_, value = intValue });
+                            preset.intParameters.Add(new FXPresetParameter<int>       { key = key_, value = intValue });
                         else if (value_ is float floatValue)
-                            preset.floatParameters.Add(new FXPresetParameter<float> { key = key_, value = floatValue });
+                            preset.floatParameters.Add(new FXPresetParameter<float>   { key = key_, value = floatValue });
                         else if (value_ is bool boolValue)
-                            preset.boolParameters.Add(new FXPresetParameter<bool> { key = key_, value = boolValue });
+                            preset.boolParameters.Add(new FXPresetParameter<bool>     { key = key_, value = boolValue });
                         else if (value_ is Color colorValue)
-                            preset.colorParameters.Add(new FXPresetParameter<Color> { key = key_, value = colorValue });
+                            preset.colorParameters.Add(new FXPresetParameter<Color>   { key = key_, value = colorValue });
                     }
                 }
             }
@@ -353,13 +353,13 @@ namespace FX {
             FXGroupController[] allFXGroups = GameObject.FindObjectsOfType<FXGroupController>();
             foreach (var group in allFXGroups)
             {
-                FXGroupPreset groupPreset    = new FXGroupPreset();
-                groupPreset.address          = group.address;
-                groupPreset.fxAddresses      = group.fxAddresses;
+                FXGroupPreset groupPreset      = new FXGroupPreset();
+                groupPreset.address            = group.address;
+                groupPreset.fxAddresses        = group.fxAddresses;
                 groupPreset.fxTriggerAddresses = group.fxTriggerAddresses;
-                groupPreset.signalSource     = group.signalSource; 
-                groupPreset.patternType      = group.patternType; 
-                groupPreset.audioFrequency   = group.audioFrequency;
+                groupPreset.signalSource       = group.signalSource; 
+                groupPreset.patternType        = group.patternType; 
+                groupPreset.audioFrequency     = group.audioFrequency;
 
                 preset.fxGroupPresets.Add(groupPreset);
             }
@@ -380,7 +380,7 @@ namespace FX {
         public bool LoadPreset(string presetName)
         {
             string directoryPath = Path.Combine(Application.streamingAssetsPath, "FX Presets"); ;
-            string filePath = Path.Combine(directoryPath, presetName + ".json");
+            string filePath      = Path.Combine(directoryPath, presetName + ".json");
 
             if (File.Exists(filePath))
             {
@@ -412,6 +412,22 @@ namespace FX {
                     SetFX(param.key, param.value);
                 }
 
+                HashSet<string> presetAddresses = new HashSet<string>(preset.boolParameters.Select(p => p.key));
+
+                // Filter and process relevant FX items
+                var relevantFXItems = fxItemsByAddress_
+                    .Where(item => item.Key.EndsWith("fxEnabled") && item.Value.type == FXItemInfoType.Parameter && item.Value.item is FXParameter<bool>)
+                    .ToList();
+
+                // Set FXParameter<bool> items to false if not included in the preset
+                foreach (var fxItem in relevantFXItems)
+                {
+                    IFXParameter parameter = fxItem.Value.item as IFXParameter;
+                    if (parameter != null && parameter.ShouldSave && !presetAddresses.Contains(fxItem.Key))
+                    {
+                        ((FXParameter<bool>)parameter).Value = false;
+                    }
+                }
 
                 Dictionary<string, FXGroupPreset> fxGroupPresets = preset.fxGroupPresets.ToDictionary(p => p.address, p => p);
 
@@ -420,6 +436,7 @@ namespace FX {
                 {
                     if (fxGroupPresets.TryGetValue(group.address, out var groupPreset))
                     {
+                        CleanInvalidFXAddresses(groupPreset.fxAddresses);
                         group.LoadPreset(groupPreset);
                     }
                 }
@@ -432,6 +449,16 @@ namespace FX {
                 Debug.LogWarning($"Preset {presetName} not found.");
                 return false;
             }
+        }
+
+        public void CleanInvalidFXAddresses(List<string> fxAddresses)
+        {
+            fxAddresses.RemoveAll(fxAddress => !fxItemsByAddress_.ContainsKey(fxAddress));
+        }
+
+        private bool IsAddressInPreset(string address, FXPreset preset)
+        {
+            return preset.boolParameters.Any(p => p.key == address);
         }
     }
 
