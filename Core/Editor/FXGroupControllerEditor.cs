@@ -15,7 +15,7 @@ namespace FX
         private ReorderableList reorderableList;
         private ReorderableList reorderableListTrigger;
 
-        private string[] paramPopupValues = new string[] {};
+        private string[] paramPopupValues        = new string[] {};
         private string[] triggerParamPopupValues = new string[] { };
 
 
@@ -55,17 +55,17 @@ namespace FX
 
             fxTriggerAddressesProperty = serializedObject.FindProperty("fxTriggerAddresses");
 
-            reorderableList = new ReorderableList(serializedObject, fxAddressesProperty, true, true, true, true);
+            reorderableList        = new ReorderableList(serializedObject, fxAddressesProperty       , true, true, true, true);
             reorderableListTrigger = new ReorderableList(serializedObject, fxTriggerAddressesProperty, true, true, true, true);
 
 
-            reorderableList.drawElementCallback = DrawListItems;
+            reorderableList.drawElementCallback   = DrawListItems;
             reorderableList.elementHeightCallback = (index) => EditorGUIUtility.singleLineHeight * 1.5f;
-            reorderableList.drawHeaderCallback = DrawHeader;
+            reorderableList.drawHeaderCallback    = DrawHeader;
 
-            reorderableListTrigger.drawElementCallback = DrawListItems2;
+            reorderableListTrigger.drawElementCallback   = DrawListItems2;
             reorderableListTrigger.elementHeightCallback = (index) => EditorGUIUtility.singleLineHeight * 1.5f;
-            reorderableListTrigger.drawHeaderCallback = DrawHeader2;
+            reorderableListTrigger.drawHeaderCallback    = DrawHeader2;
         }
 
         private void OnDisable()
@@ -141,10 +141,15 @@ namespace FX
 
         public override void OnInspectorGUI()
         {
-            if (paramPopupValues.Length == 0 || controller.presetLoaded) {
+            if (paramPopupValues.Length == 0) 
+            {
                 UpdateParamPopupValues();
-                if (controller.presetLoaded) controller.presetLoaded = false;
-            } 
+            }
+
+            if (controller.presetLoaded)
+            {
+                controller.presetLoaded = false;
+            }
 
             serializedObject.Update();
 

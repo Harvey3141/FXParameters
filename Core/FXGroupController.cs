@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using static FX.FXManager;
 using System;
 using FX.Patterns;
+using System.Linq;
+using Unity.VisualScripting.Dependencies.Sqlite;
 
 namespace FX
 {
@@ -11,9 +13,17 @@ namespace FX
         [SerializeField]
         public string address; 
 
+        /// <summary>
+        /// Note that these addresses are stored with the leading '/' removed to work with the custom editor list
+        /// </summary>
         [SerializeField]
         public List<string> fxAddresses;
 
+        public List<string> FormattedFXAddresses{get {return fxAddresses.Select(address => address.StartsWith("/") ? address : "/" + address).ToList(); }}
+
+        /// <summary>
+        /// Note that these addresses are contained with the leading '/' removed to work with the custom editor list
+        /// </summary>
         [SerializeField]
         public List<string> fxTriggerAddresses;
 
@@ -134,9 +144,14 @@ namespace FX
         public void LoadPreset(FXGroupPreset preset) {
             ClearFXAdresses();
             fxAddresses        = preset.fxAddresses;
+
+            for (int i = 0; i < fxAddresses.Count; i++) {
+                if (fxAddresses[0].StartsWith('/')) fxAddresses[0] = fxAddresses[0].Substring(1);
+            }
+
             fxTriggerAddresses = preset.fxTriggerAddresses;
-            signalSource = preset.signalSource;
-            audioFrequency = preset.audioFrequency;
+            signalSource       = preset.signalSource;
+            audioFrequency     = preset.audioFrequency;
 
             SetPatternType(preset.patternType);
             

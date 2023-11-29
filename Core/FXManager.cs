@@ -355,7 +355,7 @@ namespace FX {
             {
                 FXGroupPreset groupPreset      = new FXGroupPreset();
                 groupPreset.address            = group.address;
-                groupPreset.fxAddresses        = group.fxAddresses;
+                groupPreset.fxAddresses        = group.FormattedFXAddresses;
                 groupPreset.fxTriggerAddresses = group.fxTriggerAddresses;
                 groupPreset.signalSource       = group.signalSource; 
                 groupPreset.patternType        = group.patternType; 

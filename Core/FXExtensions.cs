@@ -31,9 +31,10 @@ namespace FX
                             if (adressPrefix.StartsWith("/"))
                                 adressPrefix = adressPrefix.Substring(1);
                             address = $"/{adressPrefix}/{field.Name}";
-                        }
-                        fxParameter.Address = address;
+                        }                        
                     }
+                    address = address.Replace(" ", "");
+                    fxParameter.Address = address;
 
                     if (FXManager.Instance != null)
                     {
@@ -63,9 +64,10 @@ namespace FX
                     {
                         if (adressPrefix.StartsWith("/")) adressPrefix = adressPrefix.Substring(1); ;
                         address = $"/{adressPrefix}/FXEnabled";
-                    }
-                    addressProperty.SetValue(fxEnabledParameter, address);
+                    }                   
                 }
+                address = address.Replace(" ", "");
+                addressProperty.SetValue(fxEnabledParameter, address);
 
                 if (FXManager.Instance != null)
                 {
@@ -84,16 +86,19 @@ namespace FX
                 var FXMethodAttribute = method.GetCustomAttribute<FXMethodAttribute>();
                 if (FXMethodAttribute != null)
                 {
-                    if (FXMethodAttribute.Address == null)
+                    var address = FXMethodAttribute.Address;
+                    if (address == null)
                     {
                         var methodName = method.Name;
-                        if (string.IsNullOrEmpty(adressPrefix)) FXMethodAttribute.Address = $"/{monoBehaviour.gameObject.name}/{monoBehaviour.GetType().Name}/{methodName}";
+                        if (string.IsNullOrEmpty(adressPrefix)) address = $"/{monoBehaviour.gameObject.name}/{monoBehaviour.GetType().Name}/{methodName}";
                         else
                         {
                             if (adressPrefix.StartsWith("/")) adressPrefix = adressPrefix.Substring(1); ;
-                            FXMethodAttribute.Address = $"/{adressPrefix}/{methodName}";
+                            address = $"/{adressPrefix}/{methodName}";
                         }                       
                     }
+                    address = address.Replace(" ", "");
+                    FXMethodAttribute.Address = address;
 
                     FXManager.Instance.AddFXItem(FXMethodAttribute.Address, FXItemInfoType.Method, method, monoBehaviour);
                 }
@@ -103,6 +108,7 @@ namespace FX
             if (string.IsNullOrEmpty(computedAddressPrefix))
             {
                 computedAddressPrefix = $"/{monoBehaviour.gameObject.name}/{monoBehaviour.GetType().Name}";
+                computedAddressPrefix = computedAddressPrefix.Replace(" ", "");
             }
             return computedAddressPrefix;
 

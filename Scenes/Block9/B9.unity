@@ -1038,6 +1038,7 @@ GameObject:
   - component: {fileID: 1739663763}
   - component: {fileID: 1739663762}
   - component: {fileID: 1739663761}
+  - component: {fileID: 1739663764}
   m_Layer: 0
   m_Name: Area Light
   m_TagString: Untagged
@@ -1244,6 +1245,45 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: -90, y: 180, z: 0}
+--- !u!114 &1739663764
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1739663760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e25ea6825322f8d4db43c962e3c67c6f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fxEnabled:
+    address_: 
+    value_: 0
+    shouldSave_: 1
+  fxAddress: 
+  targetLookAt: {fileID: 0}
+  speed:
+    address_: 
+    value_: 0.6
+    shouldSave_: 1
+    valueAtZero_: 0
+    valueAtOne_: 3
+    scaledValue_: 1.8000001
+  center: {x: 0, y: 0, z: 0}
+  sizeX:
+    address_: 
+    value_: 1
+    shouldSave_: 1
+  sizeY:
+    address_: 
+    value_: 1
+    shouldSave_: 1
+  sizeZ:
+    address_: 
+    value_: 1
+    shouldSave_: 1
+  EmoveToType: 1
 --- !u!4 &1781119391 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -6140323671744858350, guid: eb90db0518a96e741a4025a0e4bad6bd,
