@@ -4,7 +4,6 @@ using static FX.FXManager;
 using System;
 using FX.Patterns;
 using System.Linq;
-using Unity.VisualScripting.Dependencies.Sqlite;
 
 namespace FX
 {
@@ -145,8 +144,12 @@ namespace FX
             ClearFXAdresses();
             fxAddresses        = preset.fxAddresses;
 
-            for (int i = 0; i < fxAddresses.Count; i++) {
-                if (fxAddresses[0].StartsWith('/')) fxAddresses[0] = fxAddresses[0].Substring(1);
+            for (int i = 0; i < fxAddresses.Count; i++)
+            {
+                if (fxAddresses[i].StartsWith('/'))
+                {
+                    fxAddresses[i] = fxAddresses[i].Substring(1);
+                }
             }
 
             fxTriggerAddresses = preset.fxTriggerAddresses;

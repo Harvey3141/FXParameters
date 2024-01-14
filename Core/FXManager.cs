@@ -1,13 +1,10 @@
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
-using UnityEngine.UI;
 using static FX.FXGroupController;
-using static UnityEditor.Progress;
 
 namespace FX {
 
@@ -58,7 +55,7 @@ namespace FX {
 
         public event Action OnFXItemAdded;
 
-        public static Dictionary<string, (FXItemInfoType type, object item, object fxInstance)> fxItemsByAddress_ = new Dictionary<string, (FXItemInfoType type, object item, object fxInstance)>();
+        public static Dictionary<string, (FXItemInfoType type, object item, object fxInstance)> fxItemsByAddress_ = new Dictionary<string, (FXItemInfoType type, object item, object fxInstance)>(StringComparer.OrdinalIgnoreCase);
 
         public enum FXItemInfoType
         {
@@ -113,6 +110,26 @@ namespace FX {
             {
                 Debug.LogWarning($"No property, method, or trigger found for address {address}");
             }
+        }
+
+        public object GetFX(string address)
+        {
+            if (fxItemsByAddress_.TryGetValue(address, out var fxItem) && fxItem.type == FXItemInfoType.Parameter)
+            {
+                IFXParameter parameter = fxItem.item as IFXParameter;
+
+                Type parameterType = parameter.ObjectValue.GetType();
+
+                if (parameterType == typeof(float))
+                {
+                    return ((FXParameter<float>)parameter).Value;
+                }
+
+                //return parameter?.ObjectValue;
+            }
+
+            Debug.LogWarning($"FX parameter not found for address {address}");
+            return null;
         }
 
         private void SetMethod(string address, object[] args)

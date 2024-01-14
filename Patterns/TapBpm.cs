@@ -28,7 +28,7 @@ namespace FX.Patterns
                 float timeSinceLastTap = currentTime - _lastTapTime; // Calculate time between taps
                 float bpmEstimate = 60 / timeSinceLastTap; // Calculate BPM estimate
                 _tapTimes.Add(timeSinceLastTap); // Add time between taps to list
-                if (_tapTimes.Count > 4) // Limit list to the last 4 taps
+                if (_tapTimes.Count > 8) // Limit list to the last 4 taps
                 {
                     _tapTimes.RemoveAt(0);
                 }

@@ -21,7 +21,8 @@ namespace FX
                 if (fieldType.IsGenericType && (fieldType.GetGenericTypeDefinition() == typeof(FXParameter<>) || fieldType.Name.StartsWith("FXScaledParameter")))
                 {
                     var fxParameter = (IFXParameter)fieldInstance;
-                    var address = fxParameter.Address;
+                    var address = string.Empty;
+
                     if (string.IsNullOrEmpty(address))
                     {
                         if (string.IsNullOrEmpty(adressPrefix))

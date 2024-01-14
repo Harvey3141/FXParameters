@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -263,7 +264,12 @@ namespace FX
                             address = address.Substring(1);
                         }
 
-                        addressList.Add(address);
+                        // Regex to check if the address starts with 'Group' followed by a number
+                        if (!Regex.IsMatch(address, @"^Group\d"))
+                        {
+                            addressList.Add(address);
+                        }
+                       
                     }
                 }
                 else if (kvp.Value.type == FXManager.FXItemInfoType.Method)
