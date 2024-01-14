@@ -1,3 +1,20 @@
+// 1. Define Listening Ports:
+//    - The `listeningPorts` list holds the ports that the OSC receivers will listen on.
+//    - You can add or remove ports in the Unity Inspector
+
+// 2. Receiver and Transmitter Creation:
+//    - Receivers are automatically created for each port defined in `listeningPorts`.
+//    - Transmitters are dynamically created to send responses. 
+//      They respond to the sender's IP but on a different port.
+
+// 3. Handling "/GET" Requests:
+//    - If a message with an address ending in "/GET" is received, the manager will 
+//      look up a corresponding value from `FXManager` and send it back.
+//    - The response is sent to the sender's IP but on the next port.
+//      For example, if a message is received on port 9101, the response is sent to port 9102.
+
+
+
 using UnityEngine;
 using extOSC;
 using System.Collections.Generic;
@@ -7,34 +24,40 @@ namespace FX
 {
     public class FXExtOSCManager : MonoBehaviour
     {
+
         [SerializeField]
-        private int listeningPort_ = 9101;
+        public List<int> listeningPorts = new List<int> { 9101, 9103};
 
-        private OSCReceiver receiver_;
-
+        private List<OSCReceiver> receivers_;
         private List<OSCTransmitter> transmitters_;
 
         private void Start()
         {
-            receiver_ = gameObject.AddComponent<OSCReceiver>();
-            receiver_.LocalPort = 9101;
-            receiver_.Bind("/*", MessageReceived);
+            receivers_ = new List<OSCReceiver>();
+            for (int i = 0; i < listeningPorts.Count; i++)
+            {
+                OSCReceiver receiver = gameObject.AddComponent<OSCReceiver>();
+                receiver.LocalPort = listeningPorts[i];
+                receiver.Bind("/*", (message) => MessageReceived(message, receiver.LocalPort));
+
+                receivers_.Add(receiver);
+            }
 
             transmitters_ = new List<OSCTransmitter>();
         }
 
-        protected void MessageReceived(OSCMessage message)
+        protected void MessageReceived(OSCMessage message, int port)
         {
             string address = message.Address;
             if (address.ToUpper().EndsWith("/GET"))
             {
                 string paramAddress = address.Substring(0, address.Length - 4);
                 object value = FXManager.Instance.GetFX(paramAddress);
-
+                
                 if (value != null)
                 {
                     string senderIp = message.Ip.ToString();
-                    int senderPort = 9102;
+                    int senderPort  = port += 1;
 
                     bool transmitterFound = false;
 
