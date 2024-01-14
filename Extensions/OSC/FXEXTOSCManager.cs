@@ -18,11 +18,10 @@
 using UnityEngine;
 using extOSC;
 using System.Collections.Generic;
-using System;
 
 namespace FX
 {
-    public class FXExtOSCManager : MonoBehaviour
+    public class FXEXTOSCManager : MonoBehaviour
     {
 
         [SerializeField]

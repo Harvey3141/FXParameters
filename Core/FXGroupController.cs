@@ -135,9 +135,31 @@ namespace FX
             OnFXTriggered?.Invoke();
         }
 
-        public void ClearFXAdresses() { 
+        public void ClearFXAdresses() 
+        { 
             fxAddresses.Clear();
             fxTriggerAddresses.Clear();
+        }
+
+        public void AddFxAddress(string address) 
+        { 
+            if (!fxAddresses.Contains(address.Substring(1))) {         
+                fxAddresses.Add(address.Substring(1));
+            }
+        }
+
+        public void RemoveFxAddress(string address)
+        {
+            if (fxAddresses.Contains(address.Substring(1)))
+            {
+                fxAddresses.Remove(address.Substring(1));
+            }
+        }
+
+        public bool ExistsInFxAddress(string address)
+        {
+            if (String.IsNullOrEmpty(address)) return false;
+            return fxAddresses.Contains(address.Substring(1));
         }
 
         public void LoadPreset(FXGroupPreset preset) {
@@ -191,6 +213,67 @@ namespace FX
                     break;
             }
         }
+
+        public string GetLabelBasedOnSignalSource()
+        {
+            string gameObjectName = this.gameObject.name;
+            string label = gameObjectName + ": "; // Prepending the GameObject's name
+
+            switch (signalSource)
+            {
+                case SignalSource.Default:
+                    return label + "Default Signal Source";
+
+                case SignalSource.Pattern:
+                    return label + GetPatternLabel();
+
+                case SignalSource.Audio:
+                    return label + GetAudioLabel();
+
+                default:
+                    return label + "Unknown Signal Source";
+            }
+        }
+
+        private string GetPatternLabel()
+        {
+            switch (patternType)
+            {
+                case PatternType.None:
+                    return "Pattern - None";
+
+                case PatternType.Tap:
+                    return "Pattern - Tap";
+
+                case PatternType.Oscillator:
+                    return "Pattern - Oscillator";
+
+                case PatternType.Arpeggiator:
+                    return "Pattern - Arpeggiator";
+
+                default:
+                    return "Pattern - Unknown";
+            }
+        }
+
+        private string GetAudioLabel()
+        {
+            switch (audioFrequency)
+            {
+                case AudioFrequency.Low:
+                    return "Audio - Low";
+
+                case AudioFrequency.Mid:
+                    return "Audio - Mid";
+
+                case AudioFrequency.High:
+                    return "Audio - High";
+
+                default:
+                    return "Audio - Unknown";
+            }
+        }
+
 
     }
 }
