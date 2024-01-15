@@ -26,7 +26,7 @@ public class FXParameterGUI : MonoBehaviour
     private Dictionary<string, Dictionary<string, List<(string address, object item)>>> GroupParametersByBaseAddress()
     {
         return FXManager.fxItemsByAddress_
-            .Where(x => x.Value.type == FXManager.FXItemInfoType.Parameter)
+        .Where(x => x.Value.type == FXManager.FXItemInfoType.Parameter || (x.Value.type == FXManager.FXItemInfoType.Method && IsFXTrigger(x.Value.item)))
             .GroupBy(x => GetBaseAddress(x.Key))
             .ToDictionary(
                 g => g.Key,
@@ -35,7 +35,14 @@ public class FXParameterGUI : MonoBehaviour
                         sg => sg.Key,
                         sg => sg.Select(x => (x.Key, x.Value.item)).ToList()
                     )
-            );
+        );
+    }
+
+    private bool IsFXTrigger(object item)
+    {
+        bool stringCheck = (item.ToString() == "Void FXTrigger()");
+        return stringCheck;
+
     }
 
     private string GetBaseAddress(string fullAddress)
@@ -93,15 +100,26 @@ public class FXParameterGUI : MonoBehaviour
                 foreach (var item in subgroup.Value)
                 {
                     GUILayout.BeginHorizontal();
-                    GUILayout.Label("  " + item.address, paramLabelStyle);
+                    
                     if (item.item is FXScaledParameter<float> floatParam)
                     {
+                        GUILayout.Label("  " + item.address, paramLabelStyle);
                         floatParam.Value = GUILayout.HorizontalSlider(floatParam.Value, 0.0f, 1.0f);
                     }
                     else if (item.item is FXParameter<bool> boolParam)
                     {
+                        GUILayout.Label("  " + item.address, paramLabelStyle);
                         boolParam.Value = GUILayout.Toggle(boolParam.Value, "");
                     }
+                    else if (item.address.EndsWith("/FXTrigger"))
+                    {
+                        GUILayout.Label("  " + item.address, paramLabelStyle);
+                        if (GUILayout.Button("Trigger"))
+                        {
+                            FXManager.Instance.SetFX(item.address);
+                        }
+                    }
+
                     GUILayout.EndHorizontal();
                 }
             }
