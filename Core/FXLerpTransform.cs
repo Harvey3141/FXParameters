@@ -6,7 +6,7 @@ using UnityEditor;
 
 public class FXLerpTransform : FXBase, IFXTriggerable
 {
-    public FXParameter<float> lerpProgress = new FXParameter<float>(0.0f);
+    public FXScaledParameter<float> lerpProgress = new FXScaledParameter<float>(0.0f,0.0f,1.0f);
 
     [HideInInspector]
     public Vector3 positionA;
