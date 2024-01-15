@@ -141,25 +141,29 @@ namespace FX
             fxTriggerAddresses.Clear();
         }
 
-        public void AddFxAddress(string address) 
-        { 
-            if (!fxAddresses.Contains(address.Substring(1))) {         
-                fxAddresses.Add(address.Substring(1));
+        public void AddFxAddress(string address)
+        {
+            if (String.IsNullOrEmpty(address)) return;
+            string modifiedAddress = address.Substring(1);
+            if (!fxAddresses.Contains(modifiedAddress))
+            {
+                fxAddresses.Add(modifiedAddress);
             }
         }
 
         public void RemoveFxAddress(string address)
         {
-            if (fxAddresses.Contains(address.Substring(1)))
+            if (String.IsNullOrEmpty(address)) return;
+            string modifiedAddress = address.Substring(1);
+            if (fxAddresses.Contains(modifiedAddress))
             {
-                fxAddresses.Remove(address.Substring(1));
+                fxAddresses.Remove(modifiedAddress);
             }
         }
 
         public bool ExistsInFxAddress(string address)
         {
-            if (String.IsNullOrEmpty(address)) return false;
-            return fxAddresses.Contains(address.Substring(1));
+            return !String.IsNullOrEmpty(address) && fxAddresses.Contains(address.Substring(1));
         }
 
         public void LoadPreset(FXGroupPreset preset) {
@@ -217,7 +221,7 @@ namespace FX
         public string GetLabelBasedOnSignalSource()
         {
             string gameObjectName = this.gameObject.name;
-            string label = gameObjectName + ": "; // Prepending the GameObject's name
+            string label = gameObjectName + " - "; // Prepending the GameObject's name
 
             switch (signalSource)
             {
@@ -240,19 +244,19 @@ namespace FX
             switch (patternType)
             {
                 case PatternType.None:
-                    return "Pattern - None";
+                    return "Pattern:None";
 
                 case PatternType.Tap:
-                    return "Pattern - Tap";
+                    return "Pattern:Tap";
 
                 case PatternType.Oscillator:
-                    return "Pattern - Oscillator";
+                    return "Pattern:Oscillator";
 
                 case PatternType.Arpeggiator:
-                    return "Pattern - Arpeggiator";
+                    return "Pattern:Arpeggiator";
 
                 default:
-                    return "Pattern - Unknown";
+                    return "Pattern:Unknown";
             }
         }
 
@@ -261,16 +265,16 @@ namespace FX
             switch (audioFrequency)
             {
                 case AudioFrequency.Low:
-                    return "Audio - Low";
+                    return "Audio:Low";
 
                 case AudioFrequency.Mid:
-                    return "Audio - Mid";
+                    return "Audio:Mid";
 
                 case AudioFrequency.High:
-                    return "Audio - High";
+                    return "Audio:High";
 
                 default:
-                    return "Audio - Unknown";
+                    return "Audio:Unknown";
             }
         }
 
