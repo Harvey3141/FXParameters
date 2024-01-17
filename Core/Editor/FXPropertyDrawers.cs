@@ -9,13 +9,32 @@ namespace FX
     public class FXParameterDrawer : PropertyDrawer
     {
         private Dictionary<string, IFXParameter> fxParameterCache = new Dictionary<string, IFXParameter>();
-
+    
+        public FXParameterDrawer()
+        {
+            EditorApplication.playModeStateChanged += HandlePlayModeStateChanged;
+        }
+    
+        ~FXParameterDrawer()
+        {
+            EditorApplication.playModeStateChanged -= HandlePlayModeStateChanged;
+        }
+    
+        private void HandlePlayModeStateChanged(PlayModeStateChange state)
+        {
+            if (state == PlayModeStateChange.EnteredPlayMode || state == PlayModeStateChange.ExitingEditMode
+                || state == PlayModeStateChange.EnteredEditMode || state == PlayModeStateChange.EnteredEditMode)
+            {
+                fxParameterCache.Clear();
+            }
+        }
+    
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             EditorGUI.BeginProperty(position, label, property);
-
+    
             IFXParameter fxParam = GetFXParameterFromProperty(property);
-
+    
             if (fxParam is FXParameter<float> floatParam)
             {
                 float newValue = EditorGUI.FloatField(position, label, floatParam.Value);
@@ -51,25 +70,25 @@ namespace FX
                 EditorGUI.LabelField(position, label, new GUIContent("Unsupported FXParameter type"));
             }
             EditorGUI.EndProperty();
-
+    
         }
-
+    
         private IFXParameter GetFXParameterFromProperty(SerializedProperty property)
         {
             string propertyPath = property.propertyPath;
-
+    
             if (fxParameterCache.TryGetValue(propertyPath, out var cachedParam))
             {
                 return cachedParam;
             }
-
+    
             object targetObject = property.serializedObject.targetObject;
             IFXParameter fxParam = fieldInfo.GetValue(targetObject) as IFXParameter;
             fxParameterCache[propertyPath] = fxParam;
-
+    
             return fxParam;
         }
-
+    
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
             return EditorGUIUtility.singleLineHeight;

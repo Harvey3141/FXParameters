@@ -3,6 +3,7 @@ using FX;
 
 public abstract class FXBase : MonoBehaviour
 {
+    [SerializeField]
     public FXParameter<bool> fxEnabled = new FXParameter<bool>(false);
     public string fxAddress = "";
 
