@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using FX;
 using UnityEngine.Rendering.HighDefinition;
 
-public class FXScaler : FXBase
+public class FXScaler : FXBaseWithEnabled
 {
     public enum ScaleType { X, Y, Z, XYZ }
 

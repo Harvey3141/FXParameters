@@ -1,11 +1,9 @@
-using UnityEngine;
-using System.Collections;
-using System;
 using FX;
+using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 
 
-public class FXSpotlight : FXBase
+public class FXSpotlight : FXBaseWithEnabled
 {
     private HDAdditionalLightData lightData;
 

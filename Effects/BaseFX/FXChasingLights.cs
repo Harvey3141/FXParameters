@@ -1,7 +1,7 @@
 using UnityEngine;
 using FX;
 
-public class FXChasingLights : FXBase, IFXTriggerable
+public class FXChasingLights : FXBaseWithEnabled, IFXTriggerable
 {
     public Light[] lightsArray;
     public enum LightPattern { SineWave, EveryOther, MiddleOut }

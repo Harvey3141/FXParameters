@@ -6,7 +6,8 @@ using System.Reflection;
 using UnityEngine;
 using static FX.FXGroupController;
 
-namespace FX {
+namespace FX
+{
 
     public interface IFXTriggerable
     {

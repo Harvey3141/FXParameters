@@ -2,7 +2,7 @@ using FX;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 
-public class FXAreaLight : FXBase
+public class FXAreaLight : FXBaseWithEnabled
 {
     private HDAdditionalLightData lightData;
     public FXScaledParameter<float> sizeX     = new FXScaledParameter<float>(1.0f, 0.1f, 10.0f);

@@ -1,7 +1,7 @@
 using FX;
 using UnityEngine;
 
-public class FXStrobeLight : FXBase, IFXTriggerable
+public class FXStrobeLight : FXBaseWithEnabled, IFXTriggerable
 {
     private Light lightComp;
     public FXScaledParameter<float> strobeFrequency = new FXScaledParameter<float>(1.0f, 0.1f, 20.0f);

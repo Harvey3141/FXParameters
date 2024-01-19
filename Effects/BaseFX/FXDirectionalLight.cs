@@ -3,7 +3,7 @@ using FX;
 using UnityEngine.Rendering.HighDefinition; 
 
 
-public class FXDirectionalLight : FXBase, IFXTriggerable
+public class FXDirectionalLight : FXBaseWithEnabled, IFXTriggerable
 {
     private HDAdditionalLightData lightData; 
 

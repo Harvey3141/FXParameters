@@ -166,11 +166,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07c6bfd3dea7fa347abce4dec7abb006, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fxAddress: 
   fxEnabled:
     address_: 
     value_: 0
     shouldSave_: 1
-  fxAddress: 
   _scaleType: 3
   scale:
     address_: 
@@ -349,10 +349,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2882c36e20c8b8478b56a9bb9a3d217, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fxEnabled:
-    address_: 
-    value_: 0
-    shouldSave_: 1
   fxAddress: 
   palettes: []
 --- !u!1 &1483884807
@@ -617,11 +613,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d0d2482db12fe1438ef42c409f7922a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fxEnabled:
-    address_: /two/fxEnabled
-    value_: 0
-    shouldSave_: 1
-  fxAddress: two
+  fxAddress: 
   lerpProgress:
     address_: /two/lerpProgress
     value_: 0
@@ -647,11 +639,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a101c0a6b06e78458e74a4c08811050, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fxAddress: 
   fxEnabled:
     address_: 
     value_: 0
     shouldSave_: 1
-  fxAddress: 
   sizeX:
     address_: 
     value_: 1
@@ -693,7 +685,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1493849512
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -784,10 +776,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8154c8365e5b55a4b8d9cd1d34eb539d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fxEnabled:
-    address_: 
-    value_: 0
-    shouldSave_: 1
   fxAddress: cameraOne/effects
   block:
     address_: 
@@ -3144,18 +3132,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01edd31757f41114183ccea9659aab84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fxAddress: 
   fxEnabled:
     address_: /DirectionalLight/FXDirectionalLight/fxEnabled
-    value_: 0
+    value_: 1
     shouldSave_: 1
-  fxAddress: 
   intensity:
     address_: /DirectionalLight/FXDirectionalLight/intensity
-    value_: 0
+    value_: 0.516
     shouldSave_: 1
     valueAtZero_: 0
     valueAtOne_: 10
-    scaledValue_: 0
+    scaledValue_: 5.16
   color:
     address_: /DirectionalLight/FXDirectionalLight/color
     value_: {r: 1, g: 1, b: 1, a: 1}
@@ -3413,11 +3401,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cdb17ad5c221bc45a72a70761646be5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fxAddress: 
   fxEnabled:
     address_: 
     value_: 0
     shouldSave_: 1
-  fxAddress: 
   lightsArray: []
   currentPattern: 2
   spanProportion:
@@ -3786,11 +3774,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e25ea6825322f8d4db43c962e3c67c6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fxAddress: 
   fxEnabled:
     address_: 
     value_: 1
     shouldSave_: 1
-  fxAddress: 
   targetLookAt: {fileID: 4816326209131391485}
   speed:
     address_: 
@@ -3825,11 +3813,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cae1c773ea909f44d89e7dea190cbf65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fxAddress: /Strobe/test
   fxEnabled:
     address_: 
     value_: 0
     shouldSave_: 1
-  fxAddress: /Strobe/test
   strobeFrequency:
     address_: 
     value_: 1
@@ -4210,11 +4198,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94d3d11a7ef5c7d4f8d4a42cdf392866, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fxAddress: 
   fxEnabled:
     address_: 
     value_: 0
     shouldSave_: 1
-  fxAddress: 
   intensity:
     address_: 
     value_: 0.75
@@ -4382,11 +4370,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e25ea6825322f8d4db43c962e3c67c6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fxAddress: 
   fxEnabled:
     address_: 
     value_: 1
     shouldSave_: 1
-  fxAddress: 
   targetLookAt: {fileID: 4816326209131391485}
   speed:
     address_: 
@@ -5339,7 +5327,7 @@ MeshRenderer:
   m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 56b110ee48dc4194eae9f523595bcab3, type: 2}
+  - {fileID: 2100000, guid: 4e5c9a89fa465444fb9b6259b12e3ca3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5683,6 +5671,7 @@ GameObject:
   - component: {fileID: 6010232493888869844}
   - component: {fileID: 7261906004958157425}
   - component: {fileID: 4837866833004359355}
+  - component: {fileID: 7261906004958157426}
   m_Layer: 0
   m_Name: Pods_Wireframe_Complete
   m_TagString: Untagged
@@ -5701,6 +5690,7 @@ GameObject:
   - component: {fileID: 6010232494751569857}
   - component: {fileID: 7261906003806017636}
   - component: {fileID: 4837866834268171438}
+  - component: {fileID: 7261906003806017637}
   m_Layer: 0
   m_Name: Wall_Complete
   m_TagString: Untagged
@@ -6140,6 +6130,29 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6351045453657476475}
   m_Mesh: {fileID: 5512358834150723762, guid: a430cf90f30c6c14eabe0843efb8380f, type: 3}
+--- !u!114 &7261906003806017637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6351045453657476475}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74ad1d3e883c80845a9670ed2728d39c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fxAddress: 
+  materialIndex:
+    address_: 
+    value_: 0
+    shouldSave_: 1
+  controlledObjects:
+  - {fileID: 6351045453657476475}
+  Default: {fileID: 2100000, guid: 4e5c9a89fa465444fb9b6259b12e3ca3, type: 2}
+  Emissive: {fileID: 2100000, guid: 7a6ccee599c36fc419855383a3ccc61a, type: 2}
+  Concrete: {fileID: 2100000, guid: c4398d184d744bb43bd3cb1ce5bc8fdb, type: 2}
+  RustyConcrete: {fileID: 2100000, guid: 8f59fde6949c22545b97d918c700c9ef, type: 2}
 --- !u!33 &7261906004958157425
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -6148,6 +6161,29 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6351045452513791854}
   m_Mesh: {fileID: 3181945431582109686, guid: 97603798feb195d418423a12e3578949, type: 3}
+--- !u!114 &7261906004958157426
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6351045452513791854}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74ad1d3e883c80845a9670ed2728d39c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fxAddress: 
+  materialIndex:
+    address_: 
+    value_: 0
+    shouldSave_: 1
+  controlledObjects:
+  - {fileID: 6351045452513791854}
+  Default: {fileID: 2100000, guid: 4e5c9a89fa465444fb9b6259b12e3ca3, type: 2}
+  Emissive: {fileID: 0}
+  Concrete: {fileID: 0}
+  RustyConcrete: {fileID: 0}
 --- !u!33 &7368959862749637942
 MeshFilter:
   m_ObjectHideFlags: 0

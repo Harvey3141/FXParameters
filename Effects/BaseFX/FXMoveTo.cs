@@ -1,7 +1,7 @@
 using UnityEngine;
 using FX;
 
-public class FXMoveTo : FXBase, IFXTriggerable
+public class FXMoveTo : FXBaseWithEnabled, IFXTriggerable
 {
     public GameObject targetLookAt;
     public FXScaledParameter<float> speed = new FXScaledParameter<float>(0.6f, 0, 3f);
