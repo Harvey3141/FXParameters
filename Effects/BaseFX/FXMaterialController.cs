@@ -1,6 +1,7 @@
 using FX;
 using System;
-using UnityEditor;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public enum MaterialType
@@ -10,16 +11,37 @@ public enum MaterialType
     CONCRETE,
     RUSTY_CONCRETE
 }
+
+public enum TriggerPattern
+{
+    ALL,
+    ODD_EVEN,
+    SEQUENTIAL,
+    RANDOM_SINGLE,
+    RANDOM_MULTI
+}
+
 public static class MaterialTypeInfo
 {
     public static int Count { get { return Enum.GetNames(typeof(MaterialType)).Length; } }
 }
 
-public class FXMaterialController : FXBase
+public class FXMaterialController : FXBase, IFXTriggerable
 {
     public FXParameter<int> materialIndex = new FXParameter<int>(0);
 
     public FXScaledParameter<float> emmissiveIntensity = new FXScaledParameter<float>(0.0f,0.0f,1.0f);
+
+
+    public FXScaledParameter<float> triggerDuration = new FXScaledParameter<float>(0.05f, 0.0f, 1.0f);
+    private bool isTriggerCoroutineActive = false;
+    public TriggerPattern emissivePattern = TriggerPattern.ALL;
+    public int triggerSequencialIndex = 0;
+    public bool triggerOddEvenState = false;
+    private System.Random triggerRandomiser = new System.Random();
+    private List<int> triggerRandomIndices = new List<int>();
+
+
 
     public GameObject[] controlledObjects;
 
@@ -37,11 +59,6 @@ public class FXMaterialController : FXBase
 
     protected override void Start()
     {
-        //Default = Resources.Load<Material>("FXParameters/Materials/FXDefault.mat");
-        //Emissive = Resources.Load<Material>("FXParameters/Materials/FXEmissive.mat.mat");
-        //Concrete = Resources.Load<Material>("FXParameters/Materials/Concrete_UP7178.mat");
-        //RustyConcrete = Resources.Load<Material>("FXParameters/Materials/Concrete_UP7417.mat");
-
         SetMaterial(MaterialType.DEFAULT);
     }
 
@@ -64,7 +81,7 @@ public class FXMaterialController : FXBase
 
     private bool ApplyMaterial(Material material)
     {
-        if (material == null) return false;   
+        if (material == null) return false;
         foreach (var obj in controlledObjects)
         {
             if (obj != null)
@@ -72,12 +89,14 @@ public class FXMaterialController : FXBase
                 Renderer renderer = obj.GetComponent<Renderer>();
                 if (renderer != null)
                 {
-                    renderer.material = material;
+                    Material uniqueMaterial = new Material(material);
+                    renderer.material = uniqueMaterial;
                 }
             }
         }
         return true;
     }
+
 
     private void SetMaterial(int index)
     {
@@ -106,13 +125,97 @@ public class FXMaterialController : FXBase
         }
     }
 
+
     public void SetEmissiveIntensity(float intensity)
     {
-        if (Emissive != null)
+        
+        if ((MaterialType)materialIndex.Value != MaterialType.EMISSIVE) return;
+
+        for (int i = 0; i < controlledObjects.Length; i++)
         {
-            Color emissiveColorLDR = Emissive.GetColor("_EmissiveColorLDR");
-            Color emissiveColor = new Color(Mathf.GammaToLinearSpace(emissiveColorLDR.r), Mathf.GammaToLinearSpace(emissiveColorLDR.g), Mathf.GammaToLinearSpace(emissiveColorLDR.b));
-            Emissive.SetColor("_EmissiveColor", emissiveColor * intensity);
+            GameObject obj = controlledObjects[i];
+            if (obj != null)
+            {
+                Renderer renderer = obj.GetComponent<Renderer>();
+                if (renderer != null && ShouldApply(i))
+                {
+                    if (Emissive != null)
+                    {
+                        Color emissiveColorLDR = renderer.material.GetColor("_EmissiveColorLDR");
+                        Color emissiveColor = new Color(Mathf.GammaToLinearSpace(emissiveColorLDR.r), Mathf.GammaToLinearSpace(emissiveColorLDR.g), Mathf.GammaToLinearSpace(emissiveColorLDR.b));
+                        renderer.material.SetColor("_EmissiveColor", emissiveColor * intensity);
+                    }
+                }
+            }
+        }
+    }
+
+    [FXMethod]
+    public void FXTrigger() {
+        if (!isTriggerCoroutineActive) {
+            triggerOddEvenState = !triggerOddEvenState;
+            triggerSequencialIndex = (triggerSequencialIndex + 1) % controlledObjects.Length;
+            GenerateRandomIndices(UnityEngine.Random.Range(0, controlledObjects.Length));
+            StartCoroutine(LerpEmissiveIntensity());
+        } 
+    }
+
+    private IEnumerator LerpEmissiveIntensity()
+    {
+        isTriggerCoroutineActive = true;
+        float halfDuration = triggerDuration.ScaledValue / 2.0f;
+        float timer = 0.0f;
+
+        float startIntensity = emmissiveIntensity.ScaledValue;
+
+        while (timer < halfDuration)
+        {
+            timer += Time.deltaTime;
+            float intensity = Mathf.Lerp(startIntensity, 1.0f, timer / halfDuration);
+            SetEmissiveIntensity(intensity);
+            yield return null;
+        }
+
+        timer = 0.0f;
+        while (timer < halfDuration)
+        {
+            timer += Time.deltaTime;
+            float intensity = Mathf.Lerp(1.0f, 0.0f, timer / halfDuration);
+            SetEmissiveIntensity(intensity);
+            yield return null;
+        }
+
+        isTriggerCoroutineActive = false;
+    }
+
+    private bool ShouldApply(int index)
+    {
+        switch (emissivePattern)
+        {
+            case TriggerPattern.ALL:
+                return true;
+            case TriggerPattern.ODD_EVEN:
+                return (index % 2 == 0) ? triggerOddEvenState : !triggerOddEvenState;               
+            case TriggerPattern.SEQUENTIAL:
+                return (index == triggerSequencialIndex);
+            case TriggerPattern.RANDOM_SINGLE:
+                return triggerRandomiser.Next(controlledObjects.Length) == index;
+            case TriggerPattern.RANDOM_MULTI:
+                return triggerRandomIndices.Contains(index);
+        }
+        return false;
+    }
+
+    private void GenerateRandomIndices(int count)
+    {
+        triggerRandomIndices.Clear();
+        for (int i = 0; i < count; i++)
+        {
+            int randomIndex = UnityEngine.Random.Range(0, controlledObjects.Length);
+            if (!triggerRandomIndices.Contains(randomIndex))
+            {
+                triggerRandomIndices.Add(randomIndex);
+            }
         }
     }
 }

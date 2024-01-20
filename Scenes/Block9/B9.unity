@@ -1313,6 +1313,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 543450651860355985}
+  - component: {fileID: 919132147672355116}
   - component: {fileID: 202305681}
   m_Layer: 0
   m_Name: PodsSeparateRotate
@@ -1321,6 +1322,65 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &919132147672355116
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919132147672355115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74ad1d3e883c80845a9670ed2728d39c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fxAddress: 
+  materialIndex:
+    address_: 
+    value_: 0
+    shouldSave_: 1
+  emmissiveIntensity:
+    address_: 
+    value_: 0
+    shouldSave_: 1
+    valueAtZero_: 0
+    valueAtOne_: 1
+    scaledValue_: 0
+  triggerDuration:
+    address_: 
+    value_: 0
+    shouldSave_: 1
+    valueAtZero_: 0.05
+    valueAtOne_: 1
+    scaledValue_: 0
+  emissivePattern: 0
+  triggerSequencialIndex: 0
+  triggerOddEvenState: 0
+  controlledObjects:
+  - {fileID: 4813818067240683117}
+  - {fileID: 4813818067240683117}
+  - {fileID: 3661182021527977737}
+  - {fileID: 2661409211745469804}
+  - {fileID: 2276919200613958670}
+  - {fileID: 3015375987400339487}
+  - {fileID: 2243156598961576923}
+  - {fileID: 1706517430522372755}
+  - {fileID: 8031574118291458252}
+  - {fileID: 148134815341659011}
+  - {fileID: 6690309795369423714}
+  - {fileID: 4402381961681061473}
+  - {fileID: 8169509285926526518}
+  - {fileID: 539425182461744457}
+  - {fileID: 1473946179794738925}
+  - {fileID: 5356878443177188808}
+  - {fileID: 3815113405898413258}
+  - {fileID: 3255990824290442458}
+  - {fileID: 1491078073415608685}
+  - {fileID: 6326291198964217425}
+  Default: {fileID: 2100000, guid: 4e5c9a89fa465444fb9b6259b12e3ca3, type: 2}
+  Emissive: {fileID: 2100000, guid: 7a6ccee599c36fc419855383a3ccc61a, type: 2}
+  Concrete: {fileID: 2100000, guid: c4398d184d744bb43bd3cb1ce5bc8fdb, type: 2}
+  RustyConcrete: {fileID: 2100000, guid: 8f59fde6949c22545b97d918c700c9ef, type: 2}
 --- !u!33 &985141412088224466
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -6147,6 +6207,23 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+  emmissiveIntensity:
+    address_: 
+    value_: 0
+    shouldSave_: 1
+    valueAtZero_: 0
+    valueAtOne_: 1
+    scaledValue_: 0
+  triggerDuration:
+    address_: 
+    value_: 0
+    shouldSave_: 1
+    valueAtZero_: 0
+    valueAtOne_: 1
+    scaledValue_: 0
+  emissivePattern: 0
+  triggerSequencialIndex: 0
+  triggerOddEvenState: 0
   controlledObjects:
   - {fileID: 6351045453657476475}
   Default: {fileID: 2100000, guid: 4e5c9a89fa465444fb9b6259b12e3ca3, type: 2}
@@ -6178,6 +6255,23 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+  emmissiveIntensity:
+    address_: 
+    value_: 0
+    shouldSave_: 1
+    valueAtZero_: 0
+    valueAtOne_: 1
+    scaledValue_: 0
+  triggerDuration:
+    address_: 
+    value_: 0
+    shouldSave_: 1
+    valueAtZero_: 0
+    valueAtOne_: 1
+    scaledValue_: 0
+  emissivePattern: 0
+  triggerSequencialIndex: 0
+  triggerOddEvenState: 0
   controlledObjects:
   - {fileID: 6351045452513791854}
   Default: {fileID: 2100000, guid: 4e5c9a89fa465444fb9b6259b12e3ca3, type: 2}
