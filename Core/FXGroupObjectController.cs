@@ -20,7 +20,7 @@ namespace FX
         private bool triggerOddEvenState = false;
         private int triggerSequencialIndex = 0;
         private int triggerRandomIndex = 0;
-        protected TriggerPattern triggerPattern = TriggerPattern.ALL;
+        public TriggerPattern triggerPattern = TriggerPattern.ALL;
         private List<int> triggerRandomIndices = new List<int>();
         public FXScaledParameter<float> triggerDuration = new FXScaledParameter<float>(0.05f, 0.0f, 1.0f);
         public FXScaledParameter<float> triggerValue = new FXScaledParameter<float>(0.0f, 0.0f, 1.0f);
@@ -28,7 +28,7 @@ namespace FX
 
 
         [FXMethod]
-        public  void FXTrigger() {
+        public virtual void FXTrigger() {
             if (!isTriggerCoroutineActive)
             {
                 triggerOddEvenState = !triggerOddEvenState;

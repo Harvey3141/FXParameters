@@ -10,13 +10,13 @@ public class FXBaseWithEnabled : FXBase
 
     }
 
-    protected virtual void Awake()
+    protected override void Awake()
     {
         base.Awake();
         fxEnabled.OnValueChanged += OnFXEnabled;
     }
 
-    protected virtual void Start()
+    protected override void Start()
     {
         OnFXEnabled(fxEnabled.Value);
     }
