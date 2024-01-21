@@ -6,12 +6,12 @@ using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
-using static FX.FXGroupController;
+using static FX.GroupFXController;
 
 namespace FX
 {
-    [CustomEditor(typeof(FXGroupController))]
-    public class FXGroupControllerEditor : Editor
+    [CustomEditor(typeof(GroupFXController))]
+    public class GroupFXControllerEditor : Editor
     {
         private ReorderableList reorderableList;
         private ReorderableList reorderableListTrigger;
@@ -33,7 +33,7 @@ namespace FX
         private float indicatorDuration = 0.05f; 
         private float timeSinceTriggered = 0f;
 
-        FXGroupController controller;
+        GroupFXController controller;
 
         public override bool RequiresConstantRepaint()
         {
@@ -44,7 +44,7 @@ namespace FX
         {
             FXManager.Instance.OnFXItemAdded += UpdateParamPopupValues;
             
-            controller           = (FXGroupController)target;
+            controller           = (GroupFXController)target;
             controller.OnFXTriggered += HandleFXTriggered;
             fxAddressesProperty  = serializedObject.FindProperty("fxAddresses");
             valueProperty        = serializedObject.FindProperty("value");

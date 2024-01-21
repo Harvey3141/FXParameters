@@ -33,15 +33,13 @@ public class FXMaterialController : FXBase, IFXTriggerable
     public FXScaledParameter<float> emmissiveIntensity = new FXScaledParameter<float>(0.0f,0.0f,1.0f);
 
 
-    public FXScaledParameter<float> triggerDuration = new FXScaledParameter<float>(0.05f, 0.0f, 1.0f);
     private bool isTriggerCoroutineActive = false;
-    public TriggerPattern emissivePattern = TriggerPattern.ALL;
-    public int triggerSequencialIndex = 0;
-    public bool triggerOddEvenState = false;
-    private System.Random triggerRandomiser = new System.Random();
+    private bool triggerOddEvenState = false; 
+    private int triggerSequencialIndex = 0;
+    private int triggerRandomIndex = 0;
+    public TriggerPattern triggerPattern = TriggerPattern.ALL;
     private List<int> triggerRandomIndices = new List<int>();
-
-
+    public FXScaledParameter<float> triggerDuration = new FXScaledParameter<float>(0.05f, 0.0f, 1.0f);
 
     public GameObject[] controlledObjects;
 
@@ -156,11 +154,12 @@ public class FXMaterialController : FXBase, IFXTriggerable
             triggerOddEvenState = !triggerOddEvenState;
             triggerSequencialIndex = (triggerSequencialIndex + 1) % controlledObjects.Length;
             GenerateRandomIndices(UnityEngine.Random.Range(0, controlledObjects.Length));
-            StartCoroutine(LerpEmissiveIntensity());
+            triggerRandomIndex = UnityEngine.Random.Range(0, controlledObjects.Length);
+            StartCoroutine(LerpTriggerValue());
         } 
     }
 
-    private IEnumerator LerpEmissiveIntensity()
+    private IEnumerator LerpTriggerValue()
     {
         isTriggerCoroutineActive = true;
         float halfDuration = triggerDuration.ScaledValue / 2.0f;
@@ -190,7 +189,7 @@ public class FXMaterialController : FXBase, IFXTriggerable
 
     private bool ShouldApply(int index)
     {
-        switch (emissivePattern)
+        switch (triggerPattern)
         {
             case TriggerPattern.ALL:
                 return true;
@@ -199,7 +198,7 @@ public class FXMaterialController : FXBase, IFXTriggerable
             case TriggerPattern.SEQUENTIAL:
                 return (index == triggerSequencialIndex);
             case TriggerPattern.RANDOM_SINGLE:
-                return triggerRandomiser.Next(controlledObjects.Length) == index;
+                return (triggerRandomIndex == index);
             case TriggerPattern.RANDOM_MULTI:
                 return triggerRandomIndices.Contains(index);
         }

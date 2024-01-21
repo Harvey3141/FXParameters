@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
-using static FX.FXGroupController;
+using static FX.GroupFXController;
 
 namespace FX
 {
@@ -368,7 +368,7 @@ namespace FX
             }
 
             // Save group presets
-            FXGroupController[] allFXGroups = GameObject.FindObjectsOfType<FXGroupController>();
+            GroupFXController[] allFXGroups = GameObject.FindObjectsOfType<GroupFXController>();
             foreach (var group in allFXGroups)
             {
                 FXGroupPreset groupPreset      = new FXGroupPreset();
@@ -449,7 +449,7 @@ namespace FX
 
                 Dictionary<string, FXGroupPreset> fxGroupPresets = preset.fxGroupPresets.ToDictionary(p => p.address, p => p);
 
-                FXGroupController[] allFXGroups = GameObject.FindObjectsOfType<FXGroupController>();
+                GroupFXController[] allFXGroups = GameObject.FindObjectsOfType<GroupFXController>();
                 foreach (var group in allFXGroups)
                 {
                     if (fxGroupPresets.TryGetValue(group.address, out var groupPreset))

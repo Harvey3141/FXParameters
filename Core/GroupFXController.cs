@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace FX
 {
-    public class FXGroupController : MonoBehaviour, IFXTriggerable
+    public class GroupFXController : MonoBehaviour, IFXTriggerable
     {
         [SerializeField]
         public string address; 
@@ -33,7 +33,7 @@ namespace FX
         private bool isAboveAudioThreshold = false;
         public float audioThreshold = 0.8f;
 
-        public event Action OnFXTriggered; //used by FXGroupControllerEditor
+        public event Action OnFXTriggered; //used by GroupFXControllerEditor
 
         public enum SignalSource { Default, Pattern, Audio };
         [SerializeField]

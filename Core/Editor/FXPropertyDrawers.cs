@@ -101,7 +101,7 @@ namespace FX
     public class FXScaledParameterDrawer : PropertyDrawer
     {
         // TODO:
-        // Consider using a Dictionary<Type, object> to store the different FXScaledParameter<T> instances.
+        //  using a Dictionary<Type, object> to store the different FXScaledParameter<T> instances.
         bool foundParam = false;
         private FXScaledParameter<         float> fxScaledParamF;
         private FXScaledParameter<Color>   fxScaledParamC;
@@ -180,11 +180,11 @@ namespace FX
                     else if (fxScaledParamv3 != null) address = fxScaledParamv3.Address;
                 }
 
-                FXGroupController[] allFXGroups = GameObject.FindObjectsOfType<FXGroupController>();
+                GroupFXController[] allFXGroups = GameObject.FindObjectsOfType<GroupFXController>();
                 // Reverse order for nice ordered labels in UI
                 for (int i = allFXGroups.Length - 1; i >= 0; i--)
                 {
-                    FXGroupController group = allFXGroups[i];
+                    GroupFXController group = allFXGroups[i];
                     bool existsInGroup = group.ExistsInFxAddress(address);
                     GUIContent menuItemContent = new GUIContent(group.GetLabelBasedOnSignalSource());
 

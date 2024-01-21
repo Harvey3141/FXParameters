@@ -1,13 +1,12 @@
 using UnityEngine;
 using UnityEditor;
 using System.Reflection;
-using System.Collections.Generic;
 using FX;
 
 [CustomEditor(typeof(MonoBehaviour), true)]
 public class FXMethodEditor : Editor
 {
-    private bool? hasFXMethod = null; // Use nullable boolean for caching
+    private bool? hasFXMethod = null;
 
     public override void OnInspectorGUI()
     {

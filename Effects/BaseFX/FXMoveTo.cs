@@ -21,14 +21,9 @@ public class FXMoveTo : FXBaseWithEnabled, IFXTriggerable
         target = transform.position;
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         if (!fxEnabled.Value) return;
-
-        if (targetLookAt)
-        {
-            transform.LookAt(targetLookAt.transform);
-        }
 
         switch (EmoveToType)
         {
@@ -38,6 +33,11 @@ public class FXMoveTo : FXBaseWithEnabled, IFXTriggerable
             case MoveToType.LERP:
                 transform.position = Vector3.Lerp(transform.position, target, speed.ScaledValue * Time.deltaTime);
                 break;
+        }
+
+        if (targetLookAt)
+        {
+            transform.LookAt(targetLookAt.transform);
         }
     }
 
