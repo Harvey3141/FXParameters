@@ -43,10 +43,30 @@ namespace FX
             }
             else if (fxParam is FXParameter<bool> boolParam)
             {
-                bool newValue = EditorGUI.Toggle(position, label, boolParam.Value);
-                if (newValue != boolParam.Value)
-                    boolParam.Value = newValue;
-            }
+                if (fxParam.Address.Contains("fxEnabled"))
+                {
+                    EditorGUI.PrefixLabel(position, label);
+
+                    Rect buttonRect = new Rect(position.x, position.y, position.width, position.height);
+
+                    GUI.backgroundColor = boolParam.Value ? Color.green : Color.red;
+
+                    string buttonText = boolParam.Value ? "FX Enabled" : "FX Disabled";
+
+                    if (GUI.Button(buttonRect, buttonText))
+                    {
+                        boolParam.Value = !boolParam.Value;
+                    }
+                    GUI.backgroundColor = Color.white;
+                }
+                else {
+                    bool newValue = EditorGUI.Toggle(position, label, boolParam.Value);
+                    if (newValue != boolParam.Value)
+                        boolParam.Value = newValue;}
+                }
+
+
+
             else if (fxParam is FXParameter<int> intParam)
             {
                 int newValue = EditorGUI.IntField(position, label, intParam.Value);
