@@ -15,7 +15,6 @@ namespace FX
 
     public abstract class FXGroupObjectController : FXBase, IFXTriggerable
     {
-
         private bool isTriggerCoroutineActive = false;
         private bool triggerOddEvenState = false;
         private int triggerSequencialIndex = 0;
@@ -24,6 +23,9 @@ namespace FX
         private List<int> triggerRandomIndices = new List<int>();
         public FXScaledParameter<float> triggerDuration = new FXScaledParameter<float>(0.05f, 0.0f, 1.0f);
         public FXScaledParameter<float> triggerValue = new FXScaledParameter<float>(0.0f, 0.0f, 1.0f);
+
+        //protected float triggerStartValue = 0.0f;
+        //protected float triggerEndValue = 0.0f;
         public GameObject[] controlledObjects;
 
 
@@ -55,12 +57,10 @@ namespace FX
             float halfDuration = triggerDuration.ScaledValue / 2.0f;
             float timer = 0.0f;
 
-            float startIntensity = triggerValue.ScaledValue;
-
             while (timer < halfDuration)
             {
                 timer += Time.deltaTime;
-                float intensity = Mathf.Lerp(startIntensity, 1.0f, timer / halfDuration);
+                float intensity = Mathf.Lerp(triggerValue.ScaledValue, triggerValue.ValueAtOne, timer / halfDuration);
                 SetLerpValue(intensity);
                 yield return null;
             }
@@ -69,7 +69,7 @@ namespace FX
             while (timer < halfDuration)
             {
                 timer += Time.deltaTime;
-                float intensity = Mathf.Lerp(1.0f, 0.0f, timer / halfDuration);
+                float intensity = Mathf.Lerp(triggerValue.ValueAtOne, triggerValue.ScaledValue, timer / halfDuration);
                 SetLerpValue(intensity);
                 yield return null;
             }

@@ -12,16 +12,17 @@ public class FXMethodEditor : Editor
     {
         base.OnInspectorGUI();
 
-        if (!hasFXMethod.HasValue) // If value is not yet cached
+        if (!hasFXMethod.HasValue) 
         {
             hasFXMethod = HasFXMethod(target as MonoBehaviour);
         }
 
         if (hasFXMethod.Value) // Use cached value
         {
-            if (GUILayout.Button("Trigger FX Method"))
+            if (GUILayout.Button("Trigger FX"))
             {
                 MethodInfo methodInfo = target.GetType().GetMethod("FXTrigger");
+                
                 methodInfo.Invoke(target, null);
             }
         }
@@ -37,7 +38,6 @@ public class FXMethodEditor : Editor
         return false;
     }
 
-    // If script changes, reset the cached value
     public override bool RequiresConstantRepaint()
     {
         hasFXMethod = null;

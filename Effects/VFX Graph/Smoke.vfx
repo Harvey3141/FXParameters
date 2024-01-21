@@ -17,7 +17,7 @@ MonoBehaviour:
   categories: []
   uiBounds:
     serializedVersion: 2
-    x: 942
+    x: 941
     y: -190
     width: 425
     height: 1855
@@ -986,7 +986,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 9
+      m_SerializableObject: 20
     m_Space: 2147483647
   m_Property:
     name: B
@@ -1607,7 +1607,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 2
+      m_SerializableObject: 2.5
     m_Space: 2147483647
   m_Property:
     name: Size
@@ -1664,7 +1664,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 8
+      m_SerializableObject: 5
     m_Space: 2147483647
   m_Property:
     name: FrameRate
@@ -1750,7 +1750,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEngine.AnimationCurve, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
-      m_SerializableObject: '{"frames":[{"time":-0.10416507720947266,"value":0.1649169921875,"inTangent":0.46834906935691836,"outTangent":0.46834906935691836,"tangentMode":0,"leftTangentMode":1,"rightTangentMode":1,"broken":false},{"time":1.04998779296875,"value":0.7054634094238281,"inTangent":0.46834906935691836,"outTangent":0.46834906935691836,"tangentMode":0,"leftTangentMode":1,"rightTangentMode":1,"broken":false}],"preWrapMode":8,"postWrapMode":8,"version":1}'
+      m_SerializableObject: '{"frames":[{"time":0.016580209136009218,"value":0.1955704689025879,"inTangent":0.49340933561325076,"outTangent":0.49340933561325076,"tangentMode":0,"leftTangentMode":1,"rightTangentMode":1,"broken":false},{"time":1.04998779296875,"value":0.7054634094238281,"inTangent":0.49340933561325076,"outTangent":0.49340933561325076,"tangentMode":0,"leftTangentMode":1,"rightTangentMode":1,"broken":false}],"preWrapMode":8,"postWrapMode":8,"version":1}'
     m_Space: 2147483647
   m_Property:
     name: Size
@@ -2103,7 +2103,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEngine.Texture2D, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
-      m_SerializableObject: 
+      m_SerializableObject: '{"obj":{"fileID":2800000,"guid":"e9bb74faf2a15674f80528f089358e6a","type":3}}'
     m_Space: 2147483647
   m_Property:
     name: baseColorMap
