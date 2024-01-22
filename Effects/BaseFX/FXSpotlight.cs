@@ -40,6 +40,10 @@ public class FXSpotlight : FXBaseWithEnabled
         if (state)
         {
             lightComp.enabled = true;
+            SetIntensity(intensity.ScaledValue);
+            SetSpotAngle(spotAngle.ScaledValue);
+            SetLightColour(color.Value);
+
         }
         else if (!state)
         {

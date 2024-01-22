@@ -6,13 +6,13 @@ namespace FX {
 
     public class GroupFXColourController : FXBase
     {
-        public FXParameter<Color> colorOne   = new FXParameter<Color>(Color.white, "", false);
+        public FXParameter<Color> color = new FXParameter<Color>(Color.white, "", false);
         public List<string> fxAddresses  = new List<string>();          
 
         protected override void Awake()
         {
             base.Awake();
-            colorOne.OnValueChanged += SetGoupColour;
+            color.OnValueChanged += SetGoupColour;
         }
 
         protected override void Start()
