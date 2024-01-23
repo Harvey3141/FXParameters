@@ -3,8 +3,10 @@ using UnityEditor;
 
 public class GridGeneratorWindow : EditorWindow
 {
-    private Vector3 boundingBoxSize = new Vector3(10, 10, 10);
+    private GameObject referenceObject;
     private Vector3Int subdivisions = new Vector3Int(5, 5, 5);
+    private Vector3 boundingBoxSize;
+    private Vector3 boundingBoxCenter;
 
     [MenuItem("Tools/Grid Generator")]
     public static void ShowWindow()
@@ -16,7 +18,27 @@ public class GridGeneratorWindow : EditorWindow
     {
         GUILayout.Label("Grid Generator Settings", EditorStyles.boldLabel);
 
-        boundingBoxSize = EditorGUILayout.Vector3Field("Bounding Box Size", boundingBoxSize);
+        referenceObject = (GameObject)EditorGUILayout.ObjectField("Reference Object", referenceObject, typeof(GameObject), true);
+
+        if (referenceObject != null)
+        {
+            Renderer rend = referenceObject.GetComponent<Renderer>();
+            if (rend != null)
+            {
+                boundingBoxSize = rend.bounds.size;
+                boundingBoxCenter = rend.bounds.center;
+                EditorGUILayout.LabelField("Bounding Box Size", boundingBoxSize.ToString());
+            }
+            else
+            {
+                EditorGUILayout.HelpBox("The selected GameObject does not have a Renderer component.", MessageType.Warning);
+            }
+        }
+        else
+        {
+            boundingBoxSize = EditorGUILayout.Vector3Field("Manual Bounding Box Size", boundingBoxSize);
+        }
+
         subdivisions = EditorGUILayout.Vector3IntField("Subdivisions", subdivisions);
 
         if (GUILayout.Button("Generate Grid"))
@@ -28,6 +50,7 @@ public class GridGeneratorWindow : EditorWindow
     private void GenerateGrid()
     {
         GameObject gridParent = new GameObject("GridParent");
+        gridParent.transform.position = boundingBoxCenter; // Set the position to the center of the bounding box
 
         Vector3 cuboidSize = new Vector3(boundingBoxSize.x / subdivisions.x, boundingBoxSize.y / subdivisions.y, boundingBoxSize.z / subdivisions.z);
 
