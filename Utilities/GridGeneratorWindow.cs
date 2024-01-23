@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEditor;
+using MathGeoLib;
+
 
 public class GridGeneratorWindow : EditorWindow
 {
@@ -7,6 +9,8 @@ public class GridGeneratorWindow : EditorWindow
     private Vector3Int subdivisions = new Vector3Int(5, 5, 5);
     private Vector3 boundingBoxSize;
     private Vector3 boundingBoxCenter;
+    Vector3 axis1;
+    Vector3 axis2;
 
     [MenuItem("Tools/Grid Generator")]
     public static void ShowWindow()
@@ -22,17 +26,8 @@ public class GridGeneratorWindow : EditorWindow
 
         if (referenceObject != null)
         {
-            Renderer rend = referenceObject.GetComponent<Renderer>();
-            if (rend != null)
-            {
-                boundingBoxSize = rend.bounds.size;
-                boundingBoxCenter = rend.bounds.center;
-                EditorGUILayout.LabelField("Bounding Box Size", boundingBoxSize.ToString());
-            }
-            else
-            {
-                EditorGUILayout.HelpBox("The selected GameObject does not have a Renderer component.", MessageType.Warning);
-            }
+            CalculateOBB();
+            EditorGUILayout.LabelField("Bounding Box Size", boundingBoxSize.ToString());
         }
         else
         {
@@ -47,10 +42,35 @@ public class GridGeneratorWindow : EditorWindow
         }
     }
 
+    private void CalculateOBB()
+    {
+        MeshFilter meshFilter = referenceObject.GetComponent<MeshFilter>();
+        if (meshFilter != null)
+        {
+            Vector3[] vertices = meshFilter.mesh.vertices;
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                vertices[i] = referenceObject.transform.TransformPoint(vertices[i]);
+            }
+
+            OrientedBoundingBox obb = OrientedBoundingBox.OptimalEnclosing(vertices);
+            boundingBoxSize = obb.Extent * 2;
+            boundingBoxCenter = obb.Center;
+            axis1 = obb.Axis1;
+            axis2 = obb.Axis2;
+
+        }
+        else
+        {
+            Debug.LogError("Reference object does not have a MeshFilter component.");
+        }
+    }
+
     private void GenerateGrid()
     {
         GameObject gridParent = new GameObject("GridParent");
-        gridParent.transform.position = boundingBoxCenter; // Set the position to the center of the bounding box
+        gridParent.transform.position = boundingBoxCenter;
+        gridParent.transform.rotation = Quaternion.LookRotation(axis1, axis2); 
 
         Vector3 cuboidSize = new Vector3(boundingBoxSize.x / subdivisions.x, boundingBoxSize.y / subdivisions.y, boundingBoxSize.z / subdivisions.z);
 
@@ -63,6 +83,7 @@ public class GridGeneratorWindow : EditorWindow
                     GameObject cuboid = new GameObject($"Cuboid_{x}_{y}_{z}");
                     cuboid.transform.parent = gridParent.transform;
                     cuboid.transform.localPosition = new Vector3(x * cuboidSize.x, y * cuboidSize.y, z * cuboidSize.z) - boundingBoxSize / 2 + cuboidSize / 2;
+                    cuboid.transform.localRotation = Quaternion.identity;
 
                     MeshRenderer meshRenderer = cuboid.AddComponent<MeshRenderer>();
                     meshRenderer.sharedMaterial = new Material(Shader.Find("Standard"));
@@ -74,6 +95,8 @@ public class GridGeneratorWindow : EditorWindow
         }
     }
 
+
+
     private Mesh CreateCubeMesh(Vector3 size)
     {
         Mesh mesh = new Mesh();
@@ -81,42 +104,41 @@ public class GridGeneratorWindow : EditorWindow
         Vector3 halfSize = size * 0.5f;
         Vector3[] vertices = new Vector3[]
         {
-            // Bottom
-            new Vector3(-halfSize.x, -halfSize.y, -halfSize.z),
-            new Vector3(halfSize.x, -halfSize.y, -halfSize.z),
-            new Vector3(halfSize.x, -halfSize.y, halfSize.z),
-            new Vector3(-halfSize.x, -halfSize.y, halfSize.z),
+        // Bottom
+        new Vector3(-halfSize.x, -halfSize.y, -halfSize.z),
+        new Vector3(halfSize.x, -halfSize.y, -halfSize.z),
+        new Vector3(halfSize.x, -halfSize.y, halfSize.z),
+        new Vector3(-halfSize.x, -halfSize.y, halfSize.z),
 
-            // Left
-            new Vector3(-halfSize.x, -halfSize.y, halfSize.z),
-            new Vector3(-halfSize.x, halfSize.y, halfSize.z),
-            new Vector3(-halfSize.x, halfSize.y, -halfSize.z),
-            new Vector3(-halfSize.x, -halfSize.y, -halfSize.z),
+ new Vector3(-halfSize.x, -halfSize.y, -halfSize.z), // Bottom Back
+        new Vector3(-halfSize.x, halfSize.y, -halfSize.z),  // Top Back
+        new Vector3(-halfSize.x, halfSize.y, halfSize.z),   // Top Front
+        new Vector3(-halfSize.x, -halfSize.y, halfSize.z),  // Bottom Front
 
-            // Front
-            new Vector3(-halfSize.x, -halfSize.y, halfSize.z),
-            new Vector3(halfSize.x, -halfSize.y, halfSize.z),
-            new Vector3(halfSize.x, halfSize.y, halfSize.z),
-            new Vector3(-halfSize.x, halfSize.y, halfSize.z),
+        // Front
+        new Vector3(-halfSize.x, -halfSize.y, halfSize.z),
+        new Vector3(halfSize.x, -halfSize.y, halfSize.z),
+        new Vector3(halfSize.x, halfSize.y, halfSize.z),
+        new Vector3(-halfSize.x, halfSize.y, halfSize.z),
 
-            // Back
-            new Vector3(-halfSize.x, -halfSize.y, -halfSize.z),
-            new Vector3(halfSize.x, -halfSize.y, -halfSize.z),
-            new Vector3(halfSize.x, halfSize.y, -halfSize.z),
-            new Vector3(-halfSize.x, halfSize.y, -halfSize.z),
+        // Back
+        new Vector3(-halfSize.x, -halfSize.y, -halfSize.z),
+        new Vector3(halfSize.x, -halfSize.y, -halfSize.z),
+        new Vector3(halfSize.x, halfSize.y, -halfSize.z),
+        new Vector3(-halfSize.x, halfSize.y, -halfSize.z),
 
-            // Right
-            new Vector3(halfSize.x, -halfSize.y, -halfSize.z),
-            new Vector3(halfSize.x, halfSize.y, -halfSize.z),
-            new Vector3(halfSize.x, halfSize.y, halfSize.z),
-            new Vector3(halfSize.x, -halfSize.y, halfSize.z),
+        // Right
+        new Vector3(halfSize.x, -halfSize.y, -halfSize.z),
+        new Vector3(halfSize.x, halfSize.y, -halfSize.z),
+        new Vector3(halfSize.x, halfSize.y, halfSize.z),
+        new Vector3(halfSize.x, -halfSize.y, halfSize.z),
 
-            // Top
-            new Vector3(-halfSize.x, halfSize.y, halfSize.z),
-            new Vector3(halfSize.x, halfSize.y, halfSize.z),
-            new Vector3(halfSize.x, halfSize.y, -halfSize.z),
-            new Vector3(-halfSize.x, halfSize.y, -halfSize.z)
-        };
+        new Vector3(-halfSize.x, halfSize.y, halfSize.z), // Top Left - Front
+        new Vector3(halfSize.x, halfSize.y, halfSize.z),  // Top Right - Front
+        new Vector3(halfSize.x, halfSize.y, -halfSize.z), // Top Right - Back
+        new Vector3(-halfSize.x, halfSize.y, -halfSize.z) // Top Left - Back
+
+    };
 
         Vector3[] normals = new Vector3[]
         {
@@ -139,18 +161,13 @@ public class GridGeneratorWindow : EditorWindow
 
         int[] triangles = new int[]
         {
-            // Bottom
-            3, 1, 0, 3, 2, 1, 
-            // Left
-            4, 5, 6, 4, 6, 7, 
-            // Front
-            8, 9, 10, 8, 10, 11, 
-            // Back
-            12, 15, 14, 12, 14, 13, 
-            // Right
-            16, 17, 18, 16, 18, 19, 
-            // Top
-            20, 21, 22, 20, 22, 23
+        // Correcting the winding order
+        0, 1, 2, 0, 2, 3, // Bottom
+        4, 6, 5, 4, 7, 6, // Left
+        8, 9, 10, 8, 10, 11, // Front
+        15, 14, 13, 15, 13, 12, // Back
+        16, 17, 18, 16, 18, 19, // Right
+        20, 21, 22, 20, 22, 23  // Top
         };
 
         mesh.vertices = vertices;
@@ -161,4 +178,5 @@ public class GridGeneratorWindow : EditorWindow
 
         return mesh;
     }
+
 }
