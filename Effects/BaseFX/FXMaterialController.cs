@@ -30,7 +30,7 @@ public static class MaterialTypeInfo
 public class FXMaterialController : FXGroupObjectController, IFXTriggerable
 {
     public FXParameter<int> materialIndex = new FXParameter<int>(0);
-    public FXParameter<Color> color = new FXParameter<Color>(Color.blue,"",false);
+    public FXParameter<Color> color = new FXParameter<Color>(Color.white);
     public FXScaledParameter<float> dissolveEdgeWidth = new FXScaledParameter<float>(0.0f, -12.0f, 0.0f);
     public FXScaledParameter<float> dissolveOffset = new FXScaledParameter<float>(0.0f, 0.0f, 1.0f);
 
