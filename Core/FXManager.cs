@@ -293,6 +293,26 @@ namespace FX
                 {
                     ((FXParameter<Color>)parameter).Value = cValue;
                 }
+                else if (parameterType.IsEnum)
+                {
+                    if (arg is int enumInt)
+                    {
+                        if (Enum.IsDefined(parameterType, enumInt))
+                        {
+                            object enumValue = Enum.ToObject(parameterType, enumInt);
+                            iFXParameter.ObjectValue = enumValue;
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"The integer value '{enumInt}' is not defined in the enum '{parameterType.Name}'");
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Argument for setting enum parameter {address} is not an int");
+                    }
+                }
+
                 else
                 {
                     Debug.LogWarning($"FXParameter {address} has an unsupported type: {parameterType}");
@@ -315,6 +335,7 @@ namespace FX
             public List<FXPresetParameter<float>>   floatParameters     = new List<FXPresetParameter<float>>();
             public List<FXPresetParameter<bool>>    boolParameters      = new List<FXPresetParameter<bool>>();
             public List<FXPresetParameter<Color>>   colorParameters     = new List<FXPresetParameter<Color>>();
+            public List<FXPresetEnumParameter>      enumParameters      = new List<FXPresetEnumParameter>();
 
             public List<FXGroupPreset> fxGroupPresets               = new List<FXGroupPreset>();
 
@@ -325,6 +346,12 @@ namespace FX
         {
             public string key;
             public T value;
+        }
+
+        [System.Serializable]
+        public class FXPresetEnumParameter : FXPresetParameter<int> 
+        {
+            public List<string> availableNames = new List<string>();
         }
 
         [System.Serializable]
@@ -356,13 +383,26 @@ namespace FX
                         if (value_ is string strValue)
                             preset.stringParameters.Add(new FXPresetParameter<string> { key = key_, value = strValue });
                         else if (value_ is int intValue)
-                            preset.intParameters.Add(new FXPresetParameter<int>       { key = key_, value = intValue });
+                            preset.intParameters.Add(new FXPresetParameter<int> { key = key_, value = intValue });
                         else if (value_ is float floatValue)
-                            preset.floatParameters.Add(new FXPresetParameter<float>   { key = key_, value = floatValue });
+                            preset.floatParameters.Add(new FXPresetParameter<float> { key = key_, value = floatValue });
                         else if (value_ is bool boolValue)
-                            preset.boolParameters.Add(new FXPresetParameter<bool>     { key = key_, value = boolValue });
+                            preset.boolParameters.Add(new FXPresetParameter<bool> { key = key_, value = boolValue });
                         else if (value_ is Color colorValue)
-                            preset.colorParameters.Add(new FXPresetParameter<Color>   { key = key_, value = colorValue });
+                            preset.colorParameters.Add(new FXPresetParameter<Color> { key = key_, value = colorValue });
+                        else {
+                            Type valueType = value_.GetType();
+                            if (valueType.IsEnum)
+                            {
+                                FXPresetEnumParameter enumParameter = new FXPresetEnumParameter
+                                {
+                                    key = key_,
+                                    value = (int)value_, 
+                                    availableNames = Enum.GetNames(valueType).ToList()
+                                };
+                                preset.enumParameters.Add(enumParameter);
+                            }
+                        }
                     }
                 }
             }
@@ -426,6 +466,11 @@ namespace FX
                 }
 
                 foreach (var param in preset.colorParameters)
+                {
+                    SetFX(param.key, param.value);
+                }
+
+                foreach (var param in preset.enumParameters)
                 {
                     SetFX(param.key, param.value);
                 }

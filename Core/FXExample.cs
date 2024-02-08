@@ -1,6 +1,9 @@
 using System.Reflection;
 using UnityEngine;
 using FX;
+using System;
+
+
 
 /// <summary>
 /// This class demonstrates the integration of FXManager with MonoBehaviour by implementing the IFXTriggerable interface.
@@ -17,6 +20,17 @@ public class FXExample : MonoBehaviour, IFXTriggerable
     public FXParameter<bool> myBoolParameter = new FXParameter<bool>(false);
     public FXParameter<string> myStringParameter = new FXParameter<string>("no");
     public FXParameter<Color> myColorParameter = new FXParameter<Color>(Color.black);
+
+    public enum TestType
+    {
+        One,
+        Two,
+        Three,
+        Four
+    }
+
+    public FXParameter<TestType> myEnumParameter = new FXParameter<TestType>(TestType.One);
+
 
     public FXScaledParameter<Color> colorParam = new FXScaledParameter<Color>(0.5f, Color.red, Color.blue);
     public FXScaledParameter<float> floatParam = new FXScaledParameter<float>(0.5f, 0.0f, 10.0f);
@@ -40,19 +54,24 @@ public class FXExample : MonoBehaviour, IFXTriggerable
         myFloatParameterWithEvent.OnValueChanged += HandleFloatValueChanged;
         fxEnabled.OnValueChanged += FXOnEnabled;
 
+        myEnumParameter.OnValueChanged += HandleEnumValueChanged;
+
         // Setting the values of the FXParameters through the FX system.
-        FXManager.Instance.SetFX(myFloatParameter.Address, 0.6f);
-        FXManager.Instance.SetFX(myIntParameter.Address, 5);
-        FXManager.Instance.SetFX(myBoolParameter.Address, true);
-        FXManager.Instance.SetFX(myStringParameter.Address, "yes");
-        FXManager.Instance.SetFX(myColorParameter.Address, Color.white);
-        FXManager.Instance.SetFX(myFloatParameterWithEvent.Address, 99.0f);
+       //FXManager.Instance.SetFX(myFloatParameter.Address, 0.6f);
+       //FXManager.Instance.SetFX(myIntParameter.Address, 5);
+       //FXManager.Instance.SetFX(myBoolParameter.Address, true);
+       //FXManager.Instance.SetFX(myStringParameter.Address, "yes");
+       //FXManager.Instance.SetFX(myColorParameter.Address, Color.white);
+       //FXManager.Instance.SetFX(myFloatParameterWithEvent.Address, 99.0f);
+        FXManager.Instance.SetFX(myEnumParameter.Address, 2);
+
+
 
         // Triggering an FXMethod and setting the value of an FXProperty using the FX system.
         string methodAddress = $"/example/{nameof(MyTestIntMethod)}";
         FXManager.Instance.SetFX(methodAddress, 3);
 
-        FXManager.Instance.SetFX(fxEnabled.Address, false);
+        //FXManager.Instance.SetFX(fxEnabled.Address, false);
     }
 
     /// <summary>
@@ -87,6 +106,14 @@ public class FXExample : MonoBehaviour, IFXTriggerable
     private void HandleFloatValueChanged(float newValue)
     {
         Debug.Log($"Float value changed: {newValue}");
+    }
+
+    /// <summary>
+    /// Handles the value change event of the myEnumParameterWithEvent.
+    /// </summary>
+    private void HandleEnumValueChanged(TestType newValue)
+    {
+        Debug.Log($"Enum value changed: {newValue}");
     }
 
     /// <summary>

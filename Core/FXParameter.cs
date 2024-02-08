@@ -38,13 +38,16 @@ namespace FX
             }
         }
 
-        // Implement IFXParameter interface
         object IFXParameter.ObjectValue
         {
             get { return Value; }
             set
             {
-                if (value is T tValue)
+                if (typeof(T).IsEnum && value is int intValue)
+                {
+                    Value = (T)Enum.ToObject(typeof(T), intValue);
+                }
+                else if (value is T tValue)
                 {
                     Value = tValue;
                 }
@@ -71,7 +74,7 @@ namespace FX
 
         public FXParameter(T value, string address = "", bool shouldSave = true)
         {
-            if (typeof(T) == typeof(float) || typeof(T) == typeof(int) || typeof(T) == typeof(bool) || typeof(T) == typeof(string) || typeof(T) == typeof(Color))
+            if (typeof(T) == typeof(float) || typeof(T) == typeof(int) || typeof(T) == typeof(bool) || typeof(T) == typeof(string) || typeof(T) == typeof(Color) || typeof(T).IsEnum)
             {
                 Value = value;
                 ShouldSave = shouldSave;
