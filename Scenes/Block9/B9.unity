@@ -14219,11 +14219,19 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   _scaleType: 3
   scale:
     address_: 
     value_: 1
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 1
     scaledValue_: 1
@@ -82600,6 +82608,10 @@ MonoBehaviour:
     address_: 
     value_: 0.05
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 1
     scaledValue_: 0.05
@@ -82607,6 +82619,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 1
     scaledValue_: 0
@@ -83047,6 +83063,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   Default: {fileID: 2100000, guid: 4e5c9a89fa465444fb9b6259b12e3ca3, type: 2}
   Emissive: {fileID: 2100000, guid: 7a6ccee599c36fc419855383a3ccc61a, type: 2}
   Concrete: {fileID: 2100000, guid: c4398d184d744bb43bd3cb1ce5bc8fdb, type: 2}
@@ -83056,10 +83076,18 @@ MonoBehaviour:
     address_: 
     value_: {r: 1, g: 1, b: 1, a: 1}
     shouldSave_: 1
+    minValue_: {r: 0, g: 0, b: 0, a: 0}
+    maxValue_: {r: 0, g: 0, b: 0, a: 0}
+    hasMinValue_: 0
+    hasMaxValue_: 0
   dissolveEdgeWidth:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: -12
     valueAtOne_: 0
     scaledValue_: -12
@@ -83067,6 +83095,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 1
     scaledValue_: 0
@@ -83074,6 +83106,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
 --- !u!21 &1258114685
 Material:
   serializedVersion: 8
@@ -99977,6 +100013,10 @@ MonoBehaviour:
     address_: /two/lerpProgress
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 1
     scaledValue_: 1
@@ -100003,10 +100043,18 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   sizeX:
     address_: 
     value_: 1
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0.1
     valueAtOne_: 10
     scaledValue_: 10
@@ -100014,6 +100062,10 @@ MonoBehaviour:
     address_: 
     value_: 1
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0.1
     valueAtOne_: 10
     scaledValue_: 10
@@ -100021,6 +100073,10 @@ MonoBehaviour:
     address_: 
     value_: 1
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 50
     scaledValue_: 100
@@ -100028,6 +100084,10 @@ MonoBehaviour:
     address_: 
     value_: {r: 1, g: 1, b: 1, a: 1}
     shouldSave_: 1
+    minValue_: {r: 0, g: 0, b: 0, a: 0}
+    maxValue_: {r: 0, g: 0, b: 0, a: 0}
+    hasMinValue_: 0
+    hasMaxValue_: 0
 --- !u!43 &1487809755
 Mesh:
   m_ObjectHideFlags: 0
@@ -101923,6 +101983,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 1
     scaledValue_: 0
@@ -101930,6 +101994,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 1
     scaledValue_: 0
@@ -101937,6 +102005,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 1
     scaledValue_: 0
@@ -101944,6 +102016,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 1
     scaledValue_: 0
@@ -101951,6 +102027,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 1
     scaledValue_: 0
@@ -101958,22 +102038,42 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   driftEnabled:
     address_: 
     value_: 0
     shouldSave_: 0
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   jitterEnabled:
     address_: 
     value_: 0
     shouldSave_: 0
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   jumpEnabled:
     address_: 
     value_: 0
     shouldSave_: 0
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   shakeEnabled:
     address_: 
     value_: 0
     shouldSave_: 0
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
 --- !u!1 &1510710961
 GameObject:
   m_ObjectHideFlags: 0
@@ -114254,7 +114354,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &1714953504
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -143628,6 +143728,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0.05
     valueAtOne_: 1
     scaledValue_: 0.05
@@ -143635,6 +143739,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 0.8
     scaledValue_: 0
@@ -143663,6 +143771,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   Default: {fileID: 2100000, guid: 4e5c9a89fa465444fb9b6259b12e3ca3, type: 2}
   Emissive: {fileID: 2100000, guid: 7a6ccee599c36fc419855383a3ccc61a, type: 2}
   Concrete: {fileID: 2100000, guid: c4398d184d744bb43bd3cb1ce5bc8fdb, type: 2}
@@ -143672,10 +143784,18 @@ MonoBehaviour:
     address_: 
     value_: {r: 0, g: 0, b: 0, a: 1}
     shouldSave_: 1
+    minValue_: {r: 0, g: 0, b: 0, a: 0}
+    maxValue_: {r: 0, g: 0, b: 0, a: 0}
+    hasMinValue_: 0
+    hasMaxValue_: 0
   dissolveEdgeWidth:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: -16
     valueAtOne_: -1.5
     scaledValue_: 0
@@ -143683,6 +143803,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 1
     scaledValue_: 0
@@ -143690,6 +143814,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
 --- !u!33 &985141412088224466
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -143878,7 +144006,7 @@ GameObject:
   - component: {fileID: 2451072689196641864}
   - component: {fileID: 2451072689196641865}
   m_Layer: 0
-  m_Name: Group4
+  m_Name: Group4 - Oscillator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -143931,7 +144059,7 @@ GameObject:
   - component: {fileID: 4918184318806525709}
   - component: {fileID: 4918184318806525710}
   m_Layer: 0
-  m_Name: Group5
+  m_Name: Group5 - Tap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -144103,7 +144231,7 @@ GameObject:
   - component: {fileID: 5896254236151470385}
   - component: {fileID: 5896254236151470386}
   m_Layer: 0
-  m_Name: Group2
+  m_Name: Group2 - Audio Mid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -144185,8 +144313,12 @@ MonoBehaviour:
   fxTriggerAddresses: []
   value:
     address_: 
-    value_: 0
+    value_: 0.037
     shouldSave_: 0
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   audioThreshold: 0.8
   signalSource: 1
   patternType: 2
@@ -144508,6 +144640,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 0
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   audioThreshold: 0.8
   signalSource: 0
   patternType: 0
@@ -144799,6 +144935,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 0
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   audioThreshold: 0.8
   signalSource: 0
   patternType: 0
@@ -145298,14 +145438,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4816326208170510035}
-  m_LocalRotation: {x: -0.1196954, y: -0.8798748, z: 0.31019783, w: -0.3395155}
+  m_LocalRotation: {x: 0, y: 0.17364816, z: 0, w: 0.9848078}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4816326209362898054}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 398.84, y: 137.8, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 20, z: 0}
 --- !u!108 &4816326208170510037
 Light:
   m_ObjectHideFlags: 0
@@ -145505,12 +145645,20 @@ MonoBehaviour:
   fxAddress: 
   fxEnabled:
     address_: /DirectionalLight/FXDirectionalLight/fxEnabled
-    value_: 1
+    value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   intensity:
     address_: /DirectionalLight/FXDirectionalLight/intensity
     value_: 0.516
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 10
     scaledValue_: 5.16
@@ -145518,18 +145666,34 @@ MonoBehaviour:
     address_: /DirectionalLight/FXDirectionalLight/color
     value_: {r: 1, g: 1, b: 1, a: 1}
     shouldSave_: 1
+    minValue_: {r: 0, g: 0, b: 0, a: 0}
+    maxValue_: {r: 0, g: 0, b: 0, a: 0}
+    hasMinValue_: 0
+    hasMaxValue_: 0
   rotationX:
     address_: /DirectionalLight/FXDirectionalLight/rotationX
-    value_: 202.93745
+    value_: 20
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 1
+    hasMaxValue_: 1
   rotationY:
     address_: /DirectionalLight/FXDirectionalLight/rotationY
-    value_: 82.52529
+    value_: 20
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 1
+    hasMaxValue_: 1
   rotationSpeedX:
     address_: /DirectionalLight/FXDirectionalLight/rotationSpeedX
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 1
     scaledValue_: 0
@@ -145537,10 +145701,14 @@ MonoBehaviour:
     address_: /DirectionalLight/FXDirectionalLight/rotationSpeedY
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 1
     scaledValue_: 0
-  clampX: 360
+  clampX: 180
   clampY: 300
 --- !u!1 &4816326208326782752
 GameObject:
@@ -145776,15 +145944,27 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   lightsArray: []
   currentPattern:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   spanProportion:
     address_: 
     value_: 0.5
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 1
     scaledValue_: 0.5
@@ -145792,6 +145972,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 10
     scaledValue_: 0
@@ -145799,10 +145983,18 @@ MonoBehaviour:
     address_: 
     value_: 1
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   fadeSpeed:
     address_: 
     value_: 0.05
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 1
     valueAtOne_: 100
     scaledValue_: 5.9500003
@@ -145810,6 +146002,10 @@ MonoBehaviour:
     address_: 
     value_: 0.5
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 2
     scaledValue_: 1
@@ -146111,7 +146307,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4816326209131391485}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1.92, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -146152,11 +146348,19 @@ MonoBehaviour:
     address_: 
     value_: 1
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   targetLookAt: {fileID: 4816326209131391485}
   speed:
     address_: 
     value_: 0.6
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 3
     scaledValue_: 1.8000001
@@ -146165,14 +146369,26 @@ MonoBehaviour:
     address_: 
     value_: 5.94
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   sizeY:
     address_: 
     value_: 3.6
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   sizeZ:
     address_: 
     value_: 1
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   EmoveToType: 1
 --- !u!114 &4816326209331662908
 MonoBehaviour:
@@ -146191,10 +146407,18 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   strobeFrequency:
     address_: 
     value_: 1
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 1
     valueAtOne_: 30
     scaledValue_: 10
@@ -146202,6 +146426,10 @@ MonoBehaviour:
     address_: 
     value_: 1
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 6
     scaledValue_: 1
@@ -146209,10 +146437,18 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   fadeSpeedOn:
     address_: 
     value_: 0.05
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 1
     valueAtOne_: 100
     scaledValue_: 5.9500003
@@ -146220,6 +146456,10 @@ MonoBehaviour:
     address_: 
     value_: 0.05
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 1
     valueAtOne_: 100
     scaledValue_: 5.9500003
@@ -146576,10 +146816,18 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   intensity:
     address_: 
     value_: 0.75
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 30
     scaledValue_: 22.5
@@ -146587,6 +146835,10 @@ MonoBehaviour:
     address_: 
     value_: 0.38
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 5
     valueAtOne_: 100
     scaledValue_: 41.1
@@ -146594,6 +146846,10 @@ MonoBehaviour:
     address_: 
     value_: {r: 1, g: 1, b: 1, a: 1}
     shouldSave_: 1
+    minValue_: {r: 0, g: 0, b: 0, a: 0}
+    maxValue_: {r: 0, g: 0, b: 0, a: 0}
+    hasMinValue_: 0
+    hasMaxValue_: 0
 --- !u!4 &4816326209560098801
 Transform:
   m_ObjectHideFlags: 0
@@ -146748,11 +147004,19 @@ MonoBehaviour:
     address_: 
     value_: 1
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   targetLookAt: {fileID: 4816326209131391485}
   speed:
     address_: 
     value_: 0.6
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 3
     scaledValue_: 1.8000001
@@ -146761,14 +147025,26 @@ MonoBehaviour:
     address_: 
     value_: 4.86
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   sizeY:
     address_: 
     value_: 4.69
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   sizeZ:
     address_: 
     value_: 1.8
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   EmoveToType: 1
 --- !u!1 &4816326209641883354
 GameObject:
@@ -147772,6 +148048,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 0
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   audioThreshold: 0.8
   signalSource: 1
   patternType: 1
@@ -147954,6 +148234,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 0
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   audioThreshold: 0.8
   signalSource: 2
   patternType: 0
@@ -148522,6 +148806,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0.05
     valueAtOne_: 1
     scaledValue_: 0.05
@@ -148529,6 +148817,10 @@ MonoBehaviour:
     address_: 
     value_: 1
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 1
     scaledValue_: 1
@@ -148538,6 +148830,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   Default: {fileID: 2100000, guid: 4e5c9a89fa465444fb9b6259b12e3ca3, type: 2}
   Emissive: {fileID: 2100000, guid: 7a6ccee599c36fc419855383a3ccc61a, type: 2}
   Concrete: {fileID: 2100000, guid: c4398d184d744bb43bd3cb1ce5bc8fdb, type: 2}
@@ -148547,10 +148843,18 @@ MonoBehaviour:
     address_: 
     value_: {r: 0, g: 0.6420536, b: 1, a: 1}
     shouldSave_: 1
+    minValue_: {r: 0, g: 0, b: 0, a: 0}
+    maxValue_: {r: 0, g: 0, b: 0, a: 0}
+    hasMinValue_: 0
+    hasMaxValue_: 0
   dissolveEdgeWidth:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: -12
     valueAtOne_: 0
     scaledValue_: 0
@@ -148558,6 +148862,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 1
     scaledValue_: 0
@@ -148565,6 +148873,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
 --- !u!64 &7261906003806017638
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -148605,6 +148917,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 1
     scaledValue_: 0
@@ -148612,6 +148928,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 1
     scaledValue_: 0
@@ -148621,6 +148941,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   Default: {fileID: 2100000, guid: 4e5c9a89fa465444fb9b6259b12e3ca3, type: 2}
   Emissive: {fileID: 0}
   Concrete: {fileID: 0}
@@ -148630,10 +148954,18 @@ MonoBehaviour:
     address_: 
     value_: {r: 0, g: 0, b: 0, a: 1}
     shouldSave_: 1
+    minValue_: {r: 0, g: 0, b: 0, a: 0}
+    maxValue_: {r: 0, g: 0, b: 0, a: 0}
+    hasMinValue_: 0
+    hasMaxValue_: 0
   dissolveEdgeWidth:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 1
     scaledValue_: 0
@@ -148641,6 +148973,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
     valueAtZero_: 0
     valueAtOne_: 1
     scaledValue_: 0
@@ -148648,6 +148984,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
 --- !u!33 &7368959862749637942
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -148667,7 +149007,7 @@ GameObject:
   - component: {fileID: 793091738362842629}
   - component: {fileID: 7570784815052310374}
   m_Layer: 0
-  m_Name: Group1
+  m_Name: Group1 - Audio Low
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -148692,6 +149032,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 0
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   audioThreshold: 0.8
   signalSource: 2
   patternType: 0
@@ -148732,6 +149076,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 0
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   audioThreshold: 0.8
   signalSource: 0
   patternType: 0
@@ -148857,7 +149205,7 @@ GameObject:
   - component: {fileID: 1561910487027595220}
   - component: {fileID: 8598788927632260319}
   m_Layer: 0
-  m_Name: Group3
+  m_Name: Group3 - Audio High
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -148882,6 +149230,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 0
+    minValue_: 0
+    maxValue_: 0
+    hasMinValue_: 0
+    hasMaxValue_: 0
   audioThreshold: 0.8
   signalSource: 2
   patternType: 0

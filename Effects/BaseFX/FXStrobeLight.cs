@@ -5,10 +5,10 @@ public class FXStrobeLight : FXBaseWithEnabled, IFXTriggerable
 {
     private Light lightComp;
     public FXScaledParameter<float> strobeFrequency = new FXScaledParameter<float>(1.0f, 0.1f, 20.0f);
-    public FXScaledParameter<float> intensityOn = new FXScaledParameter<float>(1.0f, 0.0f, 6.0f);
-    public FXParameter<float> intensityOff = new FXParameter<float>(0.0f);
-    public FXScaledParameter<float> fadeSpeedOn = new FXScaledParameter<float>(0.05f, 1.0f, 100.0f);
-    public FXScaledParameter<float> fadeSpeedOff = new FXScaledParameter<float>(0.05f, 1.0f, 20.0f);
+    public FXScaledParameter<float> intensityOn     = new FXScaledParameter<float>(1.0f, 0.0f, 6.0f);
+    public FXScaledParameter<float> intensityOff    = new FXScaledParameter<float>(0.0f,0.0f,2.0f);
+    public FXScaledParameter<float> fadeSpeedOn     = new FXScaledParameter<float>(0.05f, 1.0f, 100.0f);
+    public FXScaledParameter<float> fadeSpeedOff    = new FXScaledParameter<float>(0.05f, 1.0f, 20.0f);
 
     private float timeSinceLastTrigger = 0f;
     private bool isStrobeOn = false;
