@@ -22,13 +22,10 @@ namespace FX
         [SerializeField]
         private bool shouldSave_ = true;
 
-        [SerializeField]
+
         private T minValue_;
-        [SerializeField]
         private T maxValue_;
-        [SerializeField]
         private bool hasMinValue_ = false;
-        [SerializeField]
         private bool hasMaxValue_ = false;
 
         public event Action<T> OnValueChanged; // Event triggered when the value changes
@@ -40,14 +37,15 @@ namespace FX
             {
                 T newValue = value;
 
-                if (hasMinValue_ && Comparer<T>.Default.Compare(newValue, minValue_) < 0)
-                {
-                    newValue = minValue_;
-                }
-                if (hasMaxValue_ && Comparer<T>.Default.Compare(newValue, maxValue_) > 0)
-                {
-                    newValue = maxValue_;
-                }
+                // TODO - fix this 
+                //if (hasMinValue_ && Comparer<T>.Default.Compare(newValue, minValue_) < 0)
+                //{
+                //    newValue = minValue_;
+                //}
+                //if (hasMaxValue_ && Comparer<T>.Default.Compare(newValue, maxValue_) > 0)
+                //{
+                //    newValue = maxValue_;
+                //}
 
                 if (!EqualityComparer<T>.Default.Equals(value_, newValue)) 
                 {
@@ -134,14 +132,12 @@ namespace FX
         {
             minValue_ = minValue;
             hasMinValue_ = true;
-            Value = value_; 
         }
 
         public void SetMaxValue(T maxValue)
         {
             maxValue_ = maxValue;
             hasMaxValue_ = true;
-            Value = value_; 
         }
 
         public T GetMinValue()
@@ -169,10 +165,13 @@ namespace FX
         public event Action<T> OnScaledValueChanged; // Event triggered when the value changes
 
         public FXScaledParameter(float value, T valueAtZero, T valueAtOne, string address = "", bool shouldSave = true)
-            : base(value, address, shouldSave)
+            : base(value, 0.0f, 1.0f, address, shouldSave)
         {
             valueAtZero_ = valueAtZero;
             valueAtOne_ = valueAtOne;
+            base.SetMinValue(0.0f);
+            base.SetMaxValue(1.0f);
+
             UpdateScaledValue();
         }
 

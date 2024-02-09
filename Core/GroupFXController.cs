@@ -27,7 +27,7 @@ namespace FX
         public List<string> fxTriggerAddresses;
 
         [SerializeField]
-        public FXParameter<float> value = new FXParameter<float>(0.0f, "", false);
+        public FXScaledParameter<float> value = new FXScaledParameter<float>(0.0f,0.0f,1.0f, "", false);
 
         private AudioManager audioManager;
         private bool isAboveAudioThreshold = false;
@@ -53,7 +53,7 @@ namespace FX
         public void Start()
         {
             this.AddFXElements(address);         
-            value.OnValueChanged += SetValue;
+            value.OnScaledValueChanged += SetValue;
 
             SetPatternType(patternType);
 

@@ -386,14 +386,17 @@ namespace FX
                         string key_   = item.Key;
                         object value_ = parameter.ObjectValue;
 
+
                         if (parameter is FXParameter<float> floatParam)
                         {
                             bool hasMinValue = floatParam.HasMinValue;
                             bool hasMaxValue = floatParam.HasMaxValue;
 
-                            if (hasMinValue || hasMaxValue) {
-                                preset.floatParameters.Add(new FXPresetParameter<float> {
-                                    key = key_, 
+                            if (hasMinValue || hasMaxValue)
+                            {
+                                preset.floatParameters.Add(new FXPresetParameter<float>
+                                {
+                                    key = key_,
                                     value = (float)value_,
                                     minValue = floatParam.GetMinValue(),
                                     maxValue = floatParam.GetMaxValue(),
@@ -402,12 +405,13 @@ namespace FX
                                 });
 
                             }
-                            else {
+                            else
+                            {
                                 preset.floatParameters.Add(new FXPresetParameter<float> { key = key_, value = (float)value_ });
 
                             }
                         }
-                        if (parameter is FXParameter<int> intParam)
+                        else if (parameter is FXParameter<int> intParam)
                         {
                             bool hasMinValue = intParam.HasMinValue;
                             bool hasMaxValue = intParam.HasMaxValue;
@@ -431,26 +435,35 @@ namespace FX
 
                             }
                         }
-
-                        else if (value_ is string stringValue)
-                            preset.stringParameters.Add(new FXPresetParameter<string> { key = key_, value = stringValue });
-                        else if (value_ is bool boolValue)
-                            preset.boolParameters.Add(new FXPresetParameter<bool> { key = key_, value = boolValue });
-                        else if (value_ is Color colorValue)
-                            preset.colorParameters.Add(new FXPresetParameter<Color> { key = key_, value = colorValue });
-                        else {
+                        else if (parameter is FXParameter<string> stringParam)
+                        {
+                            preset.stringParameters.Add(new FXPresetParameter<string> { key = key_, value = (string)value_ });
+                        }
+                        else if (parameter is FXParameter<bool> boolParam)
+                        {
+                            preset.boolParameters.Add(new FXPresetParameter<bool> { key = key_, value = (bool)value_ });
+                        }
+                        else if (parameter is FXParameter<Color> colorParam)
+                        {
+                            preset.colorParameters.Add(new FXPresetParameter<Color> { key = key_, value = (Color)value_ });
+                        }
+                        else
+                        {
                             Type valueType = value_.GetType();
                             if (valueType.IsEnum)
                             {
                                 FXPresetEnumParameter enumParameter = new FXPresetEnumParameter
                                 {
                                     key = key_,
-                                    value = (int)value_, 
+                                    value = (int)value_,
                                     availableNames = Enum.GetNames(valueType).ToList()
                                 };
                                 preset.enumParameters.Add(enumParameter);
                             }
                         }
+                        
+
+
                     }
                 }
             }
