@@ -5,12 +5,12 @@ public class FXChasingLights : FXBaseWithEnabled, IFXTriggerable
 {
     public Light[] lightsArray;
     public enum LightPattern { SineWave, EveryOther, MiddleOut }
-    public LightPattern currentPattern = LightPattern.SineWave;
+    public FXParameter<LightPattern> currentPattern = new FXParameter<LightPattern>(LightPattern.SineWave);
 
     public FXScaledParameter<float> spanProportion = new FXScaledParameter<float>(0.5f,0.0f,0.99f);
-    public FXScaledParameter<float> chaseSpeed = new FXScaledParameter<float>(1.0f, 0.0f, 10.0f);
+    public FXScaledParameter<float> chaseSpeed     = new FXScaledParameter<float>(1.0f, 0.0f, 10.0f);
     public FXParameter<bool> forwardDirection = new FXParameter<bool>(true);
-    public FXScaledParameter<float> fadeSpeed = new FXScaledParameter<float>(0.05f, 1.0f, 100.0f);
+    public FXScaledParameter<float> fadeSpeed       = new FXScaledParameter<float>(0.05f, 1.0f, 100.0f);
     public FXScaledParameter<float> targetIntensity = new FXScaledParameter<float>(0.5f, 0.0f, 2.0f);
 
     private int currentLeadIndex = 0;
@@ -39,12 +39,10 @@ public class FXChasingLights : FXBaseWithEnabled, IFXTriggerable
 
     private void Update()
     {
-        // If chaseSpeed is more than 0, update timer and check if we should trigger
         if (chaseSpeed.ScaledValue > 0)
         {
             timeSinceLastTrigger += Time.deltaTime;
 
-            // If time since last trigger exceeds the chase interval, reset timer and trigger
             if (timeSinceLastTrigger > 1f / chaseSpeed.ScaledValue)
             {
                 timeSinceLastTrigger = 0;
@@ -70,7 +68,6 @@ public class FXChasingLights : FXBaseWithEnabled, IFXTriggerable
                 {
                     lightsArray[i].intensity = targetIntensities[i];
                     currentIntensities[i] = targetIntensities[i];
-                    // Ensure value resets to 0
                     targetIntensities[i] = 0.0f;
                 }
             }
@@ -83,8 +80,7 @@ public class FXChasingLights : FXBaseWithEnabled, IFXTriggerable
     {
         if (!fxEnabled.Value) return;
 
-        // Apply pattern logic
-        switch (currentPattern)
+        switch (currentPattern.Value)
         {
             case LightPattern.SineWave:
                 float frequency = 2 * Mathf.PI / lightsArray.Length;
@@ -129,7 +125,6 @@ public class FXChasingLights : FXBaseWithEnabled, IFXTriggerable
 
         }
 
-        // Update lead index
         if (forwardDirection.Value)
         {
             currentLeadIndex++;

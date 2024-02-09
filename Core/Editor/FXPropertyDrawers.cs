@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -34,7 +35,10 @@ namespace FX
             EditorGUI.BeginProperty(position, label, property);
     
             IFXParameter fxParam = GetFXParameterFromProperty(property);
-    
+
+            Type parameterType = fxParam.GetType();
+
+
             if (fxParam is FXParameter<float> floatParam)
             {
                 float newValue = EditorGUI.FloatField(position, label, floatParam.Value);
@@ -61,12 +65,9 @@ namespace FX
                 }
                 else {
                     bool newValue = EditorGUI.Toggle(position, label, boolParam.Value);
-                    if (newValue != boolParam.Value)
-                        boolParam.Value = newValue;}
+                    if (newValue != boolParam.Value) boolParam.Value = newValue;
                 }
-
-
-
+            }
             else if (fxParam is FXParameter<int> intParam)
             {
                 int newValue = EditorGUI.IntField(position, label, intParam.Value);
@@ -87,7 +88,24 @@ namespace FX
             }
             else
             {
-                EditorGUI.LabelField(position, label, new GUIContent("Unsupported FXParameter type"));
+                // TODO - this should also be cached to prevent runtime reflection
+                Type valueType = parameterType.IsGenericType ? parameterType.GetGenericArguments()[0] : null;
+
+                if (valueType != null && valueType.IsEnum)
+                {
+                    object enumValue = fxParam.ObjectValue;
+                    EditorGUI.BeginChangeCheck();
+                    Enum selectedEnum = EditorGUI.EnumPopup(position, label, (Enum)enumValue);
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        fxParam.ObjectValue = selectedEnum;
+                    }
+                }
+                else 
+                {
+                    EditorGUI.LabelField(position, label, new GUIContent("Unsupported FXParameter type"));
+
+                }
             }
             EditorGUI.EndProperty();
     
@@ -132,33 +150,28 @@ namespace FX
         {
             EditorGUI.BeginProperty(position, label, property);
 
-            // Draw a box around the property
             EditorGUI.HelpBox(position, "", MessageType.None);
 
-            // Get the scaledValue, valueAtZero_, valueAtOne_, and value SerializedProperties
             SerializedProperty scaledValueProperty = property.FindPropertyRelative("scaledValue_");
             SerializedProperty valueAtZeroProperty = property.FindPropertyRelative("valueAtZero_");
             SerializedProperty valueAtOneProperty  = property.FindPropertyRelative("valueAtOne_");
             SerializedProperty valueProperty       = property.FindPropertyRelative("value_");
 
             // Add a small padding to the positions to fit inside the box
-            float padding = 4f;  // Change this value to adjust the padding
+            float padding = 4f;  
             Rect paddedPosition = new Rect(position.x + padding, position.y + padding, position.width - 2 * padding, position.height - 2 * padding);
 
-            // Calculate the positions for the scaledValue, valueAtZero_, and valueAtOne_ fields
             Rect labelPosition       = new Rect(paddedPosition.x, paddedPosition.y, EditorGUIUtility.labelWidth, EditorGUIUtility.singleLineHeight);
             Rect scaledValuePosition = new Rect(paddedPosition.x + EditorGUIUtility.labelWidth, paddedPosition.y, paddedPosition.width - EditorGUIUtility.labelWidth, EditorGUIUtility.singleLineHeight);
 
-            // Display the foldout
             property.isExpanded = EditorGUI.Foldout(labelPosition, property.isExpanded, "   " + property.displayName, true, EditorStyles.boldLabel);
 
-            float buttonWidth   = 20f; // Width of the button, adjust as needed
+            float buttonWidth   = 20f; 
             float fieldWidth    = scaledValuePosition.width - buttonWidth - padding;
             Rect fieldPosition  = new Rect(scaledValuePosition.x, scaledValuePosition.y, fieldWidth, scaledValuePosition.height);
             Rect buttonPosition = new Rect(fieldPosition.xMax + padding, scaledValuePosition.y, buttonWidth, scaledValuePosition.height);
 
 
-            // Display the Scaled Value Property
             EditorGUI.PropertyField(fieldPosition, scaledValueProperty, GUIContent.none);
 
             if (buttonPosition.Contains(Event.current.mousePosition) && Event.current.type == EventType.MouseDown && Event.current.button == 0)
@@ -226,13 +239,9 @@ namespace FX
 
             if (GUI.Button(buttonPosition, "G", EditorStyles.miniButton))
             {
-                // Left-click action (if needed)
                 Debug.Log("Button left-clicked");
             }
 
-
-
-            // Display the other fields only if the property is expanded
             if (property.isExpanded)
             {
                 GUIContent valueLabel       = new GUIContent("Value");
@@ -293,7 +302,6 @@ namespace FX
             // The height is 4 lines for scaledValue, value, valueAtZero_, and valueAtOne_ plus padding for the box if the property is expanded
             int lineCount = property.isExpanded ? 4 : 1;
 
-            // Multiply the number of lines by the height of a single line, add spacing for each line, and add extra padding for the box.
             return (lineCount * EditorGUIUtility.singleLineHeight) + ((lineCount + 1) * EditorGUIUtility.standardVerticalSpacing) + 2f * 4f; // additional 2f*padding for the top and bottom padding of the box
         }
 

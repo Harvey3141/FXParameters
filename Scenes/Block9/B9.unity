@@ -83043,10 +83043,15 @@ MonoBehaviour:
   - {fileID: 1025410883}
   - {fileID: 1858722527}
   - {fileID: 637786173}
-  materialIndex:
+  materialType:
     address_: 
     value_: 0
     shouldSave_: 1
+  Default: {fileID: 2100000, guid: 4e5c9a89fa465444fb9b6259b12e3ca3, type: 2}
+  Emissive: {fileID: 2100000, guid: 7a6ccee599c36fc419855383a3ccc61a, type: 2}
+  Concrete: {fileID: 2100000, guid: c4398d184d744bb43bd3cb1ce5bc8fdb, type: 2}
+  RustyConcrete: {fileID: 2100000, guid: 8f59fde6949c22545b97d918c700c9ef, type: 2}
+  Disolve: {fileID: 2100000, guid: 6b427fd9133e8ec48b00e4de57852f6d, type: 2}
   color:
     address_: 
     value_: {r: 1, g: 1, b: 1, a: 1}
@@ -83065,12 +83070,10 @@ MonoBehaviour:
     valueAtZero_: 0
     valueAtOne_: 1
     scaledValue_: 0
-  dissolveType: 0
-  Default: {fileID: 2100000, guid: 4e5c9a89fa465444fb9b6259b12e3ca3, type: 2}
-  Emissive: {fileID: 2100000, guid: 7a6ccee599c36fc419855383a3ccc61a, type: 2}
-  Concrete: {fileID: 2100000, guid: c4398d184d744bb43bd3cb1ce5bc8fdb, type: 2}
-  RustyConcrete: {fileID: 2100000, guid: 8f59fde6949c22545b97d918c700c9ef, type: 2}
-  Disolve: {fileID: 2100000, guid: 6b427fd9133e8ec48b00e4de57852f6d, type: 2}
+  dissolveType:
+    address_: 
+    value_: 0
+    shouldSave_: 1
 --- !u!21 &1258114685
 Material:
   serializedVersion: 8
@@ -100283,7 +100286,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1493849512
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -100297,6 +100300,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   panelSize: {x: 700, y: 800}
+  showUI: 0
 --- !u!4 &1493849513
 Transform:
   m_ObjectHideFlags: 0
@@ -101864,7 +101868,7 @@ GameObject:
   - component: {fileID: 1509821797}
   - component: {fileID: 1509821799}
   m_Layer: 0
-  m_Name: GradientSkyVolume
+  m_Name: FXPostProcessing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -143655,10 +143659,15 @@ MonoBehaviour:
   - {fileID: 3255990824290442458}
   - {fileID: 1491078073415608685}
   - {fileID: 6326291198964217425}
-  materialIndex:
+  materialType:
     address_: 
     value_: 0
     shouldSave_: 1
+  Default: {fileID: 2100000, guid: 4e5c9a89fa465444fb9b6259b12e3ca3, type: 2}
+  Emissive: {fileID: 2100000, guid: 7a6ccee599c36fc419855383a3ccc61a, type: 2}
+  Concrete: {fileID: 2100000, guid: c4398d184d744bb43bd3cb1ce5bc8fdb, type: 2}
+  RustyConcrete: {fileID: 2100000, guid: 8f59fde6949c22545b97d918c700c9ef, type: 2}
+  Disolve: {fileID: 2100000, guid: 6b427fd9133e8ec48b00e4de57852f6d, type: 2}
   color:
     address_: 
     value_: {r: 0, g: 0, b: 0, a: 1}
@@ -143677,12 +143686,10 @@ MonoBehaviour:
     valueAtZero_: 0
     valueAtOne_: 1
     scaledValue_: 0
-  dissolveType: 0
-  Default: {fileID: 2100000, guid: 4e5c9a89fa465444fb9b6259b12e3ca3, type: 2}
-  Emissive: {fileID: 2100000, guid: 7a6ccee599c36fc419855383a3ccc61a, type: 2}
-  Concrete: {fileID: 2100000, guid: c4398d184d744bb43bd3cb1ce5bc8fdb, type: 2}
-  RustyConcrete: {fileID: 2100000, guid: 8f59fde6949c22545b97d918c700c9ef, type: 2}
-  Disolve: {fileID: 2100000, guid: 6b427fd9133e8ec48b00e4de57852f6d, type: 2}
+  dissolveType:
+    address_: 
+    value_: 0
+    shouldSave_: 1
 --- !u!33 &985141412088224466
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -145513,11 +145520,11 @@ MonoBehaviour:
     shouldSave_: 1
   rotationX:
     address_: /DirectionalLight/FXDirectionalLight/rotationX
-    value_: 113.98073
+    value_: 202.93745
     shouldSave_: 1
   rotationY:
     address_: /DirectionalLight/FXDirectionalLight/rotationY
-    value_: 139.80559
+    value_: 82.52529
     shouldSave_: 1
   rotationSpeedX:
     address_: /DirectionalLight/FXDirectionalLight/rotationSpeedX
@@ -145770,7 +145777,10 @@ MonoBehaviour:
     value_: 0
     shouldSave_: 1
   lightsArray: []
-  currentPattern: 2
+  currentPattern:
+    address_: 
+    value_: 0
+    shouldSave_: 1
   spanProportion:
     address_: 
     value_: 0.5
@@ -147648,7 +147658,7 @@ MeshRenderer:
   m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 86942149310bef748b90e62297075707, type: 2}
+  - {fileID: 2100000, guid: a51a605597fb47c4d9e790ce917c2bd8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -147778,7 +147788,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2991356450027552168}
   m_Layer: 0
-  m_Name: Models
+  m_Name: FXModels
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -148061,7 +148071,7 @@ GameObject:
   - component: {fileID: 4837866833004359355}
   - component: {fileID: 7261906004958157426}
   m_Layer: 0
-  m_Name: Pods_Wireframe_Complete
+  m_Name: PodsWireframeComplete
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -148081,7 +148091,7 @@ GameObject:
   - component: {fileID: 7261906003806017637}
   - component: {fileID: 7261906003806017638}
   m_Layer: 0
-  m_Name: Wall_Complete
+  m_Name: WallComplete
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -148524,10 +148534,15 @@ MonoBehaviour:
     scaledValue_: 1
   controlledObjects:
   - {fileID: 6351045453657476475}
-  materialIndex:
+  materialType:
     address_: 
     value_: 0
     shouldSave_: 1
+  Default: {fileID: 2100000, guid: 4e5c9a89fa465444fb9b6259b12e3ca3, type: 2}
+  Emissive: {fileID: 2100000, guid: 7a6ccee599c36fc419855383a3ccc61a, type: 2}
+  Concrete: {fileID: 2100000, guid: c4398d184d744bb43bd3cb1ce5bc8fdb, type: 2}
+  RustyConcrete: {fileID: 2100000, guid: 8f59fde6949c22545b97d918c700c9ef, type: 2}
+  Disolve: {fileID: 2100000, guid: 1fb2aaf4a3d8f7948a995800c5878c17, type: 2}
   color:
     address_: 
     value_: {r: 0, g: 0.6420536, b: 1, a: 1}
@@ -148546,12 +148561,10 @@ MonoBehaviour:
     valueAtZero_: 0
     valueAtOne_: 1
     scaledValue_: 0
-  dissolveType: 0
-  Default: {fileID: 2100000, guid: 4e5c9a89fa465444fb9b6259b12e3ca3, type: 2}
-  Emissive: {fileID: 2100000, guid: 7a6ccee599c36fc419855383a3ccc61a, type: 2}
-  Concrete: {fileID: 2100000, guid: c4398d184d744bb43bd3cb1ce5bc8fdb, type: 2}
-  RustyConcrete: {fileID: 2100000, guid: 8f59fde6949c22545b97d918c700c9ef, type: 2}
-  Disolve: {fileID: 2100000, guid: 1fb2aaf4a3d8f7948a995800c5878c17, type: 2}
+  dissolveType:
+    address_: 
+    value_: 0
+    shouldSave_: 1
 --- !u!64 &7261906003806017638
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -148604,10 +148617,15 @@ MonoBehaviour:
     scaledValue_: 0
   controlledObjects:
   - {fileID: 6351045452513791854}
-  materialIndex:
+  materialType:
     address_: 
     value_: 0
     shouldSave_: 1
+  Default: {fileID: 2100000, guid: 4e5c9a89fa465444fb9b6259b12e3ca3, type: 2}
+  Emissive: {fileID: 0}
+  Concrete: {fileID: 0}
+  RustyConcrete: {fileID: 0}
+  Disolve: {fileID: 0}
   color:
     address_: 
     value_: {r: 0, g: 0, b: 0, a: 1}
@@ -148626,12 +148644,10 @@ MonoBehaviour:
     valueAtZero_: 0
     valueAtOne_: 1
     scaledValue_: 0
-  dissolveType: 0
-  Default: {fileID: 2100000, guid: 4e5c9a89fa465444fb9b6259b12e3ca3, type: 2}
-  Emissive: {fileID: 0}
-  Concrete: {fileID: 0}
-  RustyConcrete: {fileID: 0}
-  Disolve: {fileID: 0}
+  dissolveType:
+    address_: 
+    value_: 0
+    shouldSave_: 1
 --- !u!33 &7368959862749637942
 MeshFilter:
   m_ObjectHideFlags: 0

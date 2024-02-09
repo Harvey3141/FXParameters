@@ -29,8 +29,10 @@ namespace FX
 
                 foreach (FileInfo file in presetFiles)
                 {
-                    string presetName = Path.GetFileNameWithoutExtension(file.Name);
-                    presets.Add(presetName);
+                    if (file.Name != "ParameterList") {
+                        string presetName = Path.GetFileNameWithoutExtension(file.Name);
+                        presets.Add(presetName);
+                    }
                 }
             }
             else
@@ -50,6 +52,11 @@ namespace FX
             FXManager.Instance.SavePreset(name);
             PopulatePresetsList();
 
+        }
+
+        public void ExportParameterList()
+        {
+            FXManager.Instance.SavePreset("ParameterList",true);
         }
 
         public void RemovePreset(string name)

@@ -68,7 +68,7 @@ Material:
     - _AlphaSrcBlend: 1
     - _AlphaToMask: 0
     - _AlphaToMaskInspectorValue: 0
-    - _Animate: 0
+    - _Animate: 1
     - _BlendMode: 0
     - _ConservativeDepthOffsetEnable: 0
     - _CullMode: 2
@@ -108,7 +108,7 @@ Material:
     - _TransparentWritingMotionVec: 0
     - _TransparentZWrite: 0
     - _UseShadowThreshold: 0
-    - _Value: 0
+    - _Value: 6.51
     - _ZTestDepthEqualForOpaque: 4
     - _ZTestGBuffer: 4
     - _ZTestTransparent: 4
@@ -118,9 +118,9 @@ Material:
     - _Color2: {r: 1, g: 1, b: 1, a: 0}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
-    - _EmmisionColour: {r: 0.12813091, g: 1, b: 0, a: 0}
-    - _Offset: {r: 1, g: 1, b: 0, a: 0}
-    - _TIle: {r: 1, g: 1, b: 0, a: 0}
+    - _EmmisionColour: {r: 0.49220976, g: 0.28773582, b: 1, a: 0}
+    - _Offset: {r: 5.16, g: -5.08, b: 0, a: 0}
+    - _TIle: {r: 1, g: 3.58, b: 0, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &1985533570951980753
 MonoBehaviour:

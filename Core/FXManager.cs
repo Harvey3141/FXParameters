@@ -365,7 +365,7 @@ namespace FX
             public List<string> fxTriggerAddresses = new List<string>();
         }
 
-        public void SavePreset(string presetName)
+        public void SavePreset(string presetName, bool ignoreShouldSave = false)
         {
             FXPreset preset = new FXPreset();
 
@@ -375,7 +375,7 @@ namespace FX
                 {
                     var parameter = item.Value.item as IFXParameter;
 
-                    if (parameter.ShouldSave)
+                    if (parameter.ShouldSave || ignoreShouldSave)
                     {
                         string key_   = item.Key;
                         object value_ = parameter.ObjectValue;

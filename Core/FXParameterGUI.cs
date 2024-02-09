@@ -15,12 +15,19 @@ public class FXParameterGUI : MonoBehaviour
     GUIStyle paramLabelStyle;
     GUIStyle scrollViewStyle;
 
+    public bool showUI = false;
+
     private void Start()
     {
         groupedParams = GroupParametersByBaseAddress();
         scrollViewStyle = new GUIStyle();
         scrollViewStyle.normal.background = MakeTex(2, 2, new Color(0.2f, 0.2f, 0.2f, 0.8f));
 
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.U)) showUI = !showUI;
     }
 
     private Dictionary<string, Dictionary<string, List<(string address, object item)>>> GroupParametersByBaseAddress()
@@ -72,6 +79,8 @@ public class FXParameterGUI : MonoBehaviour
 
     private void OnGUI()
     {
+        if (!showUI) return;
+
         if (groupLabelStyle == null)
         {
             groupLabelStyle = new GUIStyle(GUI.skin.label);

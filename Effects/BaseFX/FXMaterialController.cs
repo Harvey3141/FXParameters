@@ -1,10 +1,6 @@
 using FX;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor.Presets;
 using UnityEngine;
-using UnityEngine.Experimental.AI;
 
 public enum MaterialType
 {
@@ -29,24 +25,23 @@ public static class MaterialTypeInfo
 
 public class FXMaterialController : FXGroupObjectController, IFXTriggerable
 {
-    public FXParameter<int> materialIndex = new FXParameter<int>(0);
-    public FXParameter<Color> color = new FXParameter<Color>(Color.white);
-    public FXScaledParameter<float> dissolveEdgeWidth = new FXScaledParameter<float>(0.0f, -12.0f, 0.0f);
-    public FXScaledParameter<float> dissolveOffset = new FXScaledParameter<float>(0.0f, 0.0f, 1.0f);
-
-    public DissolveType dissolveType = DissolveType.ONE;
-
-
+    public FXParameter<MaterialType> materialType = new FXParameter<MaterialType>(MaterialType.DEFAULT);
     public Material Default;
     public Material Emissive;
     public Material Concrete;
     public Material RustyConcrete;
     public Material Disolve;
 
+    public FXParameter<Color> color = new FXParameter<Color>(Color.white);
+    public FXScaledParameter<float> dissolveEdgeWidth = new FXScaledParameter<float>(0.0f, -12.0f, 0.0f);
+    public FXScaledParameter<float> dissolveOffset = new FXScaledParameter<float>(0.0f, 0.0f, 1.0f);
+    public FXParameter<DissolveType> dissolveType = new FXParameter<DissolveType>(DissolveType.ONE);
+
+
     protected override void Awake()
     {
         base.Awake();
-        materialIndex.OnValueChanged += SetMaterial;
+        materialType.OnValueChanged += SetMaterial;
         triggerValue.OnScaledValueChanged += SetEmissiveIntensityAll;
 
         dissolveEdgeWidth.OnScaledValueChanged += SetDissolveEdgeWidth;
@@ -61,7 +56,7 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
 
     private void Update()
     {
-        switch ((MaterialType)materialIndex.Value)
+        switch (materialType.Value)
         {
             case MaterialType.DEFAULT:
                 break;
@@ -147,7 +142,7 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
             if (renderer != null)
             {
 
-                switch ((MaterialType)materialIndex.Value)
+                switch (materialType.Value)
                 {
                     case MaterialType.EMISSIVE:
                         if (Emissive != null)
@@ -257,7 +252,7 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
         Vector3 direction = new Vector3(-90, 0, 0);
         Vector3 offset = new Vector3(0, 0, value);
 
-        switch (dissolveType) {
+        switch (dissolveType.Value) {
             case DissolveType.ONE:
                 direction = new Vector3(-90, 0, 0);
                 offset = new Vector3(0, 0, value);

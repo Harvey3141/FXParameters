@@ -32,7 +32,6 @@ namespace FX
                 if (!EqualityComparer<T>.Default.Equals(value_, value)) // Only trigger event if the value has changed
                 {
                     value_ = value;
-                    //Debug.Log($"New value set: {value_}");
                     OnValueChanged?.Invoke(value_); // Trigger the event
                 }
             }
@@ -211,14 +210,13 @@ namespace FX
                 if (base.Value != value)
                 {
                     base.Value = value;
-                    OnEnabledChanged(value); // Invoke the custom enabled changed handler
+                    OnEnabledChanged(value); 
                 }
             }
         }
 
         private void OnEnabledChanged(bool isEnabled)
         {
-            // Handle the enabled state change here
             Debug.Log($"Enabled value changed: {isEnabled}");
         }
     }

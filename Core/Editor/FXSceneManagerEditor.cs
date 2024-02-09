@@ -62,13 +62,21 @@ namespace FX
 
                     GUILayout.EndHorizontal();
                 }
+
             }
             else
             {
                 EditorGUILayout.HelpBox("No presets found.", MessageType.Info);
             }
 
+            if (GUILayout.Button("Export Parameter List", GUILayout.Width(70)))
+            {
+                fxSceneManager.ExportParameterList();
+            }
+
             EditorGUILayout.EndScrollView();
+
+
         }
 
         private void SavePreset()
