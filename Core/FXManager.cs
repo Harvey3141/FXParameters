@@ -346,7 +346,13 @@ namespace FX
         {
             public string key;
             public T value;
+
+            public T minValue;
+            public T maxValue;
+            public bool hasMinValue = false;
+            public bool hasMaxValue = false;
         }
+
 
         [System.Serializable]
         public class FXPresetEnumParameter : FXPresetParameter<int> 
@@ -380,12 +386,54 @@ namespace FX
                         string key_   = item.Key;
                         object value_ = parameter.ObjectValue;
 
-                        if (value_ is string strValue)
-                            preset.stringParameters.Add(new FXPresetParameter<string> { key = key_, value = strValue });
-                        else if (value_ is int intValue)
-                            preset.intParameters.Add(new FXPresetParameter<int> { key = key_, value = intValue });
-                        else if (value_ is float floatValue)
-                            preset.floatParameters.Add(new FXPresetParameter<float> { key = key_, value = floatValue });
+                        if (parameter is FXParameter<float> floatParam)
+                        {
+                            bool hasMinValue = floatParam.HasMinValue;
+                            bool hasMaxValue = floatParam.HasMaxValue;
+
+                            if (hasMinValue || hasMaxValue) {
+                                preset.floatParameters.Add(new FXPresetParameter<float> {
+                                    key = key_, 
+                                    value = (float)value_,
+                                    minValue = floatParam.GetMinValue(),
+                                    maxValue = floatParam.GetMaxValue(),
+                                    hasMaxValue = floatParam.HasMaxValue,
+                                    hasMinValue = floatParam.HasMinValue,
+                                });
+
+                            }
+                            else {
+                                preset.floatParameters.Add(new FXPresetParameter<float> { key = key_, value = (float)value_ });
+
+                            }
+                        }
+                        if (parameter is FXParameter<int> intParam)
+                        {
+                            bool hasMinValue = intParam.HasMinValue;
+                            bool hasMaxValue = intParam.HasMaxValue;
+
+                            if (hasMinValue || hasMaxValue)
+                            {
+                                preset.intParameters.Add(new FXPresetParameter<int>
+                                {
+                                    key = key_,
+                                    value = (int)value_,
+                                    minValue = intParam.GetMinValue(),
+                                    maxValue = intParam.GetMaxValue(),
+                                    hasMaxValue = intParam.HasMaxValue,
+                                    hasMinValue = intParam.HasMinValue,
+                                });
+
+                            }
+                            else
+                            {
+                                preset.intParameters.Add(new FXPresetParameter<int> { key = key_, value = (int)value_ });
+
+                            }
+                        }
+
+                        else if (value_ is string stringValue)
+                            preset.stringParameters.Add(new FXPresetParameter<string> { key = key_, value = stringValue });
                         else if (value_ is bool boolValue)
                             preset.boolParameters.Add(new FXPresetParameter<bool> { key = key_, value = boolValue });
                         else if (value_ is Color colorValue)

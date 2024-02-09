@@ -10,8 +10,8 @@ public class FXDirectionalLight : FXBaseWithEnabled, IFXTriggerable
     public FXScaledParameter<float> intensity = new FXScaledParameter<float>(0.0f, 0.0f, 2.0f);
     public FXParameter<Color> color = new FXParameter<Color>(Color.white);
 
-    public FXParameter<float> rotationX = new FXParameter<float>(0.0f);
-    public FXParameter<float> rotationY = new FXParameter<float>(0.0f);
+    public FXParameter<float> rotationX = new FXParameter<float>(0.0f, 0.0f, 360f);
+    public FXParameter<float> rotationY = new FXParameter<float>(0.0f, 0.0f, 360f);
     public FXScaledParameter<float> rotationSpeedX = new FXScaledParameter<float>(0.0f,0.0f,100.0f);
     public FXScaledParameter<float> rotationSpeedY = new FXScaledParameter<float>(0.0f, 0.0f, 100.0f);
 

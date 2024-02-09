@@ -22,6 +22,15 @@ namespace FX
         [SerializeField]
         private bool shouldSave_ = true;
 
+        [SerializeField]
+        private T minValue_;
+        [SerializeField]
+        private T maxValue_;
+        [SerializeField]
+        private bool hasMinValue_ = false;
+        [SerializeField]
+        private bool hasMaxValue_ = false;
+
         public event Action<T> OnValueChanged; // Event triggered when the value changes
 
         public virtual T Value
@@ -29,10 +38,21 @@ namespace FX
             get { return value_; }
             set
             {
-                if (!EqualityComparer<T>.Default.Equals(value_, value)) // Only trigger event if the value has changed
+                T newValue = value;
+
+                if (hasMinValue_ && Comparer<T>.Default.Compare(newValue, minValue_) < 0)
                 {
-                    value_ = value;
-                    OnValueChanged?.Invoke(value_); // Trigger the event
+                    newValue = minValue_;
+                }
+                if (hasMaxValue_ && Comparer<T>.Default.Compare(newValue, maxValue_) > 0)
+                {
+                    newValue = maxValue_;
+                }
+
+                if (!EqualityComparer<T>.Default.Equals(value_, newValue)) 
+                {
+                    value_ = newValue;
+                    OnValueChanged?.Invoke(value_); 
                 }
             }
         }
@@ -93,6 +113,46 @@ namespace FX
             }
         }
 
+        public FXParameter(T value, T minValue, T maxValue, string address = "", bool shouldSave = true) : this(value, address, shouldSave)
+        {
+            SetMinValue(minValue);
+            SetMaxValue(maxValue);
+        }
+
+        public bool HasMinValue
+        {
+            get { return hasMinValue_; }
+            
+        }
+
+        public bool HasMaxValue
+        {
+            get { return hasMaxValue_; }
+        }
+
+        public void SetMinValue(T minValue)
+        {
+            minValue_ = minValue;
+            hasMinValue_ = true;
+            Value = value_; 
+        }
+
+        public void SetMaxValue(T maxValue)
+        {
+            maxValue_ = maxValue;
+            hasMaxValue_ = true;
+            Value = value_; 
+        }
+
+        public T GetMinValue()
+        {
+            return minValue_;
+        }
+
+        public T GetMaxValue()
+        {
+            return maxValue_;
+        }
 
     }
 
