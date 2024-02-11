@@ -162,7 +162,7 @@ namespace FX
         [SerializeField]
         private T scaledValue_;
 
-        public event Action<T> OnScaledValueChanged; // Event triggered when the value changes
+        public event Action<T> OnScaledValueChanged; 
 
         public FXScaledParameter(float value, T valueAtZero, T valueAtOne, string address = "", bool shouldSave = true)
             : base(value, 0.0f, 1.0f, address, shouldSave)

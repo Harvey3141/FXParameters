@@ -36,13 +36,11 @@ public class FXStrobeLight : FXBaseWithEnabled, IFXTriggerable
     {
         float fadeSpeed = isStrobeOn ? fadeSpeedOn.ScaledValue : fadeSpeedOff.ScaledValue;
 
-        // Lerp to the target intensity
         currentIntensity = Mathf.Lerp(currentIntensity, targetIntensity, fadeSpeed * Time.deltaTime);
         lightComp.intensity = currentIntensity;
 
         if (isStrobeOn && Mathf.Abs(currentIntensity - intensityOn.ScaledValue) < 0.01f)
         {
-            // Once the light has reached the target on intensity, start fading off
             isStrobeOn = false;
             targetIntensity = intensityOff.Value;
         }
@@ -51,7 +49,6 @@ public class FXStrobeLight : FXBaseWithEnabled, IFXTriggerable
         {
             timeSinceLastTrigger += Time.deltaTime;
 
-            // If time since last trigger exceeds the strobe interval, reset timer and trigger
             if (timeSinceLastTrigger > 1f / strobeFrequency.ScaledValue)
             {
                 timeSinceLastTrigger = 0;
@@ -63,7 +60,6 @@ public class FXStrobeLight : FXBaseWithEnabled, IFXTriggerable
     [FXMethod]
     public void FXTrigger()
     {
-        // Start strobing on
         isStrobeOn = true;
         targetIntensity = intensityOn.ScaledValue;
     }

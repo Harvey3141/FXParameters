@@ -13,7 +13,7 @@ namespace FX
         RANDOM_MULTI
     }
 
-    public abstract class FXGroupObjectController : FXBase, IFXTriggerable
+    public abstract class FXGroupObjectController : FXBaseWithEnabled, IFXTriggerable
     {
         private bool isTriggerCoroutineActive = false;
         private bool triggerOddEvenState = false;

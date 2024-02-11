@@ -1,24 +1,16 @@
 using UnityEngine;
 using System.Collections.Generic;
 using FX;
-using UnityEngine.Rendering.HighDefinition;
 
 public class FXScaler : FXBaseWithEnabled
 {
     public enum ScaleType { X, Y, Z, XYZ }
 
-    [SerializeField]
-    private ScaleType _scaleType = ScaleType.XYZ;
-    private ScaleType _previousScaleType;
 
-    public ScaleType scaleType
-    {
-        get => _scaleType;
-        set
-        {
-            _scaleType = value;
-        }
-    }
+    public FXParameter<ScaleType> scaleType = new FXParameter<ScaleType>(ScaleType.XYZ);  
+
+    private ScaleType previousScaleType;
+
 
     public FXScaledParameter<float> scale   = new FXScaledParameter<float>(1.0f, 0.0f, 1.0f);
     public List<Transform> targetTransforms = new List<Transform>();
@@ -26,7 +18,7 @@ public class FXScaler : FXBaseWithEnabled
     protected override void Start()
     {
         base.Start();
-        _previousScaleType = scaleType;
+        previousScaleType = scaleType.Value;
     }
 
     private void Update()
@@ -44,7 +36,7 @@ public class FXScaler : FXBaseWithEnabled
             {
                 Vector3 currentScale = transform.localScale;
 
-                switch (scaleType)
+                switch (scaleType.Value)
                 {
                     case ScaleType.X:
                         transform.localScale = new Vector3(scale.ScaledValue, currentScale.y, currentScale.z);
@@ -65,10 +57,10 @@ public class FXScaler : FXBaseWithEnabled
 
     private void OnValidate()
     {
-        if (_scaleType != _previousScaleType)
+        if (scaleType.Value != previousScaleType)
         {
             ResetScale();
-            _previousScaleType = _scaleType;
+            previousScaleType = scaleType.Value;
         }
     }
 

@@ -1,5 +1,7 @@
 using FX;
 using System;
+using System.Net.Http.Headers;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
 public enum MaterialType
@@ -7,7 +9,7 @@ public enum MaterialType
     DEFAULT,
     EMISSIVE,
     CONCRETE,
-    RUSTY_CONCRETE,
+    CUTOUT,
     DISSOLVE
 }
 public enum DissolveType
@@ -15,6 +17,13 @@ public enum DissolveType
     ONE,
     TWO,
     THREE,
+}
+
+public enum CutoutPattern
+{
+    CHECKERBOARD,
+    HORIZONTAL,
+    CAMO
 }
 
 
@@ -29,10 +38,16 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
     public Material Default;
     public Material Emissive;
     public Material Concrete;
-    public Material RustyConcrete;
+    public Material Cutout;
     public Material Disolve;
 
     public FXParameter<Color> color = new FXParameter<Color>(Color.white);
+
+    public FXParameter<float> cutoutTileX = new FXParameter<float>(1.0f);
+    public FXParameter<float> cutoutTileY = new FXParameter<float>(1.0f);
+    public FXParameter<CutoutPattern> cutoutPattern = new FXParameter<CutoutPattern>(CutoutPattern.HORIZONTAL);
+
+
     public FXScaledParameter<float> dissolveEdgeWidth = new FXScaledParameter<float>(0.0f, -12.0f, 0.0f);
     public FXScaledParameter<float> dissolveOffset = new FXScaledParameter<float>(0.0f, 0.0f, 1.0f);
     public FXParameter<DissolveType> dissolveType = new FXParameter<DissolveType>(DissolveType.ONE);
@@ -43,15 +58,28 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
         base.Awake();
         materialType.OnValueChanged += SetMaterial;
         triggerValue.OnScaledValueChanged += SetEmissiveIntensityAll;
+        color.OnValueChanged += SetColor;
+
+        cutoutTileX.OnValueChanged += SetCutoutTileX;
+        cutoutTileY.OnValueChanged += SetCutoutTileY;
 
         dissolveEdgeWidth.OnScaledValueChanged += SetDissolveEdgeWidth;
         dissolveOffset.OnScaledValueChanged += SetDissolveOffset;
-        color.OnValueChanged += SetColor;
+    }
+
+    public void SetCutoutTileX(float value) {
+           if (materialType.Value == MaterialType.CUTOUT) SetPropertyVector2("_Tile", new Vector2(cutoutTileX.Value, cutoutTileY.Value));    
+    }
+
+    public void SetCutoutTileY(float value)
+    {
+        if (materialType.Value == MaterialType.CUTOUT) SetPropertyVector2("_Tile", new Vector2(cutoutTileX.Value, cutoutTileY.Value));
     }
 
     protected override void Start()
     {
         SetMaterial(MaterialType.DEFAULT);
+        OnFXEnabled(fxEnabled.Value);
     }
 
     private void Update()
@@ -64,12 +92,28 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
                 break;
             case MaterialType.CONCRETE:
                 break;
-            case MaterialType.RUSTY_CONCRETE:
+            case MaterialType.CUTOUT:
                 break;
             case MaterialType.DISSOLVE:
                 break;
             default:
                 break;
+        }
+    }
+
+    protected override void OnFXEnabled(bool state)
+    {
+        foreach (var obj in controlledObjects)
+        {
+            if (obj != null)
+            {
+                Renderer renderer = obj.GetComponent<Renderer>();
+                if (renderer != null)
+                {
+               
+                    renderer.enabled = state;
+                }
+            }
         }
     }
 
@@ -111,8 +155,9 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
             case MaterialType.CONCRETE:
                 ApplyMaterial(Concrete);
                 break;
-            case MaterialType.RUSTY_CONCRETE:
-                ApplyMaterial(RustyConcrete);
+            case MaterialType.CUTOUT:
+                ApplyMaterial(Cutout);
+                SetEmissiveIntensityAll(triggerValue.ScaledValue);
                 break;
             case MaterialType.DISSOLVE:
                 ApplyMaterial(Disolve);
@@ -146,11 +191,13 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
                     case MaterialType.EMISSIVE:
                         //Color emissiveColorLDR = renderer.material.GetColor("_EmissiveColorLDR");
                         //Color emissiveColor = new Color(Mathf.GammaToLinearSpace(emissiveColorLDR.r), Mathf.GammaToLinearSpace(emissiveColorLDR.g), Mathf.GammaToLinearSpace(emissiveColorLDR.b));
-                        renderer.material.SetColor("_EmissiveColor", color.Value * intensity);
-                        
+                        renderer.material.SetColor("_EmissiveColor", color.Value * Mathf.GammaToLinearSpace(intensity * 2.0f));                      
+                        break;
+                    case MaterialType.CUTOUT:
+                        renderer.material.SetColor("_EmmisionColour", color.Value * Mathf.GammaToLinearSpace(intensity * 2.0f));
                         break;
                     case MaterialType.DISSOLVE:
-                            renderer.material.SetFloat("_EdgeColorIntensity", intensity);                       
+                            renderer.material.SetFloat("_EdgeColorIntensity", Mathf.GammaToLinearSpace(intensity * 2.0f));                       
                         break;
                     default:
                         break;
@@ -169,10 +216,8 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
         base.FXTrigger();
     }
 
-    void SetEmissiveColor(Color value)
+    void SetColor(Color value)
     {
-        if (materialType.Value != MaterialType.EMISSIVE) return;
-
         for (int i = 0; i < controlledObjects.Length; i++)
         {
             GameObject obj = controlledObjects[i];
@@ -181,16 +226,28 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
                 Renderer renderer = obj.GetComponent<Renderer>();
                 if (renderer != null)
                 {
-                    Color emissiveColorLDR = renderer.material.GetColor("_EmissiveColorLDR");
-                    Color emissiveColor = new Color(Mathf.GammaToLinearSpace(value.r), Mathf.GammaToLinearSpace(value.g), Mathf.GammaToLinearSpace(value.b));
-                    renderer.material.SetColor("_EmissiveColor", emissiveColor);                    
+                    switch (materialType.Value) {
+                        case MaterialType.EMISSIVE:
+                            //Color emissiveColorLDR = renderer.material.GetColor("_EmissiveColorLDR");
+                            //Color emissiveColor = new Color(Mathf.GammaToLinearSpace(value.r), Mathf.GammaToLinearSpace(value.g), Mathf.GammaToLinearSpace(value.b));
+                            renderer.material.SetColor("_EmissiveColor", value * Mathf.GammaToLinearSpace(triggerValue.ScaledValue * 2.0f));
+                            break;
+                        case MaterialType.CUTOUT:
+                            renderer.material.SetColor("_EmmisionColour", value * Mathf.GammaToLinearSpace(triggerValue.ScaledValue * 2.0f));
+                            break;
+                        case MaterialType.DISSOLVE:
+                            renderer.material.SetColor("_EdgeColor", value * Mathf.GammaToLinearSpace(triggerValue.ScaledValue*2.0f));
+                            break;
+
+                    }
+                 
                 }
             }
         }
     }
 
 
-    void SetDissolvePropertyFloat(string name, float value)
+    void SetPropertyFloat(string name, float value)
     {
         for (int i = 0; i < controlledObjects.Length; i++)
         {
@@ -200,10 +257,23 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
                 Renderer renderer = obj.GetComponent<Renderer>();
                 if (renderer != null)
                 {
-                    if (Disolve != null)
-                    {
-                        renderer.material.SetFloat(name, value);
-                    }                   
+                    renderer.material.SetFloat(name, value);                                    
+                }
+            }
+        }
+    }
+
+    void SetPropertyVector2(string name, Vector2 value)
+    {
+        for (int i = 0; i < controlledObjects.Length; i++)
+        {
+            GameObject obj = controlledObjects[i];
+            if (obj != null)
+            {
+                Renderer renderer = obj.GetComponent<Renderer>();
+                if (renderer != null)
+                {
+                    renderer.material.SetVector(name, value);                    
                 }
             }
         }
@@ -251,15 +321,17 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
         }
     }
 
-    void SetColor(Color color)
-    {
-        SetDissolvePropertyColor("_EdgeColor", color);
-        SetEmissiveColor(color);
-    }
+    //void SetColor(Color color)
+    //{
+    //    //SetDissolvePropertyColor("_EdgeColor", color);
+    //    SetEmissiveColor(color);
+    //
+    //    
+    //}
 
 
     void SetDissolveEdgeWidth(float value) {
-        SetDissolvePropertyFloat("_DierctionEdgeWidthScale", value);
+        if (materialType.Value == MaterialType.DISSOLVE) SetPropertyFloat("_DierctionEdgeWidthScale", value);
     }
 
     void SetDissolveOffset(float value)
