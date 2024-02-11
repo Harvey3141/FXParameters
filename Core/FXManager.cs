@@ -339,6 +339,16 @@ namespace FX
 
             public List<FXGroupPreset> fxGroupPresets               = new List<FXGroupPreset>();
 
+            public List<FXPresetMethod> fXPresetMethods = new List<FXPresetMethod>();
+
+
+        }
+
+        [System.Serializable]
+        public class FXPresetMethod
+        {
+            public string key;
+
         }
 
         [System.Serializable]
@@ -371,7 +381,7 @@ namespace FX
             public List<string> fxTriggerAddresses = new List<string>();
         }
 
-        public void SavePreset(string presetName, bool ignoreShouldSave = false)
+        public void SavePreset(string presetName, bool includeAll = false)
         {
             FXPreset preset = new FXPreset();
 
@@ -381,7 +391,7 @@ namespace FX
                 {
                     var parameter = item.Value.item as IFXParameter;
 
-                    if (parameter.ShouldSave || ignoreShouldSave)
+                    if (parameter.ShouldSave || includeAll)
                     {
                         string key_   = item.Key;
                         object value_ = parameter.ObjectValue;
@@ -465,6 +475,13 @@ namespace FX
 
 
                     }
+                }
+                if (includeAll) {
+
+                    if (item.Value.type == FXItemInfoType.Method) {
+                        preset.fXPresetMethods.Add(new FXPresetMethod { key = item.Key}); 
+                    }
+
                 }
             }
 
