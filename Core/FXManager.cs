@@ -1,3 +1,4 @@
+using FX.Patterns;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -375,11 +376,17 @@ namespace FX
         {
             public string address;
             public SignalSource signalSource;
-            public PatternType patternType;
-            public AudioFrequency audioFrequency;
             public List<string> fxAddresses        = new List<string>();
             public List<string> fxTriggerAddresses = new List<string>();
+
+            public PatternType patternType;
+            public int numBeats;
+            public FX.Patterns.OscillatorPattern.OscillatorType oscillatorType;
+
+
+            public AudioFrequency audioFrequency;
         }
+
 
         public void SavePreset(string presetName, bool includeAll = false)
         {
@@ -472,8 +479,6 @@ namespace FX
                             }
                         }
                         
-
-
                     }
                 }
                 if (includeAll) {
@@ -485,17 +490,32 @@ namespace FX
                 }
             }
 
-            // Save group presets
             GroupFXController[] allFXGroups = GameObject.FindObjectsOfType<GroupFXController>();
             foreach (var group in allFXGroups)
             {
-                FXGroupPreset groupPreset      = new FXGroupPreset();
+                FXGroupPreset groupPreset = new FXGroupPreset();
                 groupPreset.address            = group.address;
                 groupPreset.fxAddresses        = group.FormattedFXAddresses;
                 groupPreset.fxTriggerAddresses = group.fxTriggerAddresses;
-                groupPreset.signalSource       = group.signalSource; 
-                groupPreset.patternType        = group.patternType; 
-                groupPreset.audioFrequency     = group.audioFrequency;
+                groupPreset.signalSource       = group.signalSource;
+
+                switch (group.signalSource) {
+                    case SignalSource.Audio:
+                        groupPreset.audioFrequency = group.audioFrequency;
+                        break;
+                    case SignalSource.Pattern:
+                        groupPreset.patternType = group.patternType;
+                        groupPreset.numBeats    = group.pattern.NumBeats;
+
+                        switch (group.patternType)
+                        {
+                            case PatternType.Oscillator:
+                                OscillatorPattern oscillator = (OscillatorPattern)group.pattern;
+                                groupPreset.oscillatorType = oscillator.Oscillator;
+                                break;
+                        }
+                        break;
+                }
 
                 preset.fxGroupPresets.Add(groupPreset);
             }

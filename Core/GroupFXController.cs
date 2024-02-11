@@ -180,10 +180,28 @@ namespace FX
 
             fxTriggerAddresses = preset.fxTriggerAddresses;
             signalSource       = preset.signalSource;
-            audioFrequency     = preset.audioFrequency;
 
-            SetPatternType(preset.patternType);
-            
+            switch (preset.signalSource)
+            {
+                case SignalSource.Audio:
+                    SetPatternType(PatternType.None);
+                    audioFrequency = preset.audioFrequency;
+                    break;
+                case SignalSource.Pattern:
+
+                    SetPatternType(preset.patternType);
+                    pattern.NumBeats = preset.numBeats;
+
+                    switch (patternType)
+                    {
+                        case PatternType.Oscillator:
+                            OscillatorPattern oscillator = (OscillatorPattern)pattern;
+                            oscillator.Oscillator = preset.oscillatorType;
+                            break;
+                    }
+                    break;
+            }
+          
             presetLoaded = true;
         }
 
