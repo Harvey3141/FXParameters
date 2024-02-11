@@ -117,13 +117,13 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
             case MaterialType.DISSOLVE:
                 ApplyMaterial(Disolve);
                 SetEmissiveIntensityAll(triggerValue.ScaledValue);
-                SetColor(color.Value);
                 SetDissolveEdgeWidth(dissolveEdgeWidth.ScaledValue);
                 SetDissolveOffset(dissolveOffset.ScaledValue);
                 break;
             default:
                 break;
         }
+        SetColor(color.Value);
     }
 
     void SetEmissiveIntensityAll(float intensity) { 
@@ -141,23 +141,16 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
             Renderer renderer = obj.GetComponent<Renderer>();
             if (renderer != null)
             {
-
                 switch (materialType.Value)
                 {
                     case MaterialType.EMISSIVE:
-                        if (Emissive != null)
-                        {
-                            Color emissiveColorLDR = renderer.material.GetColor("_EmissiveColorLDR");
-                            Color emissiveColor = new Color(Mathf.GammaToLinearSpace(emissiveColorLDR.r), Mathf.GammaToLinearSpace(emissiveColorLDR.g), Mathf.GammaToLinearSpace(emissiveColorLDR.b));
-                            renderer.material.SetColor("_EmissiveColor", emissiveColor * intensity);
-                        }
+                        //Color emissiveColorLDR = renderer.material.GetColor("_EmissiveColorLDR");
+                        //Color emissiveColor = new Color(Mathf.GammaToLinearSpace(emissiveColorLDR.r), Mathf.GammaToLinearSpace(emissiveColorLDR.g), Mathf.GammaToLinearSpace(emissiveColorLDR.b));
+                        renderer.material.SetColor("_EmissiveColor", color.Value * intensity);
+                        
                         break;
                     case MaterialType.DISSOLVE:
-
-                        if (Disolve != null)
-                        {
-                            renderer.material.SetFloat("_EdgeColorIntensity", intensity);
-                        }
+                            renderer.material.SetFloat("_EdgeColorIntensity", intensity);                       
                         break;
                     default:
                         break;
@@ -174,6 +167,26 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
 
     public override void FXTrigger() {
         base.FXTrigger();
+    }
+
+    void SetEmissiveColor(Color value)
+    {
+        if (materialType.Value != MaterialType.EMISSIVE) return;
+
+        for (int i = 0; i < controlledObjects.Length; i++)
+        {
+            GameObject obj = controlledObjects[i];
+            if (obj != null)
+            {
+                Renderer renderer = obj.GetComponent<Renderer>();
+                if (renderer != null)
+                {
+                    Color emissiveColorLDR = renderer.material.GetColor("_EmissiveColorLDR");
+                    Color emissiveColor = new Color(Mathf.GammaToLinearSpace(value.r), Mathf.GammaToLinearSpace(value.g), Mathf.GammaToLinearSpace(value.b));
+                    renderer.material.SetColor("_EmissiveColor", emissiveColor);                    
+                }
+            }
+        }
     }
 
 
@@ -217,6 +230,8 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
 
     void SetDissolvePropertyColor(string name, Color value)
     {
+        if (materialType.Value != MaterialType.DISSOLVE) return;
+
         for (int i = 0; i < controlledObjects.Length; i++)
         {
             GameObject obj = controlledObjects[i];
@@ -225,13 +240,12 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
                 Renderer renderer = obj.GetComponent<Renderer>();
                 if (renderer != null)
                 {
-                    if (Disolve != null)
-                    {
-                        //renderer.material.SetColor(name, value);
-                       // Color emissiveColorLDR = renderer.material.GetColor(name);
-                        // emissiveColor = new Color(Mathf.GammaToLinearSpace(emissiveColorLDR.r), Mathf.GammaToLinearSpace(emissiveColorLDR.g), Mathf.GammaToLinearSpace(emissiveColorLDR.b));
-                        renderer.material.SetColor(name, value * Mathf.GammaToLinearSpace(6));
-                    }
+
+                    //renderer.material.SetColor(name, value);
+                    // Color emissiveColorLDR = renderer.material.GetColor(name);
+                    // emissiveColor = new Color(Mathf.GammaToLinearSpace(emissiveColorLDR.r), Mathf.GammaToLinearSpace(emissiveColorLDR.g), Mathf.GammaToLinearSpace(emissiveColorLDR.b));
+                    renderer.material.SetColor(name, value * Mathf.GammaToLinearSpace(6));
+                    
                 }
             }
         }
@@ -240,6 +254,7 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
     void SetColor(Color color)
     {
         SetDissolvePropertyColor("_EdgeColor", color);
+        SetEmissiveColor(color);
     }
 
 

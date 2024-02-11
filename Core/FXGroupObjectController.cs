@@ -19,7 +19,7 @@ namespace FX
         private bool triggerOddEvenState = false;
         private int triggerSequencialIndex = 0;
         private int triggerRandomIndex = 0;
-        public TriggerPattern triggerPattern = TriggerPattern.ALL;
+        public FXParameter<TriggerPattern> triggerPattern = new FXParameter<TriggerPattern>(TriggerPattern.ALL);
         private List<int> triggerRandomIndices = new List<int>();
         public FXScaledParameter<float> triggerDuration = new FXScaledParameter<float>(0.05f, 0.0f, 1.0f);
         public FXScaledParameter<float> triggerValue = new FXScaledParameter<float>(0.0f, 0.0f, 1.0f);
@@ -95,7 +95,7 @@ namespace FX
 
         private bool ShouldApply(int index)
         {
-            switch (triggerPattern)
+            switch (triggerPattern.Value)
             {
                 case TriggerPattern.ALL:
                     return true;
