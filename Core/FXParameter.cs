@@ -152,6 +152,14 @@ namespace FX
 
     }
 
+    public enum EffectorFunction
+    {
+        Linear,
+        EaseIn,
+        EaseOut,
+        Randomise
+    }
+
     [System.Serializable]
     public class FXScaledParameter<T> : FXParameter<float>
     {
@@ -161,6 +169,9 @@ namespace FX
         private T valueAtOne_;
         [SerializeField]
         private T scaledValue_;
+
+        [SerializeField]
+        private EffectorFunction effectorFunction_ = EffectorFunction.Linear;
 
         public event Action<T> OnScaledValueChanged; 
 
@@ -180,9 +191,36 @@ namespace FX
             get { return base.Value; }
             set
             {
-                base.Value = value;
+                float easedValued = Mathf.Clamp01(value);
+                switch (effectorFunction_)
+                {
+                    case EffectorFunction.Linear:
+                        break;
+                    case EffectorFunction.EaseIn:
+                        easedValued = Mathf.Pow(easedValued, 2);
+                        break;
+                    case EffectorFunction.EaseOut:
+                        easedValued = Mathf.Sqrt(easedValued);
+                        break;
+                    case EffectorFunction.Randomise:
+                        easedValued = UnityEngine.Random.Range(0f, 1f);
+                        break;
+                       
+                }
+
+                base.Value = easedValued;
                 UpdateScaledValue();
                 OnScaledValueChanged?.Invoke(scaledValue_);
+            }
+        }
+
+        public EffectorFunction EffectorFunction
+        {
+            get => effectorFunction_;
+            set
+            {
+                effectorFunction_ = value;
+                UpdateScaledValue(); 
             }
         }
 

@@ -242,6 +242,16 @@ namespace FX
                 Debug.Log("Button left-clicked");
             }
 
+            Rect dropdownPosition = new Rect(buttonPosition.xMax + padding, buttonPosition.y, 100, buttonPosition.height); // Adjust width as needed
+
+            SerializedProperty effectorFunctionProperty = property.FindPropertyRelative("effectorFunction_");
+
+            if (effectorFunctionProperty != null)
+            {
+                string[] options = Enum.GetNames(typeof(EffectorFunction));
+                effectorFunctionProperty.enumValueIndex = EditorGUI.Popup(dropdownPosition, effectorFunctionProperty.enumValueIndex, options);
+            }
+
             if (property.isExpanded)
             {
                 GUIContent valueLabel       = new GUIContent("Value");
