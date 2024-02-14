@@ -33,7 +33,7 @@ public class FXParameterGUI : MonoBehaviour
     private Dictionary<string, Dictionary<string, List<(string address, object item)>>> GroupParametersByBaseAddress()
     {
         return FXManager.fxItemsByAddress_
-        .Where(x => x.Value.type == FXManager.FXItemInfoType.Parameter || (x.Value.type == FXManager.FXItemInfoType.Method && IsFXTrigger(x.Value.item)))
+        .Where(x => x.Value.type == FXManager.FXItemInfoType.Parameter || x.Value.type == FXManager.FXItemInfoType.ScaledParameter || (x.Value.type == FXManager.FXItemInfoType.Method && IsFXTrigger(x.Value.item)))
             .GroupBy(x => GetBaseAddress(x.Key))
             .ToDictionary(
                 g => g.Key,

@@ -250,7 +250,7 @@ namespace FX
 
             foreach (var kvp in FXManager.fxItemsByAddress_)
             {
-                if (kvp.Value.type == FXManager.FXItemInfoType.Parameter)
+                if (kvp.Value.type == FXManager.FXItemInfoType.Parameter || kvp.Value.type == FXManager.FXItemInfoType.ScaledParameter)
                 {
                     if (kvp.Value.item is FXParameter<float> ||
                         kvp.Value.item is FXParameter<bool> ||

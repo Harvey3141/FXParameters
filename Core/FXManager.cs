@@ -62,7 +62,8 @@ namespace FX
         public enum FXItemInfoType
         {
             Method,
-            Parameter
+            Parameter,
+            ScaledParameter
         }
 
         public void AddFXItem(string address, FXItemInfoType type, object item, object fxInstance)
@@ -77,6 +78,10 @@ namespace FX
                 {
                     Debug.LogError($"Item with address {address} is not implementing IFXParameter.");
                     return;
+                }
+                if (item is FXScaledParameter<float> || item is FXScaledParameter<int> || item is FXScaledParameter<Color> || item is FXScaledParameter<Vector3>)
+                {
+                    type = FXItemInfoType.ScaledParameter; 
                 }
                 fxItemsByAddress_.Add(address, (type, item, fxInstance));
 
@@ -106,6 +111,9 @@ namespace FX
                     case FXItemInfoType.Parameter:
                         SetParameter(address, args[0]);
                         break;
+                    case FXItemInfoType.ScaledParameter:
+                        SetParameter(address, args[0]);
+                        break;
                 }
             }
             else
@@ -116,7 +124,7 @@ namespace FX
 
         public object GetFX(string address)
         {
-            if (fxItemsByAddress_.TryGetValue(address, out var fxItem) && fxItem.type == FXItemInfoType.Parameter)
+            if (fxItemsByAddress_.TryGetValue(address, out var fxItem) && (fxItem.type == FXItemInfoType.Parameter || fxItem.type == FXItemInfoType.ScaledParameter))
             {
                 IFXParameter parameter = fxItem.item as IFXParameter;
 
@@ -239,9 +247,9 @@ namespace FX
         {
             if (fxItemsByAddress_.TryGetValue(address, out var fxItem))
             {
-                if (fxItem.type != FXItemInfoType.Parameter)
+                if (fxItem.type != FXItemInfoType.Parameter && fxItem.type != FXItemInfoType.ScaledParameter)
                 {
-                    Debug.LogWarning($"FX item at address {address} is not a parameter.");
+                    Debug.LogWarning($"FX item at address {address} is not a parameter or scaled parameter.");
                     return;
                 }
 
@@ -254,70 +262,105 @@ namespace FX
                 }
 
                 if (!iFXParameter.ShouldSave) {
-                    Debug.LogWarning($"FXParameter {address}, should save is set to false therefore param will not be set");
+                    Debug.LogError($"FXParameter {address}, should save is set to false therefore param will not be set");
                     return;
                 }
 
-                Type parameterType = iFXParameter.ObjectValue.GetType();
-
-                if (parameterType == typeof(float) && arg is float fValueFloat)
+                if (fxItem.type == FXItemInfoType.ScaledParameter)
                 {
-                    ((FXParameter<float>)parameter).Value = fValueFloat;
-                }
-                else if (parameterType == typeof(int))
-                {
-                    if (arg is int iValue)
+                    if (arg is float floatValue)
                     {
-                        ((FXParameter<int>)parameter).Value = iValue;
-                    }
-                    else if (arg is float fValueInt)
-                    {
-                        ((FXParameter<int>)parameter).Value = Mathf.CeilToInt(fValueInt);
-                    }
-                }
-                else if (parameterType == typeof(bool))
-                {
-                    if (arg is bool bValue)
-                    {
-                        ((FXParameter<bool>)parameter).Value = bValue;
-                    }
-                    else if (arg is float fValueBool)
-                    {
-                        ((FXParameter<bool>)parameter).Value = (fValueBool != 0f);
-                    }
-                }
-                else if (parameterType == typeof(string) && arg is string sValue)
-                {
-                    ((FXParameter<string>)parameter).Value = sValue;
-                }
-                else if (parameterType == typeof(Color) && arg is Color cValue)
-                {
-                    ((FXParameter<Color>)parameter).Value = cValue;
-                }
-                else if (parameterType.IsEnum)
-                {
-                    if (arg is int enumInt)
-                    {
-                        if (Enum.IsDefined(parameterType, enumInt))
+                        if (fxItem.item is FXScaledParameter<float> scaledParamFloat)
                         {
-                            object enumValue = Enum.ToObject(parameterType, enumInt);
-                            iFXParameter.ObjectValue = enumValue;
+                            scaledParamFloat.Value = floatValue;
+                        }
+                        else if (fxItem.item is FXScaledParameter<Color> scaledParamColor)
+                        {
+                            scaledParamColor.Value = floatValue; 
+                        }
+                        else if (fxItem.item is FXScaledParameter<int> scaledParamInt)
+                        {
+                            scaledParamInt.Value = floatValue;
+                        }
+                        else if (fxItem.item is FXScaledParameter<Vector3> scaledParamVector3)
+                        {
+                            scaledParamVector3.Value = floatValue;
                         }
                         else
                         {
-                            Debug.LogWarning($"The integer value '{enumInt}' is not defined in the enum '{parameterType.Name}'");
+                            Debug.LogWarning($"FXScaledParameter at address {address} has an unsupported generic type.");
                         }
                     }
                     else
                     {
-                        Debug.LogWarning($"Argument for setting enum parameter {address} is not an int");
+                        Debug.LogWarning($"Argument for setting ScaledParameter {address} must be a float");
+                    }
+                }
+                else if (fxItem.type == FXItemInfoType.Parameter)
+                {
+                    Type parameterType = iFXParameter.ObjectValue.GetType();
+
+                    if (parameterType == typeof(float) && arg is float fValueFloat)
+                    {
+                        ((FXParameter<float>)parameter).Value = fValueFloat;
+                    }
+                    else if (parameterType == typeof(int))
+                    {
+                        if (arg is int iValue)
+                        {
+                            ((FXParameter<int>)parameter).Value = iValue;
+                        }
+                        else if (arg is float fValueInt)
+                        {
+                            ((FXParameter<int>)parameter).Value = Mathf.CeilToInt(fValueInt);
+                        }
+                    }
+                    else if (parameterType == typeof(bool))
+                    {
+                        if (arg is bool bValue)
+                        {
+                            ((FXParameter<bool>)parameter).Value = bValue;
+                        }
+                        else if (arg is float fValueBool)
+                        {
+                            ((FXParameter<bool>)parameter).Value = (fValueBool != 0f);
+                        }
+                    }
+                    else if (parameterType == typeof(string) && arg is string sValue)
+                    {
+                        ((FXParameter<string>)parameter).Value = sValue;
+                    }
+                    else if (parameterType == typeof(Color) && arg is Color cValue)
+                    {
+                        ((FXParameter<Color>)parameter).Value = cValue;
+                    }
+                    else if (parameterType.IsEnum)
+                    {
+                        if (arg is int enumInt)
+                        {
+                            if (Enum.IsDefined(parameterType, enumInt))
+                            {
+                                object enumValue = Enum.ToObject(parameterType, enumInt);
+                                iFXParameter.ObjectValue = enumValue;
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"The integer value '{enumInt}' is not defined in the enum '{parameterType.Name}'");
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"Argument for setting enum parameter {address} is not an int");
+                        }
+                    }
+
+                    else
+                    {
+                        Debug.LogWarning($"FXParameter {address} has an unsupported type: {parameterType}");
                     }
                 }
 
-                else
-                {
-                    Debug.LogWarning($"FXParameter {address} has an unsupported type: {parameterType}");
-                }
+
 
 
             }
@@ -362,6 +405,11 @@ namespace FX
             public T maxValue;
             public bool hasMinValue = false;
             public bool hasMaxValue = false;
+
+            // Settings specific to FXScaledParamers 
+            public bool isScaled = false;
+            public AffectorFunction affector = AffectorFunction.Linear;
+            public bool isInverted = false;
         }
 
 
@@ -394,7 +442,80 @@ namespace FX
 
             foreach (var item in fxItemsByAddress_)
             {
-                if (item.Value.type == FXItemInfoType.Parameter)
+
+                if (item.Value.type == FXItemInfoType.ScaledParameter)
+                {
+                    var parameter = item.Value.item as IFXParameter;
+
+                    if (parameter.ShouldSave || includeAll)
+                    {
+                        string key_ = item.Key;
+                        object value_ = parameter.ObjectValue;
+
+                        if (item.Value.item is FXScaledParameter<float> scaledParamFloat)
+                        {
+                            preset.floatParameters.Add(new FXPresetParameter<float>
+                            {
+                                key = key_,
+                                value = (float)value_,
+                                minValue = scaledParamFloat.GetMinValue(),
+                                maxValue = scaledParamFloat.GetMaxValue(),
+                                hasMaxValue = scaledParamFloat.HasMaxValue,
+                                hasMinValue = scaledParamFloat.HasMinValue,
+                                isScaled = true,
+                                affector = scaledParamFloat.AffectorFunction,
+                                isInverted = scaledParamFloat.InvertValue
+                            });
+                        }
+                        else if (item.Value.item is FXScaledParameter<Color> scaledParamColor)
+                        {
+                            preset.floatParameters.Add(new FXPresetParameter<float>
+                            {
+                                key = key_,
+                                value = (float)value_,
+                                minValue = scaledParamColor.GetMinValue(),
+                                maxValue = scaledParamColor.GetMaxValue(),
+                                hasMaxValue = scaledParamColor.HasMaxValue,
+                                hasMinValue = scaledParamColor.HasMinValue,
+                                isScaled = true,
+                                affector = scaledParamColor.AffectorFunction,
+                                isInverted = scaledParamColor.InvertValue
+                            });
+                        }
+                        else if (item.Value.item is FXScaledParameter<int> scaledParamInt)
+                        {
+                            preset.floatParameters.Add(new FXPresetParameter<float>
+                            {
+                                key = key_,
+                                value = (float)value_,
+                                minValue = scaledParamInt.GetMinValue(),
+                                maxValue = scaledParamInt.GetMaxValue(),
+                                hasMaxValue = scaledParamInt.HasMaxValue,
+                                hasMinValue = scaledParamInt.HasMinValue,
+                                isScaled = true,
+                                affector = scaledParamInt.AffectorFunction,
+                                isInverted = scaledParamInt.InvertValue
+                            });
+                        }
+                        else if (item.Value.item is FXScaledParameter<Vector3> scaledParamVector3)
+                        {
+                            preset.floatParameters.Add(new FXPresetParameter<float>
+                            {
+                                key = key_,
+                                value = (float)value_,
+                                minValue = scaledParamVector3.GetMinValue(),
+                                maxValue = scaledParamVector3.GetMaxValue(),
+                                hasMaxValue = scaledParamVector3.HasMaxValue,
+                                hasMinValue = scaledParamVector3.HasMinValue,
+                                isScaled = true,
+                                affector = scaledParamVector3.AffectorFunction,
+                                isInverted = scaledParamVector3.InvertValue
+                            });
+                        }
+                    }
+                }
+
+                else if (item.Value.type == FXItemInfoType.Parameter)
                 {
                     var parameter = item.Value.item as IFXParameter;
 
@@ -402,7 +523,6 @@ namespace FX
                     {
                         string key_   = item.Key;
                         object value_ = parameter.ObjectValue;
-
 
                         if (parameter is FXParameter<float> floatParam)
                         {
@@ -418,9 +538,8 @@ namespace FX
                                     minValue = floatParam.GetMinValue(),
                                     maxValue = floatParam.GetMaxValue(),
                                     hasMaxValue = floatParam.HasMaxValue,
-                                    hasMinValue = floatParam.HasMinValue,
-                                });
-
+                                    hasMinValue = floatParam.HasMinValue
+                                }) ;
                             }
                             else
                             {

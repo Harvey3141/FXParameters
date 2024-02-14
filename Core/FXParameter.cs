@@ -28,7 +28,7 @@ namespace FX
         private bool hasMinValue_ = false;
         private bool hasMaxValue_ = false;
 
-        public event Action<T> OnValueChanged; // Event triggered when the value changes
+        public event Action<T> OnValueChanged; 
 
         public virtual T Value
         {
@@ -152,7 +152,7 @@ namespace FX
 
     }
 
-    public enum EffectorFunction
+    public enum AffectorFunction
     {
         Linear,
         EaseIn,
@@ -171,7 +171,10 @@ namespace FX
         private T scaledValue_;
 
         [SerializeField]
-        private EffectorFunction effectorFunction_ = EffectorFunction.Linear;
+        private AffectorFunction affectorFunction_ = AffectorFunction.Linear;
+
+        bool invertValue_ = false;
+
 
         public event Action<T> OnScaledValueChanged; 
 
@@ -191,36 +194,20 @@ namespace FX
             get { return base.Value; }
             set
             {
-                float easedValued = Mathf.Clamp01(value);
-                switch (effectorFunction_)
-                {
-                    case EffectorFunction.Linear:
-                        break;
-                    case EffectorFunction.EaseIn:
-                        easedValued = Mathf.Pow(easedValued, 2);
-                        break;
-                    case EffectorFunction.EaseOut:
-                        easedValued = Mathf.Sqrt(easedValued);
-                        break;
-                    case EffectorFunction.Randomise:
-                        easedValued = UnityEngine.Random.Range(0f, 1f);
-                        break;
-                       
-                }
 
-                base.Value = easedValued;
+                base.Value = value;
                 UpdateScaledValue();
                 OnScaledValueChanged?.Invoke(scaledValue_);
             }
         }
 
-        public EffectorFunction EffectorFunction
+        public AffectorFunction AffectorFunction
         {
-            get => effectorFunction_;
+            get => affectorFunction_;
             set
             {
-                effectorFunction_ = value;
-                UpdateScaledValue(); 
+                affectorFunction_ = value;
+                Value = Value;
             }
         }
 
@@ -242,19 +229,46 @@ namespace FX
             private set { valueAtOne_ = value; }
         }
 
+        public bool InvertValue
+        {
+            get { return invertValue_; }
+            private set { 
+                invertValue_ = value;
+                Value = Value;
+            }
+        }
+
         private void UpdateScaledValue()
         {
             if (valueAtZero_ != null && valueAtOne_ != null)
             {
+                float affectedValue = (invertValue_ ? (1.0f - Mathf.Clamp01(Value)) : Mathf.Clamp01(Value));
+
+                switch (affectorFunction_)
+                {
+                    case AffectorFunction.Linear:
+                        break;
+                    case AffectorFunction.EaseIn:
+                        affectedValue = Mathf.Pow(affectedValue, 2);
+                        break;
+                    case AffectorFunction.EaseOut:
+                        affectedValue = Mathf.Sqrt(affectedValue);
+                        break;
+                    case AffectorFunction.Randomise:
+                        affectedValue = UnityEngine.Random.Range(0f, 1f);
+                        break;
+
+                }
+
                 if (typeof(T) == typeof(Color))
                 {
                     Color zeroColor = (Color)Convert.ChangeType(valueAtZero_, typeof(Color));
                     Color oneColor  = (Color)Convert.ChangeType(valueAtOne_, typeof(Color));
 
-                    float r = Mathf.Lerp(zeroColor.r, oneColor.r, Value);
-                    float g = Mathf.Lerp(zeroColor.g, oneColor.g, Value);
-                    float b = Mathf.Lerp(zeroColor.b, oneColor.b, Value);
-                    float a = Mathf.Lerp(zeroColor.a, oneColor.a, Value);
+                    float r = Mathf.Lerp(zeroColor.r, oneColor.r, affectedValue);
+                    float g = Mathf.Lerp(zeroColor.g, oneColor.g, affectedValue);
+                    float b = Mathf.Lerp(zeroColor.b, oneColor.b, affectedValue);
+                    float a = Mathf.Lerp(zeroColor.a, oneColor.a, affectedValue);
 
                     scaledValue_ = (T)(object)new Color(r, g, b, a);
                 }
@@ -262,13 +276,13 @@ namespace FX
                 {
                     float zeroValue = (float)Convert.ChangeType(valueAtZero_, typeof(float));
                     float oneValue  = (float)Convert.ChangeType(valueAtOne_, typeof(float));
-                    scaledValue_    = (T)(object)Mathf.Lerp(zeroValue, oneValue, Value);
+                    scaledValue_    = (T)(object)Mathf.Lerp(zeroValue, oneValue, affectedValue);
                 }
                 else if (typeof(T) == typeof(int))
                 {
                     float zeroValue   = (float)Convert.ChangeType(valueAtZero_, typeof(int));
                     float oneValue    = (float)Convert.ChangeType(valueAtOne_, typeof(int));
-                    float lerpedValue = Mathf.Lerp(zeroValue, oneValue, Value);
+                    float lerpedValue = Mathf.Lerp(zeroValue, oneValue, affectedValue);
                     scaledValue_      = (T)(object)Mathf.RoundToInt(lerpedValue);
                 }
                 else if (typeof(T) == typeof(Vector3))
@@ -276,9 +290,9 @@ namespace FX
                     Vector3 zeroVector = (Vector3)Convert.ChangeType(valueAtZero_, typeof(Vector3));
                     Vector3 oneVector  = (Vector3)Convert.ChangeType(valueAtOne_, typeof(Vector3));
 
-                    float x = Mathf.Lerp(zeroVector.x, oneVector.x, Value);
-                    float y = Mathf.Lerp(zeroVector.y, oneVector.y, Value);
-                    float z = Mathf.Lerp(zeroVector.z, oneVector.z, Value);
+                    float x = Mathf.Lerp(zeroVector.x, oneVector.x, affectedValue);
+                    float y = Mathf.Lerp(zeroVector.y, oneVector.y, affectedValue);
+                    float z = Mathf.Lerp(zeroVector.z, oneVector.z, affectedValue);
 
                     scaledValue_ = (T)(object)new Vector3(x, y, z);
                 }
