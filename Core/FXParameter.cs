@@ -16,7 +16,7 @@ namespace FX
     public class FXParameter<T> : IFXParameter
     {
         [SerializeField]
-        private string address_;
+        protected string address_;
         [SerializeField]
         private T value_;
         [SerializeField]
@@ -50,7 +50,8 @@ namespace FX
                 if (!EqualityComparer<T>.Default.Equals(value_, newValue)) 
                 {
                     value_ = newValue;
-                    OnValueChanged?.Invoke(value_); 
+                    OnValueChanged?.Invoke(value_);
+                    FXManager.Instance.OnParameterValueChanges(address_, value);
                 }
             }
         }
@@ -198,6 +199,7 @@ namespace FX
                 base.Value = value;
                 UpdateScaledValue();
                 OnScaledValueChanged?.Invoke(scaledValue_);
+                FXManager.Instance.OnParameterValueChanges(address_, value);
             }
         }
 
@@ -257,7 +259,6 @@ namespace FX
                     case AffectorFunction.Randomise:
                         affectedValue = UnityEngine.Random.Range(0f, 1f);
                         break;
-
                 }
 
                 if (typeof(T) == typeof(Color))

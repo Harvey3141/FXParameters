@@ -18,6 +18,7 @@
 using UnityEngine;
 using extOSC;
 using System.Collections.Generic;
+using System.Xml.Schema;
 
 namespace FX
 {
@@ -25,10 +26,12 @@ namespace FX
     {
 
         [SerializeField]
-        public List<int> listeningPorts = new List<int> { 9101, 9103};
+        public List<int> listeningPorts = new List<int> { 9101, 9103 };
 
         private List<OSCReceiver> receivers_;
         private List<OSCTransmitter> transmitters_;
+
+        
 
         private void Start()
         {
@@ -43,6 +46,12 @@ namespace FX
             }
 
             transmitters_ = new List<OSCTransmitter>();
+
+            OSCTransmitter newTransmitter = gameObject.AddComponent<OSCTransmitter>();
+            newTransmitter.RemotePort = 10021;
+            newTransmitter.RemoteHost = "127.0.0.1";
+            transmitters_.Add(newTransmitter);
+            FXManager.Instance.onFXParamChanged += OnFXParamChanged;
         }
 
         protected void MessageReceived(OSCMessage message, int port)
@@ -52,11 +61,11 @@ namespace FX
             {
                 string paramAddress = address.Substring(0, address.Length - 4);
                 object value = FXManager.Instance.GetFX(paramAddress);
-                
+
                 if (value != null)
                 {
                     string senderIp = message.Ip.ToString();
-                    int senderPort  = port += 1;
+                    int senderPort = port += 1;
 
                     bool transmitterFound = false;
 
@@ -73,7 +82,7 @@ namespace FX
                     if (!transmitterFound)
                     {
                         OSCTransmitter newTransmitter = gameObject.AddComponent<OSCTransmitter>();
-                        newTransmitter.RemotePort = senderPort;  
+                        newTransmitter.RemotePort = senderPort;
                         newTransmitter.RemoteHost = senderIp;
                         transmitters_.Add(newTransmitter);
                         SendOSCMessage(paramAddress, newTransmitter, value);
@@ -107,6 +116,10 @@ namespace FX
 
         }
 
+        void OnFXParamChanged(string address, object value) {
+            SendOSCMessage(address, transmitters_[0], value);
+        }
+
         void SendOSCMessage(string address, OSCTransmitter transmitter, object value)
         {
             var message = new OSCMessage(address);
@@ -126,9 +139,7 @@ namespace FX
                     Debug.LogWarning($"Unsupported value type for OSC message: {value.GetType()}");
                     break;
             }
-
             transmitter.Send(message);
-
         }
 
 

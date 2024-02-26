@@ -59,6 +59,9 @@ namespace FX
 
         public static Dictionary<string, (FXItemInfoType type, object item, object fxInstance)> fxItemsByAddress_ = new Dictionary<string, (FXItemInfoType type, object item, object fxInstance)>(StringComparer.OrdinalIgnoreCase);
 
+        public delegate void OnFXParamChanged(string address, object value);
+        public event OnFXParamChanged onFXParamChanged;
+
         public enum FXItemInfoType
         {
             Method,
@@ -81,7 +84,7 @@ namespace FX
                 }
                 if (item is FXScaledParameter<float> || item is FXScaledParameter<int> || item is FXScaledParameter<Color> || item is FXScaledParameter<Vector3>)
                 {
-                    type = FXItemInfoType.ScaledParameter; 
+                    type = FXItemInfoType.ScaledParameter;
                 }
                 fxItemsByAddress_.Add(address, (type, item, fxInstance));
 
@@ -276,7 +279,7 @@ namespace FX
                         }
                         else if (fxItem.item is FXScaledParameter<Color> scaledParamColor)
                         {
-                            scaledParamColor.Value = floatValue; 
+                            scaledParamColor.Value = floatValue;
                         }
                         else if (fxItem.item is FXScaledParameter<int> scaledParamInt)
                         {
@@ -359,16 +362,18 @@ namespace FX
                         Debug.LogWarning($"FXParameter {address} has an unsupported type: {parameterType}");
                     }
                 }
-
-
-
-
             }
             else
             {
                 Debug.LogWarning($"No parameter found for address {address}");
             }
         }
+
+        public void OnParameterValueChanges<T>(string address, T value) {
+            onFXParamChanged.Invoke(address, value);    
+        }
+
+
 
 
         [System.Serializable]
