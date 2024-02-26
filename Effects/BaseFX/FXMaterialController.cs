@@ -1,7 +1,5 @@
 using FX;
 using System;
-using System.Net.Http.Headers;
-using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
 public enum MaterialType
@@ -10,7 +8,8 @@ public enum MaterialType
     EMISSIVE,
     CONCRETE,
     CUTOUT,
-    DISSOLVE
+    DISSOLVE,
+    RESOLUME
 }
 public enum DissolveType
 {
@@ -40,16 +39,18 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
     public Material Concrete;
     public Material Cutout;
     public Material Disolve;
+    public Material Resolume;
+
 
     public FXParameter<Color> color = new FXParameter<Color>(Color.white);
 
-    public FXParameter<float> cutoutTileX = new FXParameter<float>(1.0f);
-    public FXParameter<float> cutoutTileY = new FXParameter<float>(1.0f);
-    public FXParameter<CutoutPattern> cutoutPattern = new FXParameter<CutoutPattern>(CutoutPattern.HORIZONTAL);
+    public FXScaledParameter<float> cutoutWidth  = new FXScaledParameter<float>(1.0f,0.0f,1.0f);
+    public FXScaledParameter<float> cutoutHeight = new FXScaledParameter<float>(1.0f, 0.0f, 1.0f);
+    public FXParameter<bool> cutoutInvert = new FXParameter<bool>(false);
 
 
     public FXScaledParameter<float> dissolveEdgeWidth = new FXScaledParameter<float>(0.0f, -12.0f, 0.0f);
-    public FXScaledParameter<float> dissolveOffset = new FXScaledParameter<float>(0.0f, 0.0f, 1.0f);
+    public FXScaledParameter<float> dissolveOffset    = new FXScaledParameter<float>(0.0f, 0.0f, 1.0f);
     public FXParameter<DissolveType> dissolveType = new FXParameter<DissolveType>(DissolveType.ONE);
 
 
@@ -60,20 +61,29 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
         triggerValue.OnScaledValueChanged += SetEmissiveIntensityAll;
         color.OnValueChanged += SetColor;
 
-        cutoutTileX.OnValueChanged += SetCutoutTileX;
-        cutoutTileY.OnValueChanged += SetCutoutTileY;
+        cutoutWidth.OnValueChanged += SetCutoutWidth;
+        cutoutHeight.OnValueChanged += SetCutoutHeight;
+        cutoutInvert.OnValueChanged += SetCutoutInvert;
+
 
         dissolveEdgeWidth.OnScaledValueChanged += SetDissolveEdgeWidth;
         dissolveOffset.OnScaledValueChanged += SetDissolveOffset;
     }
 
-    public void SetCutoutTileX(float value) {
-           if (materialType.Value == MaterialType.CUTOUT) SetPropertyVector2("_Tile", new Vector2(cutoutTileX.Value, cutoutTileY.Value));    
+    public void SetCutoutWidth(float value) 
+    {
+           if (materialType.Value == MaterialType.CUTOUT) SetPropertyFloat("_Width", value);    
     }
 
-    public void SetCutoutTileY(float value)
+
+    public void SetCutoutHeight(float value)
     {
-        if (materialType.Value == MaterialType.CUTOUT) SetPropertyVector2("_Tile", new Vector2(cutoutTileX.Value, cutoutTileY.Value));
+        if (materialType.Value == MaterialType.CUTOUT) SetPropertyFloat("_Height", value);
+    }
+
+    public void SetCutoutInvert(bool value)
+    {
+        if (materialType.Value == MaterialType.CUTOUT) SetPropertyFloat("_Invert", value ? 1.0f : 0.0f);
     }
 
     protected override void Start()
@@ -95,6 +105,8 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
             case MaterialType.CUTOUT:
                 break;
             case MaterialType.DISSOLVE:
+                break;
+            case MaterialType.RESOLUME:
                 break;
             default:
                 break;
@@ -151,6 +163,7 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
             case MaterialType.EMISSIVE:
                 ApplyMaterial(Emissive);
                 SetEmissiveIntensityAll(triggerValue.ScaledValue);
+                SetColor(color.Value);
                 break;
             case MaterialType.CONCRETE:
                 ApplyMaterial(Concrete);
@@ -158,17 +171,22 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
             case MaterialType.CUTOUT:
                 ApplyMaterial(Cutout);
                 SetEmissiveIntensityAll(triggerValue.ScaledValue);
+                SetColor(color.Value);
                 break;
             case MaterialType.DISSOLVE:
                 ApplyMaterial(Disolve);
                 SetEmissiveIntensityAll(triggerValue.ScaledValue);
                 SetDissolveEdgeWidth(dissolveEdgeWidth.ScaledValue);
                 SetDissolveOffset(dissolveOffset.ScaledValue);
+                SetColor(color.Value);
+                break;
+            case MaterialType.RESOLUME:
+                ApplyMaterial(Resolume);
                 break;
             default:
                 break;
         }
-        SetColor(color.Value);
+        
     }
 
     void SetEmissiveIntensityAll(float intensity) { 
@@ -194,7 +212,7 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
                         renderer.material.SetColor("_EmissiveColor", color.Value * Mathf.GammaToLinearSpace(intensity * 2.0f));                      
                         break;
                     case MaterialType.CUTOUT:
-                        renderer.material.SetColor("_EmmisionColour", color.Value * Mathf.GammaToLinearSpace(intensity * 2.0f));
+                        renderer.material.SetColor("_EmissiveColor", color.Value * Mathf.GammaToLinearSpace(intensity * 2.0f));
                         break;
                     case MaterialType.DISSOLVE:
                             renderer.material.SetFloat("_EdgeColorIntensity", Mathf.GammaToLinearSpace(intensity * 2.0f));                       
@@ -233,14 +251,13 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
                             renderer.material.SetColor("_EmissiveColor", value * Mathf.GammaToLinearSpace(triggerValue.ScaledValue * 2.0f));
                             break;
                         case MaterialType.CUTOUT:
-                            renderer.material.SetColor("_EmmisionColour", value * Mathf.GammaToLinearSpace(triggerValue.ScaledValue * 2.0f));
+                            renderer.material.SetColor("_EmissiveColor", value * Mathf.GammaToLinearSpace(triggerValue.ScaledValue * 2.0f));
                             break;
                         case MaterialType.DISSOLVE:
                             renderer.material.SetColor("_EdgeColor", value * Mathf.GammaToLinearSpace(triggerValue.ScaledValue*2.0f));
                             break;
 
-                    }
-                 
+                    }                 
                 }
             }
         }
@@ -257,7 +274,8 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
                 Renderer renderer = obj.GetComponent<Renderer>();
                 if (renderer != null)
                 {
-                    renderer.material.SetFloat(name, value);                                    
+                    renderer.material.SetFloat(name, value);
+
                 }
             }
         }
