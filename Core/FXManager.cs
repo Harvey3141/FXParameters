@@ -370,10 +370,8 @@ namespace FX
         }
 
         public void OnParameterValueChanges<T>(string address, T value) {
-            onFXParamChanged.Invoke(address, value);    
+            if (onFXParamChanged != null) onFXParamChanged.Invoke(address, value);    
         }
-
-
 
 
         [System.Serializable]
