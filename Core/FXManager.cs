@@ -62,6 +62,9 @@ namespace FX
         public delegate void OnFXParamChanged(string address, object value);
         public event OnFXParamChanged onFXParamChanged;
 
+        public delegate void OnPresetLoaded(string name);
+        public event OnPresetLoaded onPresetLoaded;
+
         public enum FXItemInfoType
         {
             Method,
@@ -723,6 +726,8 @@ namespace FX
                         group.LoadPreset(groupPreset);
                     }
                 }
+
+                onPresetLoaded.Invoke(presetName);
 
                 return true;
                

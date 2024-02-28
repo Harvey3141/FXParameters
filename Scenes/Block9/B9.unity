@@ -15963,7 +15963,7 @@ GameObject:
   - component: {fileID: 283287818}
   - component: {fileID: 283287817}
   m_Layer: 0
-  m_Name: extOSCManager
+  m_Name: OSCManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15976,12 +15976,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 283287816}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3fc117dd81b24424ea6b3e18b6f366a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  listeningPorts: 8d230000
+  sendInterval: 0.1
+  maxMessagesPerInterval: 10
 --- !u!4 &283287818
 Transform:
   m_ObjectHideFlags: 0

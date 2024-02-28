@@ -11,6 +11,8 @@ using extOSC;
 using System.Collections.Generic;
 using System.Collections;
 using System.IO;
+using System.Text.RegularExpressions;
+using System;
 
 namespace FX
 {
@@ -62,6 +64,8 @@ namespace FX
             SetupNodes();
             StartCoroutine(SendMessagesAtInterval(sendInterval));
             FXManager.Instance.onFXParamChanged += OnFXParamChanged;
+            FXManager.Instance.onPresetLoaded   += OnPresetLoaded;
+
         }
 
         private void SetupNodes()
@@ -130,6 +134,12 @@ namespace FX
                         case OSCValueType.Float:
                             args[i] = message.Values[0].FloatValue;
                             break;
+                        case OSCValueType.True:
+                            args[i] = true;
+                            break;
+                        case OSCValueType.False:
+                            args[i] = false;
+                            break;
                         case OSCValueType.Int:
                             args[i] = message.Values[0].IntValue;
                             break;
@@ -147,10 +157,18 @@ namespace FX
 
 
         void OnFXParamChanged(string address, object value) {
-            foreach (var node in oscNodes)
+            if (!Regex.IsMatch(address, @"^/Group\d"))
             {
-                if (node.SendParamChanges) SendOSCMessage(address, node, value);
+                foreach (var node in oscNodes)
+                {
+                    if (node.SendParamChanges) SendOSCMessage(address, node, value);
+                }
             }
+
+        }
+
+        void OnPresetLoaded(string name) {
+            //SendAllFXParams();
         }
 
 
@@ -189,13 +207,22 @@ namespace FX
                 case string stringValue:
                     message.AddValue(OSCValue.String(stringValue));
                     break;
+                case bool boolValue:
+                    message.AddValue(OSCValue.Bool(boolValue));
+                    break;
+                case Enum enumValue:
+                    int enumIntValue = Convert.ToInt32(enumValue);
+                    message.AddValue(OSCValue.Int(enumIntValue));
+                    break;
+                case Color colorValue:
+                    message.AddValue(OSCValue.Color(colorValue));
+                    break;
                 default:
-                    Debug.LogWarning($"Unsupported value type for OSC message: {value.GetType()}");
+                    Debug.LogWarning($"Unsupported value type for OSC message: {value.GetType()} , address: {address} ");
                     break;
             }
             node.MessageQueue.Enqueue(message);
         }
-
 
     }
 }
