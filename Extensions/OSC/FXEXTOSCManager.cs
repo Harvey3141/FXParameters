@@ -63,9 +63,9 @@ namespace FX
         {
             SetupNodes();
             StartCoroutine(SendMessagesAtInterval(sendInterval));
-            FXManager.Instance.onFXParamChanged += OnFXParamChanged;
-            FXManager.Instance.onPresetLoaded   += OnPresetLoaded;
-
+            FXManager.Instance.onFXParamValueChanged    += OnFXParamValueChanged;
+            FXManager.Instance.onFXParamAffectorChanged += OnFXParamAffectorChanged;
+            FXManager.Instance.onPresetLoaded           += OnPresetLoaded;
         }
 
         private void SetupNodes()
@@ -156,15 +156,24 @@ namespace FX
         }
 
 
-        void OnFXParamChanged(string address, object value) {
-            if (!Regex.IsMatch(address, @"^/Group\d"))
+        void OnFXParamValueChanged(string address, object value)
+        {
+            if (!string.IsNullOrEmpty(address) && !Regex.IsMatch(address, @"^/Group\d"))
             {
                 foreach (var node in oscNodes)
                 {
                     if (node.SendParamChanges) SendOSCMessage(address, node, value);
                 }
             }
+        }
 
+        void OnFXParamAffectorChanged(string address, AffectorFunction affector)
+        {
+            address += "/affector";
+            foreach (var node in oscNodes)
+            {
+                if (node.SendParamChanges) SendOSCMessage(address, node, affector.ToString());
+            }         
         }
 
         void OnPresetLoaded(string name) {

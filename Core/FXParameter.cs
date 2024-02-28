@@ -51,7 +51,7 @@ namespace FX
                 {
                     value_ = newValue;
                     OnValueChanged?.Invoke(value_);
-                    FXManager.Instance.OnParameterValueChanges(address_, value);
+                    FXManager.Instance.OnParameterValueChanged(address_, value);
                 }
             }
         }
@@ -199,7 +199,7 @@ namespace FX
                 base.Value = value;
                 UpdateScaledValue();
                 OnScaledValueChanged?.Invoke(scaledValue_);
-                FXManager.Instance.OnParameterValueChanges(address_, value);
+                FXManager.Instance.OnParameterValueChanged(address_, value);
             }
         }
 
@@ -209,6 +209,8 @@ namespace FX
             set
             {
                 affectorFunction_ = value;
+                FXManager.Instance.OnParameterAffertorChanged(address_, affectorFunction_);
+
                 Value = Value;
             }
         }

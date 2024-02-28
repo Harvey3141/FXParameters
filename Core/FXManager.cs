@@ -59,8 +59,11 @@ namespace FX
 
         public static Dictionary<string, (FXItemInfoType type, object item, object fxInstance)> fxItemsByAddress_ = new Dictionary<string, (FXItemInfoType type, object item, object fxInstance)>(StringComparer.OrdinalIgnoreCase);
 
-        public delegate void OnFXParamChanged(string address, object value);
-        public event OnFXParamChanged onFXParamChanged;
+        public delegate void OnFXParamValueChanged(string address, object value);
+        public event OnFXParamValueChanged onFXParamValueChanged;
+
+        public delegate void OnFXParamAffectorChanged(string address, AffectorFunction affector);
+        public event OnFXParamAffectorChanged onFXParamAffectorChanged;
 
         public delegate void OnPresetLoaded(string name);
         public event OnPresetLoaded onPresetLoaded;
@@ -372,8 +375,13 @@ namespace FX
             }
         }
 
-        public void OnParameterValueChanges<T>(string address, T value) {
-            if (onFXParamChanged != null) onFXParamChanged.Invoke(address, value);    
+        public void OnParameterValueChanged<T>(string address, T value) {
+            if (onFXParamValueChanged != null) onFXParamValueChanged.Invoke(address, value);    
+        }
+
+        public void OnParameterAffertorChanged(string address, AffectorFunction affector)
+        {
+            if (onFXParamAffectorChanged != null) onFXParamAffectorChanged.Invoke(address, affector);
         }
 
 

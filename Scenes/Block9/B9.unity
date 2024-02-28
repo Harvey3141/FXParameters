@@ -114822,18 +114822,9 @@ MonoBehaviour:
     scaledValue_: 1.8000001
     affectorFunction_: 0
   center: {x: 0, y: 1.61, z: 0}
-  sizeX:
-    address_: 
-    value_: 5.94
-    shouldSave_: 1
-  sizeY:
-    address_: 
-    value_: 3.6
-    shouldSave_: 1
-  sizeZ:
-    address_: 
-    value_: 1
-    shouldSave_: 1
+  sizeX: 4.59
+  sizeY: 4.3
+  sizeZ: 1
   EmoveToType: 1
 --- !u!114 &4816326209331662908
 MonoBehaviour:
@@ -114847,7 +114838,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cae1c773ea909f44d89e7dea190cbf65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fxAddress: /Strobe/test
+  fxAddress: 
   fxEnabled:
     address_: 
     value_: 0
@@ -114878,19 +114869,19 @@ MonoBehaviour:
     affectorFunction_: 0
   fadeSpeedOn:
     address_: 
-    value_: 0.05
+    value_: 0.688
     shouldSave_: 1
     valueAtZero_: 1
     valueAtOne_: 100
-    scaledValue_: 5.9500003
+    scaledValue_: 69.112
     affectorFunction_: 0
   fadeSpeedOff:
     address_: 
-    value_: 0.05
+    value_: 0.296
     shouldSave_: 1
     valueAtZero_: 1
     valueAtOne_: 100
-    scaledValue_: 5.9500003
+    scaledValue_: 30.304
     affectorFunction_: 0
 --- !u!1 &4816326209331662909
 GameObject:
@@ -114935,7 +114926,7 @@ Light:
   m_GameObject: {fileID: 4816326209331662909}
   m_Enabled: 0
   serializedVersion: 10
-  m_Type: 0
+  m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 600
@@ -114968,7 +114959,7 @@ Light:
       e31: 0
       e32: 0
       e33: 1
-    m_UseCullingMatrixOverride: 1
+    m_UseCullingMatrixOverride: 0
   m_Cookie: {fileID: 0}
   m_DrawHalo: 0
   m_Flare: {fileID: 0}
@@ -114984,7 +114975,7 @@ Light:
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 0, y: 0, z: 5, w: 5.0124846}
-  m_UseBoundingSphereOverride: 1
+  m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -115227,7 +115218,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &4816326209560098800
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -115429,18 +115420,9 @@ MonoBehaviour:
     scaledValue_: 1.8000001
     affectorFunction_: 0
   center: {x: 0, y: 1.4, z: 4.64}
-  sizeX:
-    address_: 
-    value_: 4.86
-    shouldSave_: 1
-  sizeY:
-    address_: 
-    value_: 4.69
-    shouldSave_: 1
-  sizeZ:
-    address_: 
-    value_: 1.8
-    shouldSave_: 1
+  sizeX: 4.8
+  sizeY: 4.8
+  sizeZ: 1.8
   EmoveToType: 1
 --- !u!1 &4816326209641883354
 GameObject:

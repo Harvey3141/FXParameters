@@ -166,11 +166,12 @@ namespace FX
 
             property.isExpanded = EditorGUI.Foldout(labelPosition, property.isExpanded, "   " + property.displayName, true, EditorStyles.boldLabel);
 
-            float buttonWidth   = 20f; 
-            float fieldWidth    = scaledValuePosition.width - buttonWidth - padding;
+            float buttonWidth   = 20f;
+            float fieldWidth = scaledValuePosition.width - 2 * buttonWidth - 2 * padding;
             Rect fieldPosition  = new Rect(scaledValuePosition.x, scaledValuePosition.y, fieldWidth, scaledValuePosition.height);
             Rect buttonPosition = new Rect(fieldPosition.xMax + padding, scaledValuePosition.y, buttonWidth, scaledValuePosition.height);
 
+            Rect buttonPositionAffector = new Rect(buttonPosition.xMax + padding, scaledValuePosition.y, buttonWidth, scaledValuePosition.height);
 
             EditorGUI.PropertyField(fieldPosition, scaledValueProperty, GUIContent.none);
 
@@ -242,14 +243,48 @@ namespace FX
                 Debug.Log("Button left-clicked");
             }
 
-            Rect dropdownPosition = new Rect(buttonPosition.xMax + padding, buttonPosition.y, 100, buttonPosition.height); 
-
-            SerializedProperty effectorFunctionProperty = property.FindPropertyRelative("affectorFunction_");
-
-            if (effectorFunctionProperty != null)
+            if (GUI.Button(buttonPositionAffector, "E", EditorStyles.miniButton))
             {
-                string[] options = Enum.GetNames(typeof(AffectorFunction));
-                effectorFunctionProperty.enumValueIndex = EditorGUI.Popup(dropdownPosition, effectorFunctionProperty.enumValueIndex, options);
+                GenericMenu menu = new GenericMenu();
+
+                if (!foundParam)
+                {
+                    object target = fieldInfo.GetValue(property.serializedObject.targetObject);
+            
+                    if (target is FXScaledParameter<Color>)
+                    {
+                        fxScaledParamC = (FXScaledParameter<Color>)target;
+                        foundParam = true;
+                    }
+                    else if (target is FXScaledParameter<float>)
+                    {
+                        fxScaledParamF = (FXScaledParameter<float>)target;
+                        foundParam = true;
+                    }
+                    else if (target is FXScaledParameter<int>)
+                    {
+                        fxScaledParamI = (FXScaledParameter<int>)target;
+                        foundParam = true;
+                    }
+                    else if (target is FXScaledParameter<Vector3>)
+                    {
+                        fxScaledParamv3 = (FXScaledParameter<Vector3>)target;
+                        foundParam = true;
+                    }
+                }
+
+                AffectorFunction currentAffectorFunction = GetAffectorFunction();
+
+                foreach (AffectorFunction func in Enum.GetValues(typeof(AffectorFunction)))
+                {
+                    bool isSelected = currentAffectorFunction == func;
+                    menu.AddItem(new GUIContent(func.ToString()), isSelected, () =>
+                    {
+                        SetAffectorFunction(func);
+                    });
+                }
+
+                menu.ShowAsContext();
             }
 
             if (property.isExpanded)
@@ -313,6 +348,28 @@ namespace FX
             int lineCount = property.isExpanded ? 4 : 1;
 
             return (lineCount * EditorGUIUtility.singleLineHeight) + ((lineCount + 1) * EditorGUIUtility.standardVerticalSpacing) + 2f * 4f; // additional 2f*padding for the top and bottom padding of the box
+        }
+
+        // Helper method to get the current AffectorFunction from the correctly typed FXScaledParameter instance
+        private AffectorFunction GetAffectorFunction()
+        {
+            if (fxScaledParamC != null) return fxScaledParamC.AffectorFunction;
+            if (fxScaledParamF != null) return fxScaledParamF.AffectorFunction;
+            if (fxScaledParamI != null) return fxScaledParamI.AffectorFunction;
+            if (fxScaledParamv3 != null) return fxScaledParamv3.AffectorFunction;
+            return default(AffectorFunction); // Default or some error handling
+        }
+
+        // Helper method to set the AffectorFunction on the correctly typed FXScaledParameter instance
+        private void SetAffectorFunction(AffectorFunction func)
+        {
+            if (fxScaledParamC != null) fxScaledParamC.AffectorFunction = func;
+            else if (fxScaledParamF != null) fxScaledParamF.AffectorFunction = func;
+            else if (fxScaledParamI != null) fxScaledParamI.AffectorFunction = func;
+            else if (fxScaledParamv3 != null) fxScaledParamv3.AffectorFunction = func;
+
+            // Ensure changes are saved, might require marking the object as dirty etc., depending on your setup
+            // EditorUtility.SetDirty(targetObject); if working within the editor
         }
 
     }
