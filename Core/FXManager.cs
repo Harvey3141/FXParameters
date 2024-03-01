@@ -252,7 +252,7 @@ namespace FX
             }
         }
 
-        private void SetParameter(string address, object arg)
+        private void SetParameter(string address, object arg = null, bool resetToDefault = false)
         {
             if (fxItemsByAddress_.TryGetValue(address, out var fxItem))
             {
@@ -278,6 +278,7 @@ namespace FX
 
                 if (fxItem.type == FXItemInfoType.ScaledParameter)
                 {
+
                     if (arg is float floatValue)
                     {
                         if (fxItem.item is FXScaledParameter<float> scaledParamFloat)
@@ -376,6 +377,69 @@ namespace FX
             }
         }
 
+        public void ResetParameterToDefault(string address)
+        {
+            if (fxItemsByAddress_.TryGetValue(address, out var fxItem))
+            {
+                if (fxItem.type == FXItemInfoType.ScaledParameter)
+                {
+                    switch (fxItem.item)
+                    {
+                        case FXScaledParameter<float> floatParam:
+                            floatParam.ResetToDefaultValue();
+                            break;
+                        case FXScaledParameter<int> intParam:
+                            intParam.ResetToDefaultValue();
+                            break;
+                        case FXScaledParameter<bool> boolParam:
+                            boolParam.ResetToDefaultValue();
+                            break;
+                        case FXScaledParameter<Enum> enumParam:
+                            enumParam.ResetToDefaultValue();
+                            break;
+                        case FXScaledParameter<Color> colorParam:
+                            colorParam.ResetToDefaultValue();
+                            break;
+                        case FXScaledParameter<String> stringParam:
+                            stringParam.ResetToDefaultValue();
+                            break;
+                    }
+                }
+                else if (fxItem.type == FXItemInfoType.Parameter)
+                {
+                    switch (fxItem.item)
+                    {
+                        case FXParameter<float> floatParam:
+                            floatParam.ResetToDefaultValue();
+                            break;
+                        case FXParameter<int> intParam:
+                            intParam.ResetToDefaultValue();
+                            break;
+                        case FXParameter<bool> boolParam:
+                            boolParam.ResetToDefaultValue();
+                            break;
+                        case FXParameter<Enum> enumParam:
+                            enumParam.ResetToDefaultValue();
+                            break;
+                        case FXParameter<Color> colorParam:
+                            colorParam.ResetToDefaultValue();
+                            break;
+                        case FXParameter<String> stringParam:
+                            stringParam.ResetToDefaultValue();
+                            break;
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning($"No parameter found for address {address}.");
+                }
+            }
+        }
+
+        public void ResetAllParamsToDefault() { 
+        
+        }
+
         public void OnParameterValueChanged<T>(string address, T value) {
             if (onFXParamValueChanged != null) onFXParamValueChanged.Invoke(address, value);    
         }
@@ -384,6 +448,7 @@ namespace FX
         {
             if (onFXParamAffectorChanged != null) onFXParamAffectorChanged.Invoke(address, affector);
         }
+
 
 
         [System.Serializable]

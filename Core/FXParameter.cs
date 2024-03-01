@@ -19,6 +19,8 @@ namespace FX
         protected string address_;
         [SerializeField]
         private T value_;
+        private T defaultValue_; 
+
         [SerializeField]
         private bool shouldSave_ = true;
 
@@ -95,6 +97,7 @@ namespace FX
             if (typeof(T) == typeof(float) || typeof(T) == typeof(int) || typeof(T) == typeof(bool) || typeof(T) == typeof(string) || typeof(T) == typeof(Color) || typeof(T).IsEnum)
             {
                 Value = value;
+                defaultValue_ = value;
                 ShouldSave = shouldSave;
 
                 if (string.IsNullOrEmpty(address))
@@ -149,6 +152,11 @@ namespace FX
         public T GetMaxValue()
         {
             return maxValue_;
+        }
+
+        public void ResetToDefaultValue()
+        {
+            Value = defaultValue_;
         }
 
     }

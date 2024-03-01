@@ -166,6 +166,7 @@ namespace FX
             if (fxAddresses.Contains(modifiedAddress))
             {
                 fxAddresses.Remove(modifiedAddress);
+                FXManager.Instance.ResetParameterToDefault(address);
             }
         }
 

@@ -130,6 +130,11 @@ namespace FX
                     // TODO - create transmitter 
                 }
             }
+            if (address.ToUpper().EndsWith("/RESET"))
+            {
+                string paramAddress = address.Substring(0, address.Length - 4);
+                FXManager.Instance.ResetParameterToDefault(paramAddress);
+            }
             else if (address.ToUpper() == "/SCENE/LOAD")
             {
                 if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
