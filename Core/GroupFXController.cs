@@ -10,7 +10,15 @@ namespace FX
     public class GroupFXController : MonoBehaviour, IFXTriggerable
     {
         [SerializeField]
-        public string address; 
+        public string address;
+
+        public string label;
+        public string Label{
+            get => label;
+            set { 
+                if (label != value){label = value;}
+            }
+        }
 
         /// <summary>
         /// Note that these addresses are stored with the leading '/' removed to work with the custom editor list
@@ -141,7 +149,7 @@ namespace FX
             fxTriggerAddresses.Clear();
         }
 
-        public void AddFxAddress(string address)
+        public void AddFXParam(string address)
         {
             if (String.IsNullOrEmpty(address)) return;
             string modifiedAddress = address.Substring(1);
@@ -151,13 +159,33 @@ namespace FX
             }
         }
 
-        public void RemoveFxAddress(string address)
+        public void RemoveFXParam(string address)
         {
             if (String.IsNullOrEmpty(address)) return;
             string modifiedAddress = address.Substring(1);
             if (fxAddresses.Contains(modifiedAddress))
             {
                 fxAddresses.Remove(modifiedAddress);
+            }
+        }
+
+        public void AddFXTrigger(string address)
+        {
+            if (String.IsNullOrEmpty(address)) return;
+            string modifiedAddress = address.Substring(1);
+            if (!fxTriggerAddresses.Contains(modifiedAddress))
+            {
+                fxTriggerAddresses.Add(modifiedAddress);
+            }
+        }
+
+        public void RemoveFXTrigger(string address)
+        {
+            if (String.IsNullOrEmpty(address)) return;
+            string modifiedAddress = address.Substring(1);
+            if (fxTriggerAddresses.Contains(modifiedAddress))
+            {
+                fxTriggerAddresses.Remove(modifiedAddress);
             }
         }
 
@@ -169,6 +197,7 @@ namespace FX
         public void LoadPreset(FXGroupPreset preset) {
             ClearFXAdresses();
             fxAddresses        = preset.fxAddresses;
+            Label              = preset.label;  
 
             for (int i = 0; i < fxAddresses.Count; i++)
             {

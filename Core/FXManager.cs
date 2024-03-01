@@ -438,6 +438,7 @@ namespace FX
         public class FXGroupPreset
         {
             public string address;
+            public string label;
             public SignalSource signalSource;
             public List<string> fxAddresses        = new List<string>();
             public List<string> fxTriggerAddresses = new List<string>();
@@ -629,6 +630,7 @@ namespace FX
             {
                 FXGroupPreset groupPreset = new FXGroupPreset();
                 groupPreset.address            = group.address;
+                groupPreset.label              = group.label;
                 groupPreset.fxAddresses        = group.FormattedFXAddresses;
                 groupPreset.fxTriggerAddresses = group.fxTriggerAddresses;
                 groupPreset.signalSource       = group.signalSource;
@@ -756,6 +758,73 @@ namespace FX
         private bool IsAddressInPreset(string address, FXPreset preset)
         {
             return preset.boolParameters.Any(p => p.key == address);
+        }
+
+
+
+        public void AddFXParamToGroup(string groupAddress, string fxAddress)
+        {
+            GroupFXController group = FindGroupByAddress(groupAddress);
+            if (group != null)
+            {
+                group.AddFXParam(fxAddress);
+            }
+            else
+            {
+                Debug.LogWarning($"Group with address {groupAddress} not found.");
+            }
+        }
+
+        public void RemoveFXParamFromGroup(string groupAddress, string fxAddress)
+        {
+            GroupFXController group = FindGroupByAddress(groupAddress);
+            if (group != null)
+            {
+                group.RemoveFXParam(fxAddress);
+            }
+            else
+            {
+                Debug.LogWarning($"Group with address {groupAddress} not found.");
+            }
+        }
+
+        public void AddFXTriggerToGroup(string groupAddress, string fxAddress)
+        {
+            GroupFXController group = FindGroupByAddress(groupAddress);
+            if (group != null)
+            {
+                group.AddFXTrigger(fxAddress);
+            }
+            else
+            {
+                Debug.LogWarning($"Group with address {groupAddress} not found.");
+            }
+        }
+
+        public void RemoveFXTriggerFromGroup(string groupAddress, string fxAddress)
+        {
+            GroupFXController group = FindGroupByAddress(groupAddress);
+            if (group != null)
+            {
+                group.RemoveFXTrigger(fxAddress);
+            }
+            else
+            {
+                Debug.LogWarning($"Group with address {groupAddress} not found.");
+            }
+        }
+
+        private GroupFXController FindGroupByAddress(string address)
+        {
+            GroupFXController[] allGroups = GameObject.FindObjectsOfType<GroupFXController>();
+            foreach (var group in allGroups)
+            {
+                if (group.address == address)
+                {
+                    return group;
+                }
+            }
+            return null; 
         }
     }
 

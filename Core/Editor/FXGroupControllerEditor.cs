@@ -23,6 +23,7 @@ namespace FX
         private SerializedProperty fxAddressesProperty;
         private SerializedProperty fxTriggerAddressesProperty;
         private SerializedProperty valueProperty;
+        private SerializedProperty labelProperty;
         private SerializedProperty addressProperty;
         private SerializedProperty fxTypeProperty;
         private SerializedProperty signalSourcePropery;
@@ -49,6 +50,7 @@ namespace FX
             fxAddressesProperty  = serializedObject.FindProperty("fxAddresses");
             valueProperty        = serializedObject.FindProperty("value");
             addressProperty      = serializedObject.FindProperty("address");
+            labelProperty        = serializedObject.FindProperty("label");
             fxTypeProperty       = serializedObject.FindProperty("fxType");
             signalSourcePropery  = serializedObject.FindProperty("signalSource");
             patternTypeProperty  = serializedObject.FindProperty("patternType");
@@ -157,6 +159,9 @@ namespace FX
             EditorGUI.BeginChangeCheck();
             EditorGUILayout.PropertyField(addressProperty, new GUIContent("Address"));
             GUILayout.Space(10);
+            EditorGUILayout.PropertyField(labelProperty, new GUIContent("Label"));
+            GUILayout.Space(10);
+            EditorGUI.BeginChangeCheck();
             EditorGUILayout.PropertyField(signalSourcePropery);
             GUILayout.Space(10);
             SignalSource currentSignalSource = (SignalSource)signalSourcePropery.enumValueIndex;

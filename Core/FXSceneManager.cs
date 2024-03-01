@@ -10,16 +10,16 @@ namespace FX
         public List<string> presets;
 
         [HideInInspector]
-        private string _currentPresetName;
+        private string currentPresetName;
         public string CurrentPresetName
         {
-            get => _currentPresetName;
+            get => currentPresetName;
             set
             {
-                if (_currentPresetName != value)
+                if (currentPresetName != value)
                 {
-                    _currentPresetName = value;
-                    if (onCurrentPresetNameChanged != null) onCurrentPresetNameChanged?.Invoke(_currentPresetName);
+                    currentPresetName = value;
+                    if (onCurrentPresetNameChanged != null) onCurrentPresetNameChanged?.Invoke(currentPresetName);
                 }
             }
         }

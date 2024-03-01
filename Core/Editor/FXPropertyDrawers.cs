@@ -226,11 +226,11 @@ namespace FX
                     {
                         if (existsInGroup)
                         {
-                            group.RemoveFxAddress(address);
+                            group.RemoveFXParam(address);
                         }
                         else
                         {
-                            group.AddFxAddress(address);
+                            group.AddFXParam(address);
                         }
                     });
                 }

@@ -70,7 +70,7 @@ namespace FX
             FXManager.Instance.onFXParamAffectorChanged += OnFXParamAffectorChanged;
             FXManager.Instance.onPresetLoaded           += OnPresetLoaded;
 
-            fxSceneManager.onPresetListUpdated += OnPresetListUpdated;
+            fxSceneManager.onPresetListUpdated        += OnPresetListUpdated;
             fxSceneManager.onCurrentPresetNameChanged += OnCurrentPresetNameChanged;
 
         }
@@ -167,6 +167,42 @@ namespace FX
             {
                 // Reset to all params to default
                 // Load default groups ? 
+            }
+            else if (address.ToUpper() == "/GROUP/PARAM/ADD")
+            {
+                if (message.Values.Count > 1 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String)
+                {
+                    string groupAddress = message.Values[0].StringValue;
+                    string paramAddress = message.Values[1].StringValue;
+                    FXManager.Instance.AddFXParamToGroup(groupAddress, paramAddress);
+                }
+            }
+            else if (address.ToUpper() == "/GROUP/PARAM/REMOVE")
+            {
+                if (message.Values.Count > 1 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String)
+                {
+                    string groupAddress = message.Values[0].StringValue;
+                    string paramAddress = message.Values[1].StringValue;
+                    FXManager.Instance.RemoveFXParamFromGroup(groupAddress, paramAddress);
+                }
+            }
+            else if (address.ToUpper() == "/GROUP/TRIGGER/ADD")
+            {
+                if (message.Values.Count > 1 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String)
+                {
+                    string groupAddress = message.Values[0].StringValue;
+                    string paramAddress = message.Values[1].StringValue;
+                    FXManager.Instance.AddFXTriggerToGroup(groupAddress, paramAddress);
+                }
+            }
+            else if (address.ToUpper() == "/GROUP/TRIGGER/REMOVE")
+            {
+                if (message.Values.Count > 1 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String)
+                {
+                    string groupAddress = message.Values[0].StringValue;
+                    string paramAddress = message.Values[1].StringValue;
+                    FXManager.Instance.RemoveFXTriggerFromGroup(groupAddress, paramAddress);
+                }
             }
             else
             {
