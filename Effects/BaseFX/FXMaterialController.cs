@@ -9,6 +9,7 @@ public enum MaterialType
     CONCRETE,
     CUTOUT,
     DISSOLVE,
+    WIREFRAME,
     RESOLUME
 }
 public enum DissolveType
@@ -16,6 +17,12 @@ public enum DissolveType
     ONE,
     TWO,
     THREE,
+}
+
+public enum WireframType
+{
+    LIT,
+    EMISSIVE
 }
 
 public enum CutoutPattern
@@ -39,6 +46,7 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
     public Material Concrete;
     public Material Cutout;
     public Material Disolve;
+    public Material Wireframe;
     public Material Resolume;
 
 
@@ -52,6 +60,9 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
     public FXScaledParameter<float> dissolveEdgeWidth = new FXScaledParameter<float>(0.0f, -12.0f, 0.0f);
     public FXScaledParameter<float> dissolveOffset    = new FXScaledParameter<float>(0.0f, 0.0f, 1.0f);
     public FXParameter<DissolveType> dissolveType = new FXParameter<DissolveType>(DissolveType.ONE);
+
+    public FXParameter<WireframType> wireframeType = new FXParameter<WireframType>(WireframType.LIT);
+
 
 
     protected override void Awake()
@@ -105,6 +116,8 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
             case MaterialType.CUTOUT:
                 break;
             case MaterialType.DISSOLVE:
+                break;
+            case MaterialType.WIREFRAME:
                 break;
             case MaterialType.RESOLUME:
                 break;
@@ -180,6 +193,9 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
                 SetDissolveOffset(dissolveOffset.ScaledValue);
                 SetColor(color.Value);
                 break;
+            case MaterialType.WIREFRAME:
+                ApplyMaterial(Wireframe);
+                break;
             case MaterialType.RESOLUME:
                 ApplyMaterial(Resolume);
                 break;
@@ -252,6 +268,9 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
                             break;
                         case MaterialType.CUTOUT:
                             renderer.material.SetColor("_EmissiveColor", value * Mathf.GammaToLinearSpace(triggerValue.ScaledValue * 2.0f));
+                            break;
+                        case MaterialType.WIREFRAME:
+                            renderer.material.SetColor("_Wireframe_Color", value);
                             break;
                         case MaterialType.DISSOLVE:
                             renderer.material.SetColor("_EdgeColor", value * Mathf.GammaToLinearSpace(triggerValue.ScaledValue*2.0f));

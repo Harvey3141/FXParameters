@@ -270,10 +270,11 @@ namespace FX
                     return;
                 }
 
-                if (!iFXParameter.ShouldSave) {
-                    Debug.LogError($"FXParameter {address}, should save is set to false therefore param will not be set");
-                    return;
-                }
+                // TODO - Why was this here? 
+                //if (!iFXParameter.ShouldSave) {
+                //    Debug.LogError($"FXParameter {address}, should save is set to false therefore param will not be set");
+                //    return;
+                //}
 
                 if (fxItem.type == FXItemInfoType.ScaledParameter)
                 {
