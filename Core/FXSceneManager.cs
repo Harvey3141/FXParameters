@@ -10,7 +10,28 @@ namespace FX
         public List<string> presets;
 
         [HideInInspector]
-        public string currentPresetName;
+        private string _currentPresetName;
+        public string CurrentPresetName
+        {
+            get => _currentPresetName;
+            set
+            {
+                if (_currentPresetName != value)
+                {
+                    _currentPresetName = value;
+                    if (onCurrentPresetNameChanged != null) onCurrentPresetNameChanged?.Invoke(_currentPresetName);
+                }
+            }
+        }
+
+
+        public delegate void OnPresetListUpdated(List<string> presets);
+        public event OnPresetListUpdated onPresetListUpdated;
+
+        public delegate void OnCurrentPresetNameChanged(string newName);
+        public event OnCurrentPresetNameChanged onCurrentPresetNameChanged;
+
+
         private void Awake()
         {
             presets = new List<string>();
@@ -34,6 +55,7 @@ namespace FX
                         presets.Add(presetName);
                     }
                 }
+                if (onPresetListUpdated != null) onPresetListUpdated.Invoke(presets);
             }
             else
             {
@@ -47,11 +69,15 @@ namespace FX
 
         }
 
+        public void SavePreset()
+        {
+            if (!string.IsNullOrEmpty(CurrentPresetName)) SavePreset(CurrentPresetName);
+        }
+
         public void SavePreset(string name)
         {
             FXManager.Instance.SavePreset(name);
             PopulatePresetsList();
-
         }
 
         public void ExportParameterList()

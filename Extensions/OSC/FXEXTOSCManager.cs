@@ -13,6 +13,8 @@ using System.Collections;
 using System.IO;
 using System.Text.RegularExpressions;
 using System;
+using System.Diagnostics.Tracing;
+using UnityEngine.SceneManagement;
 
 namespace FX
 {
@@ -56,8 +58,9 @@ namespace FX
 
         public List<OSCNode> oscNodes = new List<OSCNode>();
         public float sendInterval = 0.1f;
-        public int maxMessagesPerInterval = 10; 
+        public int maxMessagesPerInterval = 10;
 
+        public FXSceneManager fxSceneManager;
 
         private void Start()
         {
@@ -66,6 +69,10 @@ namespace FX
             FXManager.Instance.onFXParamValueChanged    += OnFXParamValueChanged;
             FXManager.Instance.onFXParamAffectorChanged += OnFXParamAffectorChanged;
             FXManager.Instance.onPresetLoaded           += OnPresetLoaded;
+
+            fxSceneManager.onPresetListUpdated += OnPresetListUpdated;
+            fxSceneManager.onCurrentPresetNameChanged += OnCurrentPresetNameChanged;
+
         }
 
         private void SetupNodes()
@@ -118,10 +125,48 @@ namespace FX
                     {
                         string senderIp = matchingNode.Transmitter.RemoteHost.ToString();
                         int senderPort = matchingNode.Transmitter.RemotePort;
-                        SendOSCMessage(paramAddress, matchingNode, value);                       
+                        SendOSCMessage(paramAddress, matchingNode, value);
                     }
                     // TODO - create transmitter 
                 }
+            }
+            else if (address.ToUpper() == "/SCENE/LOAD")
+            {
+                if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
+                {
+                    string sceneName = message.Values[0].StringValue;
+                    fxSceneManager.LoadPreset(sceneName);
+                }
+            }
+            else if (address.ToUpper() == "/SCENE/NAME/SET")
+            {
+                if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
+                {
+                    string sceneName = message.Values[0].StringValue;
+                    fxSceneManager.CurrentPresetName = sceneName;
+                }
+            }
+            else if (address.ToUpper() == "/SCENE/SAVE")
+            {
+                if (message.Values.Count == 0) fxSceneManager.SavePreset();
+                else if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
+                {
+                    string sceneName = message.Values[0].StringValue;
+                    fxSceneManager.SavePreset(sceneName);
+                }
+            }
+            else if (address.ToUpper() == "/SCENE/REMOVE")
+            {
+                if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
+                {
+                    string sceneName = message.Values[0].StringValue;
+                    fxSceneManager.RemovePreset(sceneName);
+                }
+            }
+            else if (address.ToUpper() == "/SCENE/NEW")
+            {
+                // Reset to all params to default
+                // Load default groups ? 
             }
             else
             {
@@ -176,8 +221,28 @@ namespace FX
             }         
         }
 
-        void OnPresetLoaded(string name) {
-            //SendAllFXParams();
+        void OnPresetLoaded(string name) 
+        {
+            foreach (var node in oscNodes)
+            {
+                if (node.SendParamChanges) SendOSCMessage("/scene/loaded", node, name);
+            }
+        }
+
+        void OnPresetListUpdated(List<string> presets) 
+        {
+            foreach (var node in oscNodes)
+            {
+                if (node.SendParamChanges) SendOSCMessage("/sceneList/get", node, name);
+            }
+        }
+
+        void OnCurrentPresetNameChanged(string name)
+        {
+            foreach (var node in oscNodes)
+            {
+                if (node.SendParamChanges) SendOSCMessage("/scene/name/get", node, name);
+            }
         }
 
 

@@ -24,7 +24,7 @@ namespace FX
             GUILayout.Label("Current Preset", EditorStyles.boldLabel);
             GUILayout.BeginHorizontal();
             EditorGUIUtility.labelWidth = 60;
-            fxSceneManager.currentPresetName = EditorGUILayout.TextField("Name", fxSceneManager.currentPresetName);
+            fxSceneManager.CurrentPresetName = EditorGUILayout.TextField("Name", fxSceneManager.CurrentPresetName);
             EditorGUIUtility.labelWidth = 0;
 
             if (GUILayout.Button("Save", GUILayout.Width(70)))
@@ -83,20 +83,20 @@ namespace FX
 
         private void SavePreset()
         {
-            if (string.IsNullOrEmpty(fxSceneManager.currentPresetName))
+            if (string.IsNullOrEmpty(fxSceneManager.CurrentPresetName))
             {
                 Debug.LogError("Preset name cannot be empty.");
                 return;
             }
 
-            FXManager.Instance.SavePreset(fxSceneManager.currentPresetName);
-            fxSceneManager.PopulatePresetsList(); // Refresh the list after saving
+            FXManager.Instance.SavePreset(fxSceneManager.CurrentPresetName);
+            fxSceneManager.PopulatePresetsList(); 
         }
 
         private void LoadPreset(string presetName)
         {
-            fxSceneManager.LoadPreset(presetName);
-            fxSceneManager.currentPresetName = presetName;
+            bool loadOK = fxSceneManager.LoadPreset(presetName);
+            if (loadOK) fxSceneManager.CurrentPresetName = presetName;
         }
 
         private void RemovePreset(string presetName)

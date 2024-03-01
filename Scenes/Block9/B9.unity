@@ -15983,6 +15983,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sendInterval: 0.1
   maxMessagesPerInterval: 10
+  fxSceneManager: {fileID: 6786225926994504096}
 --- !u!4 &283287818
 Transform:
   m_ObjectHideFlags: 0
@@ -65416,6 +65417,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+  wireframeType:
+    address_: 
+    value_: 0
+    shouldSave_: 1
 --- !u!43 &1259401627
 Mesh:
   m_ObjectHideFlags: 0
@@ -112170,6 +112175,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+  wireframeType:
+    address_: 
+    value_: 0
+    shouldSave_: 1
 --- !u!4 &1000042271120563012
 Transform:
   m_ObjectHideFlags: 0
@@ -116826,6 +116835,10 @@ MonoBehaviour:
     address_: 
     value_: 0
     shouldSave_: 1
+  wireframeType:
+    address_: 
+    value_: 0
+    shouldSave_: 1
 --- !u!114 &6513489019159103787
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -116929,7 +116942,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   presets: []
-  currentPresetName: 
 --- !u!1 &6786225926994504097
 GameObject:
   m_ObjectHideFlags: 0
@@ -117303,6 +117315,10 @@ MonoBehaviour:
     scaledValue_: 0
     affectorFunction_: 0
   dissolveType:
+    address_: 
+    value_: 0
+    shouldSave_: 1
+  wireframeType:
     address_: 
     value_: 0
     shouldSave_: 1
