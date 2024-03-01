@@ -1,5 +1,6 @@
 using FX;
 using System;
+using System.Xml.Schema;
 using UnityEngine;
 
 public enum MaterialType
@@ -64,7 +65,6 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
     public FXParameter<WireframType> wireframeType = new FXParameter<WireframType>(WireframType.LIT);
 
 
-
     protected override void Awake()
     {
         base.Awake();
@@ -79,22 +79,8 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
 
         dissolveEdgeWidth.OnScaledValueChanged += SetDissolveEdgeWidth;
         dissolveOffset.OnScaledValueChanged += SetDissolveOffset;
-    }
 
-    public void SetCutoutWidth(float value) 
-    {
-           if (materialType.Value == MaterialType.CUTOUT) SetPropertyFloat("_Width", value);    
-    }
-
-
-    public void SetCutoutHeight(float value)
-    {
-        if (materialType.Value == MaterialType.CUTOUT) SetPropertyFloat("_Height", value);
-    }
-
-    public void SetCutoutInvert(bool value)
-    {
-        if (materialType.Value == MaterialType.CUTOUT) SetPropertyFloat("_Invert", value ? 1.0f : 0.0f);
+        wireframeType.OnValueChanged += SetWireframeType; 
     }
 
     protected override void Start()
@@ -195,6 +181,8 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
                 break;
             case MaterialType.WIREFRAME:
                 ApplyMaterial(Wireframe);
+                SetEmissiveIntensityAll(triggerValue.ScaledValue);
+                SetColor(color.Value);
                 break;
             case MaterialType.RESOLUME:
                 ApplyMaterial(Resolume);
@@ -229,6 +217,9 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
                         break;
                     case MaterialType.CUTOUT:
                         renderer.material.SetColor("_EmissiveColor", color.Value * Mathf.GammaToLinearSpace(intensity * 2.0f));
+                        break;
+                    case MaterialType.WIREFRAME:
+                        renderer.material.SetFloat("_Wireframe_ColorEmissionStrength", intensity);
                         break;
                     case MaterialType.DISSOLVE:
                             renderer.material.SetFloat("_EdgeColorIntensity", Mathf.GammaToLinearSpace(intensity * 2.0f));                       
@@ -400,6 +391,42 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
 
         }
        
+    }
+
+    public void SetCutoutWidth(float value)
+    {
+        if (materialType.Value == MaterialType.CUTOUT) SetPropertyFloat("_Width", value);
+    }
+
+
+    public void SetCutoutHeight(float value)
+    {
+        if (materialType.Value == MaterialType.CUTOUT) SetPropertyFloat("_Height", value);
+    }
+
+    public void SetCutoutInvert(bool value)
+    {
+        if (materialType.Value == MaterialType.CUTOUT) SetPropertyFloat("_Invert", value ? 1.0f : 0.0f);
+    }
+
+    public void SetWireframeType(WireframType type)
+    {
+        if (materialType.Value == MaterialType.WIREFRAME) { 
+            switch (type)
+            {
+                case WireframType.LIT:
+                    SetWireframeEmission(0.0f);
+                    break;
+                case WireframType.EMISSIVE:
+                    SetWireframeEmission(1.0f);
+                    break;
+            }
+        }
+    }
+
+    public void SetWireframeEmission(float value)
+    {
+        if (materialType.Value == MaterialType.WIREFRAME) SetPropertyFloat("_Wireframe_ColorEmissionStrength", value);
     }
 
 }

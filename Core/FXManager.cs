@@ -814,6 +814,29 @@ namespace FX
             }
         }
 
+        public GroupFXController CreateGroup(string address, string label = "")
+        {
+            GameObject groupObject = new GameObject($"Group_{address}");
+            GroupFXController group = groupObject.AddComponent<GroupFXController>();
+
+            group.address = address;
+            group.label = label;
+            return group;
+        }
+
+        public void RemoveGroup(string address)
+        {
+            GroupFXController group = FindGroupByAddress(address);
+            if (group != null)
+            {
+                GameObject.Destroy(group.gameObject);
+            }
+            else
+            {
+                Debug.LogWarning($"Group with address {address} not found and cannot be removed.");
+            }
+        }
+
         private GroupFXController FindGroupByAddress(string address)
         {
             GroupFXController[] allGroups = GameObject.FindObjectsOfType<GroupFXController>();
