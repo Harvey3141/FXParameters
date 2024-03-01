@@ -4,10 +4,9 @@
 
 The FX API offers functionalities that include:
 
-- Loading OSC node settings from a JSON configuration file for flexible setup.
 - Sending messages at specified intervals with a controlled rate to manage traffic efficiently.
 - Processing "/GET" requests and other messages to update or fetch FX parameters.
-- Optionally sending real-time FX parameter changes to configured OSC nodes.
+- Optionally sending real-time FX parameter changes.
 
 ## OSC Messages
 
