@@ -23,7 +23,9 @@ namespace FX.Patterns
         public OscillatorType Oscillator
         {
             get { return _oscillatorType; }
-            set { _oscillatorType = value; GeneratePattern(); }
+            set {
+                _oscillatorType = value;
+                GeneratePattern(); }
         }
 
         public override void Start()

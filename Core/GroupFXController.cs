@@ -20,6 +20,8 @@ namespace FX
             }
         }
 
+        public bool isPinned = true;
+
         /// <summary>
         /// Note that these addresses are stored with the leading '/' removed to work with the custom editor list
         /// </summary>
@@ -63,9 +65,12 @@ namespace FX
             this.AddFXElements(address);         
             value.OnScaledValueChanged += SetValue;
 
-            SetPatternType(patternType);
+            if (pattern == null) SetPatternType(patternType);
 
             audioManager = FindObjectOfType<FX.AudioManager>();
+
+            fxAddresses        = new List<string>();
+            fxTriggerAddresses = new List<string>();    
         }
 
         void Update () {
@@ -228,6 +233,10 @@ namespace FX
                             OscillatorPattern oscillator = (OscillatorPattern)pattern;
                             oscillator.Oscillator = preset.oscillatorType;
                             break;
+                        case PatternType.Arpeggiator:
+                            ArpeggiatorPattern arp = (ArpeggiatorPattern)pattern;
+                            arp.style = preset.arpeggiatorStyle;
+                            break;
                     }
                     break;
             }
@@ -263,6 +272,31 @@ namespace FX
                 default:
                     Debug.LogError("Invalid pattern type!");
                     break;
+            }
+        }
+
+        public void SetOscillatorPatternType (OscillatorPattern.OscillatorType oscillatorType)
+        {
+            if (signalSource == SignalSource.Pattern && patternType == PatternType.Oscillator) {
+                OscillatorPattern oscillator = (OscillatorPattern)pattern;
+                oscillator.Oscillator = oscillatorType;
+            }
+        }
+
+        public void SetArpeggiatorPatternType(ArpeggiatorPattern.PatternStyle patternStyle)
+        {
+            if (signalSource == SignalSource.Pattern && patternType == PatternType.Arpeggiator)
+            {
+                ArpeggiatorPattern arp = (ArpeggiatorPattern)pattern;
+                arp.style = patternStyle;
+            }
+        }
+
+        public void SetPatternNumBeats(int value)
+        {
+            if (signalSource == SignalSource.Pattern)
+            {
+                pattern.NumBeats = value;
             }
         }
 

@@ -269,8 +269,7 @@ namespace FX
                             address = address.Substring(1);
                         }
 
-                        // Regex to check if the address starts with 'Group' followed by a number
-                        if (!Regex.IsMatch(address, @"^Group\d"))
+                        if (!address.ToUpper().StartsWith("GROUP/"))
                         {
                             addressList.Add(address);
                         }

@@ -23,6 +23,8 @@ namespace FX.Patterns {
         {
             triggers = new Dictionary<float, bool>();
 
+            AddTriggers(1);
+
             base.Start();
             beatDuration = 60f / _bpm; // Calculate the duration of each beat
             lastBeatTime = Time.time;

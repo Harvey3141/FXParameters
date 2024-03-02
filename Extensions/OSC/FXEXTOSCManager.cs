@@ -13,8 +13,6 @@ using System.Collections;
 using System.IO;
 using System.Text.RegularExpressions;
 using System;
-using System.Diagnostics.Tracing;
-using UnityEngine.SceneManagement;
 
 namespace FX
 {

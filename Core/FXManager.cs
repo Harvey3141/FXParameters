@@ -511,6 +511,7 @@ namespace FX
             public PatternType patternType;
             public int numBeats;
             public FX.Patterns.OscillatorPattern.OscillatorType oscillatorType;
+            public FX.Patterns.ArpeggiatorPattern.PatternStyle arpeggiatorStyle;
 
 
             public AudioFrequency audioFrequency;
@@ -723,6 +724,10 @@ namespace FX
                                 OscillatorPattern oscillator = (OscillatorPattern)group.pattern;
                                 groupPreset.oscillatorType = oscillator.Oscillator;
                                 break;
+                            case PatternType.Arpeggiator:
+                                ArpeggiatorPattern arp = (ArpeggiatorPattern)group.pattern;
+                                groupPreset.arpeggiatorStyle = arp.style;
+                                break;
                         }
                         break;
                 }
@@ -888,13 +893,72 @@ namespace FX
             }
         }
 
-        public GroupFXController CreateGroup(string address, string label = "")
+        public GroupFXController CreateDefaultGroup(string label = "", bool isPinned = false)
         {
-            GameObject groupObject = new GameObject($"Group_{address}");
+            GroupFXController group = CreateGroup(label, SignalSource.Default, isPinned);
+            return group;
+        }
+
+        public GroupFXController CreateAudioGroup(AudioFrequency audioFrequency, string label = "", bool isPinned = false) 
+        {
+            GroupFXController group = CreateGroup(label, SignalSource.Audio, isPinned);
+            group.audioFrequency = audioFrequency;
+            return group;
+        }
+
+        public GroupFXController CreateOscillatorPatternGroup(FX.Patterns.OscillatorPattern.OscillatorType oscillatorType, int numBeats = 4, string label = "", bool isPinned = false)
+        {
+            GroupFXController group = CreatePatternGroup(PatternType.Oscillator ,numBeats, label, isPinned);
+            group.SetOscillatorPatternType(oscillatorType);
+            return group;
+        }
+        public GroupFXController CreateTapPatternGroup(int numBeats = 4, string label = "", bool isPinned = false)
+        {
+            GroupFXController group = CreatePatternGroup(PatternType.Tap, numBeats, label, isPinned);
+            return group;
+        }
+
+        public GroupFXController CreateArpeggiatorPatternGroup(int numBeats = 4, string label = "", bool isPinned = false)
+        {
+            GroupFXController group = CreatePatternGroup(PatternType.Arpeggiator, numBeats, label, isPinned);
+            return group;
+        }
+
+        private GroupFXController CreatePatternGroup(PatternType patternType, int numBeats = 4, string label = "", bool isPinned = false)
+        {
+            GroupFXController group = CreateGroup(label, SignalSource.Pattern, isPinned);
+            group.SetPatternType(patternType);
+            group.SetPatternNumBeats(numBeats);
+            return group;
+        }
+
+        private GroupFXController CreateGroup(string label = "", SignalSource signalSource = SignalSource.Default, bool isPinned = false)
+        {
+            int maxIndex = 0;
+            GroupFXController[] allGroups = GameObject.FindObjectsOfType<GroupFXController>();
+            foreach (var g in allGroups)
+            {
+                string groupPrefix = "/group/";
+                string groupIndexS = g.address.Substring(groupPrefix.Length);
+                bool ok = Int32.TryParse(groupIndexS, out int index);
+                if (ok) {
+                     if (index > maxIndex) maxIndex = index;
+                }
+            }
+
+            string address = "/Group/" + (maxIndex + 1);
+            GameObject groupObject = new GameObject($"Group - {label}");
             GroupFXController group = groupObject.AddComponent<GroupFXController>();
 
-            group.address = address;
-            group.label = label;
+            GameObject parent =  GameObject.FindObjectOfType<FXSceneManager>().gameObject;
+            if (parent != null) { 
+                groupObject.transform.parent = parent.transform;
+            }
+
+            group.address      = address;
+            group.label        = label;
+            group.signalSource = signalSource;
+            group.isPinned     = isPinned;
             return group;
         }
 
@@ -903,7 +967,8 @@ namespace FX
             GroupFXController group = FindGroupByAddress(address);
             if (group != null)
             {
-                GameObject.Destroy(group.gameObject);
+                if (!group.isPinned) GameObject.Destroy(group.gameObject);
+                else Debug.LogWarning($"Group with address {address} is pinned so cannot be removed");
             }
             else
             {

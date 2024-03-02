@@ -1,3 +1,4 @@
+using FX.Patterns;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -8,6 +9,9 @@ namespace FX
     {
         [HideInInspector]
         public List<string> presets;
+
+        
+        public bool exportParameterListOnStart = false;
 
         [HideInInspector]
         private string currentPresetName;
@@ -36,6 +40,31 @@ namespace FX
         {
             presets = new List<string>();
             PopulatePresetsList();
+        }
+
+        private void Start()
+        {
+            FXManager.Instance.CreateDefaultGroup("Default", true);
+
+            FXManager.Instance.CreateAudioGroup(GroupFXController.AudioFrequency.Low,  "Audio Low",  true);
+            FXManager.Instance.CreateAudioGroup(GroupFXController.AudioFrequency.Mid,  "Audio Mid",  true);
+            FXManager.Instance.CreateAudioGroup(GroupFXController.AudioFrequency.High, "Audio High", true);
+
+            FXManager.Instance.CreateOscillatorPatternGroup(OscillatorPattern.OscillatorType.Sine, 4 ,"Oscillator - Sine",  true);
+            FXManager.Instance.CreateOscillatorPatternGroup(OscillatorPattern.OscillatorType.Square, 8, "Oscillator - Square", true);
+
+            FXManager.Instance.CreateTapPatternGroup(1, "Tap", true);
+            FXManager.Instance.CreateArpeggiatorPatternGroup(1, "Arpeggiator", true);
+
+            if (exportParameterListOnStart) ExportParameterList();
+
+        }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.T)) {
+
+            }
         }
 
         public void PopulatePresetsList()

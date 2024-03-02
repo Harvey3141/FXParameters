@@ -2,12 +2,6 @@ using UnityEngine;
 
 namespace FX.Patterns
 {
-    public enum PatternStyle
-    {
-        Up,
-        Down,
-        Random
-    }
 
     public class ArpeggiatorPattern : PatternBase
     {
@@ -20,6 +14,13 @@ namespace FX.Patterns
                 numSteps = value;
                 GeneratePattern();
             }
+        }
+
+        public enum PatternStyle
+        {
+            Up,
+            Down,
+            Random
         }
 
         public PatternStyle style;

@@ -20,7 +20,6 @@ namespace FX
 
             GUILayout.Space(10);
 
-            // Save Preset Section
             GUILayout.Label("Current Preset", EditorStyles.boldLabel);
             GUILayout.BeginHorizontal();
             EditorGUIUtility.labelWidth = 60;
