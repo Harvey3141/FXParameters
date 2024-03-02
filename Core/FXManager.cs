@@ -480,7 +480,7 @@ namespace FX
         {
             public string key;
             public T value;
-
+            public T defaultValue;
             public T minValue;
             public T maxValue;
             public bool hasMinValue = false;
@@ -539,6 +539,7 @@ namespace FX
                             {
                                 key = key_,
                                 value = (float)value_,
+                                defaultValue = scaledParamFloat.GetDefaultValue(),
                                 minValue = scaledParamFloat.GetMinValue(),
                                 maxValue = scaledParamFloat.GetMaxValue(),
                                 hasMaxValue = scaledParamFloat.HasMaxValue,
@@ -546,7 +547,7 @@ namespace FX
                                 isScaled = true,
                                 affector = scaledParamFloat.AffectorFunction,
                                 isInverted = scaledParamFloat.InvertValue
-                            });
+                            }) ;
                         }
                         else if (item.Value.item is FXScaledParameter<Color> scaledParamColor)
                         {
@@ -554,6 +555,8 @@ namespace FX
                             {
                                 key = key_,
                                 value = (float)value_,
+                                defaultValue = scaledParamColor.GetDefaultValue(),
+
                                 minValue = scaledParamColor.GetMinValue(),
                                 maxValue = scaledParamColor.GetMaxValue(),
                                 hasMaxValue = scaledParamColor.HasMaxValue,
@@ -569,6 +572,8 @@ namespace FX
                             {
                                 key = key_,
                                 value = (float)value_,
+                                defaultValue = scaledParamInt.GetDefaultValue(),
+
                                 minValue = scaledParamInt.GetMinValue(),
                                 maxValue = scaledParamInt.GetMaxValue(),
                                 hasMaxValue = scaledParamInt.HasMaxValue,
@@ -584,6 +589,8 @@ namespace FX
                             {
                                 key = key_,
                                 value = (float)value_,
+                                defaultValue = scaledParamVector3.GetDefaultValue(),
+
                                 minValue = scaledParamVector3.GetMinValue(),
                                 maxValue = scaledParamVector3.GetMaxValue(),
                                 hasMaxValue = scaledParamVector3.HasMaxValue,
@@ -616,6 +623,7 @@ namespace FX
                                 {
                                     key = key_,
                                     value = (float)value_,
+                                    defaultValue = floatParam.GetDefaultValue(),
                                     minValue = floatParam.GetMinValue(),
                                     maxValue = floatParam.GetMaxValue(),
                                     hasMaxValue = floatParam.HasMaxValue,
@@ -639,6 +647,7 @@ namespace FX
                                 {
                                     key = key_,
                                     value = (int)value_,
+                                    defaultValue = intParam.GetDefaultValue(),
                                     minValue = intParam.GetMinValue(),
                                     maxValue = intParam.GetMaxValue(),
                                     hasMaxValue = intParam.HasMaxValue,
@@ -658,11 +667,11 @@ namespace FX
                         }
                         else if (parameter is FXParameter<bool> boolParam)
                         {
-                            preset.boolParameters.Add(new FXPresetParameter<bool> { key = key_, value = (bool)value_ });
+                            preset.boolParameters.Add(new FXPresetParameter<bool> { key = key_, value = (bool)value_ , defaultValue = boolParam.GetDefaultValue()});
                         }
                         else if (parameter is FXParameter<Color> colorParam)
                         {
-                            preset.colorParameters.Add(new FXPresetParameter<Color> { key = key_, value = (Color)value_ });
+                            preset.colorParameters.Add(new FXPresetParameter<Color> { key = key_, value = (Color)value_ , defaultValue = colorParam.GetDefaultValue()});
                         }
                         else
                         {

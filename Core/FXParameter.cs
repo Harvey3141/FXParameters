@@ -159,6 +159,11 @@ namespace FX
             Value = defaultValue_;
         }
 
+        public T GetDefaultValue() 
+        { 
+            return defaultValue_;
+        }
+        
     }
 
     public enum AffectorFunction

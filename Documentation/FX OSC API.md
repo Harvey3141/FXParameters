@@ -18,10 +18,10 @@ The FX API offers functionalities that include:
   **Format**: `/[parameter_address]/GET`  
   **Example**: `/FXLight/intensity/GET`
   
-  - **/RESET**  
-  Sets the current value of a specified FX parameter to its default value  
-  **Format**: `/[parameter_address]/RESET`  
-  **Example**: `/FXLight/intensity/RESET`
+- **/RESET**  
+Sets the current value of a specified FX parameter to its default value  
+**Format**: `/[parameter_address]/RESET`  
+**Example**: `/FXLight/intensity/RESET`
 
 ### Scene Management
 
