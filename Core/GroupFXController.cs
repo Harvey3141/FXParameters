@@ -12,11 +12,27 @@ namespace FX
         [SerializeField]
         public string address;
 
+        private bool active = true;
+        public bool Active
+        {
+            get => active;
+            set
+            {
+                if (active != value) {
+                    active = value; 
+                }
+            }
+        }
+
         public string label;
         public string Label{
             get => label;
             set { 
-                if (label != value){label = value;}
+                if (label != value)
+                {
+                    label = value;
+                    gameObject.name = ($"Group - {label}");
+                }
             }
         }
 
@@ -60,17 +76,14 @@ namespace FX
         public bool presetLoaded = false;
 
 
-        public void Start()
+        public void Initialise()
         {
             this.AddFXElements(address);         
             value.OnScaledValueChanged += SetValue;
 
             if (pattern == null) SetPatternType(patternType);
 
-            audioManager = FindObjectOfType<FX.AudioManager>();
-
-            fxAddresses        = new List<string>();
-            fxTriggerAddresses = new List<string>();    
+            audioManager = FindObjectOfType<FX.AudioManager>();   
         }
 
         void Update () {
@@ -131,27 +144,36 @@ namespace FX
 
         public void SetValue(float value)
         {
-            foreach (string address in fxAddresses)
-            {
-                string formattedAddress = address.StartsWith("/") ? address : "/" + address;
-                FXManager.Instance.SetFX(formattedAddress, value);
+            if (!enabled) return;
+
+            if (fxAddresses != null) {
+                foreach (string address in fxAddresses)
+                {
+                    string formattedAddress = address.StartsWith("/") ? address : "/" + address;
+                    FXManager.Instance.SetFX(formattedAddress, value);
+                }
             }
         }
 
         public void FXTrigger()
         {
-            foreach (string address in fxTriggerAddresses)
-            {
-                string formattedAddress = address.StartsWith("/") ? address : "/" + address;
-                FXManager.Instance.SetFX(formattedAddress);
+            if (!enabled) return;
+
+            if (fxTriggerAddresses != null) {
+                foreach (string address in fxTriggerAddresses)
+                {
+                    string formattedAddress = address.StartsWith("/") ? address : "/" + address;
+                    FXManager.Instance.SetFX(formattedAddress);
+                }
             }
+
             OnFXTriggered?.Invoke();
         }
 
         public void ClearFXAdresses() 
         { 
-            fxAddresses.Clear();
-            fxTriggerAddresses.Clear();
+            if (fxAddresses!=null) fxAddresses.Clear();
+            if (fxTriggerAddresses != null) fxTriggerAddresses.Clear();
         }
 
         public void AddFXParam(string address)
@@ -204,6 +226,8 @@ namespace FX
             ClearFXAdresses();
             fxAddresses        = preset.fxAddresses;
             Label              = preset.label;  
+            isPinned = preset.isPinned;
+
 
             for (int i = 0; i < fxAddresses.Count; i++)
             {

@@ -44,17 +44,32 @@ namespace FX
 
         private void Start()
         {
-            FXManager.Instance.CreateDefaultGroup("Default", true);
 
-            FXManager.Instance.CreateAudioGroup(GroupFXController.AudioFrequency.Low,  "Audio Low",  true);
-            FXManager.Instance.CreateAudioGroup(GroupFXController.AudioFrequency.Mid,  "Audio Mid",  true);
-            FXManager.Instance.CreateAudioGroup(GroupFXController.AudioFrequency.High, "Audio High", true);
+            //FXManager.Instance.CreateDefaultGroup("Default", true);
 
-            FXManager.Instance.CreateOscillatorPatternGroup(OscillatorPattern.OscillatorType.Sine, 4 ,"Oscillator - Sine",  true);
-            FXManager.Instance.CreateOscillatorPatternGroup(OscillatorPattern.OscillatorType.Square, 8, "Oscillator - Square", true);
+            FXManager.FXGroupPreset p = new FXManager.FXGroupPreset();
+            p.label = "Default";
+            p.isPinned = true;
+            p.signalSource = GroupFXController.SignalSource.Default;
+            FXManager.Instance.CreateGroup(p);
 
-            FXManager.Instance.CreateTapPatternGroup(1, "Tap", true);
-            FXManager.Instance.CreateArpeggiatorPatternGroup(1, "Arpeggiator", true);
+            p = new FXManager.FXGroupPreset();
+            p.label = "Audio Low";
+            p.isPinned = true;
+            p.signalSource = GroupFXController.SignalSource.Audio;
+            p.audioFrequency = GroupFXController.AudioFrequency.Low;
+            FXManager.Instance.CreateGroup(p);
+
+
+            //FXManager.Instance.CreateAudioGroup(GroupFXController.AudioFrequency.Low,  "Audio Low",  true);
+            //FXManager.Instance.CreateAudioGroup(GroupFXController.AudioFrequency.Mid,  "Audio Mid",  true);
+            //FXManager.Instance.CreateAudioGroup(GroupFXController.AudioFrequency.High, "Audio High", true);
+            //
+            //FXManager.Instance.CreateOscillatorPatternGroup(OscillatorPattern.OscillatorType.Sine, 4 ,"Oscillator - Sine",  true);
+            //FXManager.Instance.CreateOscillatorPatternGroup(OscillatorPattern.OscillatorType.Square, 8, "Oscillator - Square", true);
+            //
+            //FXManager.Instance.CreateTapPatternGroup(1, "Tap", true);
+            //FXManager.Instance.CreateArpeggiatorPatternGroup(1, "Arpeggiator", true);
 
             if (exportParameterListOnStart) ExportParameterList();
 

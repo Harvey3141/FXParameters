@@ -13,6 +13,7 @@ using System.Collections;
 using System.IO;
 using System.Text.RegularExpressions;
 using System;
+using FX.Patterns;
 
 namespace FX
 {
@@ -171,6 +172,13 @@ namespace FX
                 // Reset to all params to default
                 // Load default groups ? 
             }
+            else if (address.ToUpper() == "/GROUP/CREATE/JSON")
+            {
+                if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
+                {
+                    string json = message.Values[0].StringValue;
+                }
+            }
             else if (address.ToUpper() == "/GROUP/PARAM/ADD")
             {
                 if (message.Values.Count > 1 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String)
@@ -205,6 +213,80 @@ namespace FX
                     string groupAddress = message.Values[0].StringValue;
                     string paramAddress = message.Values[1].StringValue;
                     FXManager.Instance.RemoveFXTriggerFromGroup(groupAddress, paramAddress);
+                }
+            }
+            else if (address.ToUpper() == "/GROUP/ENABLED/SET")
+            {
+                if (message.Values.Count > 1 && message.Values[0].Type == OSCValueType.String && (message.Values[1].Type == OSCValueType.True || message.Values[1].Type == OSCValueType.False))
+                {
+                    string groupAddress = message.Values[0].StringValue;
+                    bool state = message.Values[1].BoolValue;
+                    var g = FXManager.Instance.FindGroupByAddress(groupAddress);
+                    if (g != null) {
+                        g.Active = state;
+                    }
+                }
+            }
+            else if (address.ToUpper() == "/GROUP/PATTERN/NUMBEATS")
+            {
+                if (message.Values.Count > 1 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.Int)
+                {
+                    string groupAddress = message.Values[0].StringValue;
+                    int numBeats  = message.Values[1].IntValue;
+                    var g = FXManager.Instance.FindGroupByAddress(groupAddress);
+                    if (g != null)
+                    {
+                        if (g.signalSource == GroupFXController.SignalSource.Pattern) g.SetPatternNumBeats(numBeats);
+                    }
+                }
+            }
+            else if (address.ToUpper() == "/GROUP/TAP/ADDTRIGGERATCURRENTTIME")
+            {
+                if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
+                {
+                    string groupAddress = message.Values[0].StringValue;
+                    var g = FXManager.Instance.FindGroupByAddress(groupAddress);
+                    if (g != null)
+                    {
+                        if (g.signalSource == GroupFXController.SignalSource.Pattern && g.patternType == GroupFXController.PatternType.Tap) { 
+                            TapPattern tp = (TapPattern)g.pattern;
+                            tp.AddTriggerAtCurrentTime();
+                        }
+                    }
+                }
+            }
+            else if (address.ToUpper() == "/GROUP/TAP/NUMBEROFTRIGGERS/SET")
+            {
+                if (message.Values.Count > 1 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.Int)
+                {
+                    string groupAddress = message.Values[0].StringValue;
+                    int numTriggers = message.Values[1].IntValue;
+
+                    var g = FXManager.Instance.FindGroupByAddress(groupAddress);
+                    if (g != null)
+                    {
+                        if (g.signalSource == GroupFXController.SignalSource.Pattern && g.patternType == GroupFXController.PatternType.Tap)
+                        {
+                            TapPattern tp = (TapPattern)g.pattern;
+                            tp.AddTriggers(numTriggers);
+                        }
+                    }
+                }
+            }
+            else if (address.ToUpper() == "/GROUP/TAP/CLEARTRIGGERS")
+            {
+                if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
+                {
+                    string groupAddress = message.Values[0].StringValue;
+                    var g = FXManager.Instance.FindGroupByAddress(groupAddress);
+                    if (g != null)
+                    {
+                        if (g.signalSource == GroupFXController.SignalSource.Pattern && g.patternType == GroupFXController.PatternType.Tap)
+                        {
+                            TapPattern tp = (TapPattern)g.pattern;
+                            tp.ClearTriggers();
+                        }
+                    }
                 }
             }
             else

@@ -111978,21 +111978,6 @@ Transform:
   m_Father: {fileID: 543450651860355985}
   m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &793091738362842629
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7570784815052310373}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6786225926994504099}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &812122358297210679
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -112329,55 +112314,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2193447378495234793}
   m_Mesh: {fileID: 4300000, guid: 8f208bd2960a87140b1781ad0b1d8a99, type: 2}
---- !u!1 &1416477932588286390
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2451072689196641864}
-  - component: {fileID: 2451072689196641865}
-  m_Layer: 0
-  m_Name: Group4 - Oscillator
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!1 &1494863260789962666
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4918184318806525709}
-  - component: {fileID: 4918184318806525710}
-  m_Layer: 0
-  m_Name: Group5 - Tap
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1561910487027595220
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8598788927632260318}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6786225926994504099}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1629849327449528865
 GameObject:
   m_ObjectHideFlags: 0
@@ -112441,23 +112377,6 @@ Transform:
   m_Father: {fileID: 543450651860355985}
   m_RootOrder: 16
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &2158709685333954637
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5896254236151470385}
-  - component: {fileID: 5896254236151470386}
-  m_Layer: 0
-  m_Name: Group2 - Audio Mid
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!1 &2163380432308605054
 GameObject:
   m_ObjectHideFlags: 0
@@ -112580,51 +112499,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!4 &2451072689196641864
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1416477932588286390}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6786225926994504099}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2451072689196641865
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1416477932588286390}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2296b0254b2105418bf647455e6bc9c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  address: /Group4
-  label: 
-  fxAddresses: []
-  fxTriggerAddresses: []
-  value:
-    address_: 
-    value_: 0.037
-    shouldSave_: 0
-    valueAtZero_: 0
-    valueAtOne_: 1
-    scaledValue_: 0
-    affectorFunction_: 0
-  audioThreshold: 0.8
-  signalSource: 1
-  patternType: 2
-  audioFrequency: 0
-  pattern: {fileID: 0}
-  presetLoaded: 0
 --- !u!23 &2713299931979661011
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -112731,36 +112605,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabProjectPath: Assets/Generated Assets/B9/PodsSeparateRotate_asset/Assets/Generated
     Assets/B9/Object_13_asset/Object_13.prefab
---- !u!4 &2835942256713520910
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3544272103732768773}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6786225926994504099}
-  m_RootOrder: 7
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &2840791500295319564
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4685583545938244301}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6786225926994504099}
-  m_RootOrder: 8
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2843152449203701432
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -113037,53 +112881,6 @@ Transform:
   m_Father: {fileID: 543450651860355985}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &3544272103732768773
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2835942256713520910}
-  - component: {fileID: 3544272103732768774}
-  m_Layer: 0
-  m_Name: Group7
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &3544272103732768774
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3544272103732768773}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2296b0254b2105418bf647455e6bc9c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  address: /Group7
-  label: 
-  fxAddresses: []
-  fxTriggerAddresses: []
-  value:
-    address_: 
-    value_: 0
-    shouldSave_: 0
-    valueAtZero_: 0
-    valueAtOne_: 1
-    scaledValue_: 0
-    affectorFunction_: 0
-  audioThreshold: 0.8
-  signalSource: 0
-  patternType: 0
-  audioFrequency: 0
-  pattern: {fileID: 0}
-  presetLoaded: 0
 --- !u!114 &3715001300100435829
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -113276,53 +113073,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabProjectPath: Assets/Generated Assets/B9/PodsSeparateRotate_asset/Assets/Generated
     Assets/B9/Object_3_asset/Object_3.prefab
---- !u!1 &4685583545938244301
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2840791500295319564}
-  - component: {fileID: 4685583545938244302}
-  m_Layer: 0
-  m_Name: Group8
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &4685583545938244302
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4685583545938244301}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2296b0254b2105418bf647455e6bc9c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  address: /Group8
-  label: 
-  fxAddresses: []
-  fxTriggerAddresses: []
-  value:
-    address_: 
-    value_: 0
-    shouldSave_: 0
-    valueAtZero_: 0
-    valueAtOne_: 1
-    scaledValue_: 0
-    affectorFunction_: 0
-  audioThreshold: 0.8
-  signalSource: 0
-  patternType: 0
-  audioFrequency: 0
-  pattern: {fileID: 0}
-  presetLoaded: 0
 --- !u!4 &4786235998948241825
 Transform:
   m_ObjectHideFlags: 0
@@ -116181,51 +115931,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!4 &4918184318806525709
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1494863260789962666}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6786225926994504099}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4918184318806525710
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1494863260789962666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2296b0254b2105418bf647455e6bc9c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  address: /Group5
-  label: 
-  fxAddresses: []
-  fxTriggerAddresses: []
-  value:
-    address_: 
-    value_: 0
-    shouldSave_: 0
-    valueAtZero_: 0
-    valueAtOne_: 1
-    scaledValue_: 0
-    affectorFunction_: 0
-  audioThreshold: 0.8
-  signalSource: 1
-  patternType: 1
-  audioFrequency: 0
-  pattern: {fileID: 0}
-  presetLoaded: 0
 --- !u!23 &4975725410815713536
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -116481,51 +116186,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!4 &5896254236151470385
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2158709685333954637}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6786225926994504099}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5896254236151470386
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2158709685333954637}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2296b0254b2105418bf647455e6bc9c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  address: /Group2
-  label: 
-  fxAddresses: []
-  fxTriggerAddresses: []
-  value:
-    address_: 
-    value_: 0
-    shouldSave_: 0
-    valueAtZero_: 0
-    valueAtOne_: 1
-    scaledValue_: 0
-    affectorFunction_: 0
-  audioThreshold: 0.8
-  signalSource: 2
-  patternType: 0
-  audioFrequency: 1
-  pattern: {fileID: 0}
-  presetLoaded: 0
 --- !u!23 &5994290678935450490
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -116985,14 +116645,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6786225927434200822}
-  - {fileID: 793091738362842629}
-  - {fileID: 5896254236151470385}
-  - {fileID: 1561910487027595220}
-  - {fileID: 2451072689196641864}
-  - {fileID: 4918184318806525709}
-  - {fileID: 7780987698590967050}
-  - {fileID: 2835942256713520910}
-  - {fileID: 2840791500295319564}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -117195,23 +116847,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7738170082722819995}
   m_Mesh: {fileID: 4300000, guid: 7257e24e2129d6e4f95fc4e40bc2e179, type: 2}
---- !u!1 &7141119045297983426
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7780987698590967050}
-  - component: {fileID: 7780987698590967051}
-  m_Layer: 0
-  m_Name: Group6
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!4 &7163791060628192437
 Transform:
   m_ObjectHideFlags: 0
@@ -117451,53 +117086,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!1 &7570784815052310373
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 793091738362842629}
-  - component: {fileID: 7570784815052310374}
-  m_Layer: 0
-  m_Name: Group1 - Audio Low
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &7570784815052310374
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7570784815052310373}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2296b0254b2105418bf647455e6bc9c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  address: /Group1
-  label: 
-  fxAddresses: []
-  fxTriggerAddresses: []
-  value:
-    address_: 
-    value_: 0
-    shouldSave_: 0
-    valueAtZero_: 0
-    valueAtOne_: 1
-    scaledValue_: 0
-    affectorFunction_: 0
-  audioThreshold: 0.8
-  signalSource: 2
-  patternType: 0
-  audioFrequency: 0
-  pattern: {fileID: 0}
-  presetLoaded: 0
 --- !u!4 &7588229066303726028
 Transform:
   m_ObjectHideFlags: 0
@@ -117603,51 +117191,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabProjectPath: Assets/Generated Assets/B9/PodsSeparateRotate_asset/Assets/Generated
     Assets/B9/Object_14_asset/Object_14.prefab
---- !u!4 &7780987698590967050
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7141119045297983426}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6786225926994504099}
-  m_RootOrder: 6
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7780987698590967051
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7141119045297983426}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2296b0254b2105418bf647455e6bc9c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  address: /Group6
-  label: 
-  fxAddresses: []
-  fxTriggerAddresses: []
-  value:
-    address_: 
-    value_: 0
-    shouldSave_: 0
-    valueAtZero_: 0
-    valueAtOne_: 1
-    scaledValue_: 0
-    affectorFunction_: 0
-  audioThreshold: 0.8
-  signalSource: 0
-  patternType: 0
-  audioFrequency: 0
-  pattern: {fileID: 0}
-  presetLoaded: 0
 --- !u!23 &7793215814457949279
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -117745,53 +117288,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabProjectPath: Assets/Generated Assets/B9/PodsSeparateRotate_asset/Assets/Generated
     Assets/B9/Object_12_asset/Object_12.prefab
---- !u!1 &8598788927632260318
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1561910487027595220}
-  - component: {fileID: 8598788927632260319}
-  m_Layer: 0
-  m_Name: Group3 - Audio High
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &8598788927632260319
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8598788927632260318}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2296b0254b2105418bf647455e6bc9c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  address: /Group3
-  label: 
-  fxAddresses: []
-  fxTriggerAddresses: []
-  value:
-    address_: 
-    value_: 0
-    shouldSave_: 0
-    valueAtZero_: 0
-    valueAtOne_: 1
-    scaledValue_: 0
-    affectorFunction_: 0
-  audioThreshold: 0.8
-  signalSource: 2
-  patternType: 0
-  audioFrequency: 2
-  pattern: {fileID: 0}
-  presetLoaded: 0
 --- !u!1 &8646238828236295248
 GameObject:
   m_ObjectHideFlags: 0
