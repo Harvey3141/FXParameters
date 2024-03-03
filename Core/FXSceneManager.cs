@@ -47,13 +47,13 @@ namespace FX
 
             //FXManager.Instance.CreateDefaultGroup("Default", true);
 
-            FXManager.FXGroupPreset p = new FXManager.FXGroupPreset();
+            FXGroupData p = new FXGroupData();
             p.label = "Default";
             p.isPinned = true;
             p.signalSource = GroupFXController.SignalSource.Default;
             FXManager.Instance.CreateGroup(p);
 
-            p = new FXManager.FXGroupPreset();
+            p = new FXGroupData();
             p.label = "Audio Low";
             p.isPinned = true;
             p.signalSource = GroupFXController.SignalSource.Audio;

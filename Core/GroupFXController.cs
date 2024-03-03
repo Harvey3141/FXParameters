@@ -1,12 +1,31 @@
+using System;
 using UnityEngine;
 using System.Collections.Generic;
 using static FX.FXManager;
-using System;
 using FX.Patterns;
 using System.Linq;
+using static FX.GroupFXController;
 
 namespace FX
 {
+    [System.Serializable]
+    public class FXGroupData
+    {
+        public string address = null;
+        public string label = null;
+        public GroupFXController.SignalSource signalSource = GroupFXController.SignalSource.Default;
+        public List<string> fxAddresses = new List<string>();
+        public List<string> fxTriggerAddresses = new List<string>();
+
+        public bool isPinned = false;
+
+        public PatternType patternType;
+        public int numBeats = 4;
+        public FX.Patterns.OscillatorPattern.OscillatorType oscillatorType;
+        public FX.Patterns.ArpeggiatorPattern.PatternStyle arpeggiatorStyle;
+
+        public AudioFrequency audioFrequency;
+    }
     public class GroupFXController : MonoBehaviour, IFXTriggerable
     {
         [SerializeField]
@@ -222,7 +241,7 @@ namespace FX
             return !String.IsNullOrEmpty(address) && fxAddresses.Contains(address.Substring(1));
         }
 
-        public void LoadPreset(FXGroupPreset preset) {
+        public void LoadPreset(FXGroupData preset) {
             ClearFXAdresses();
             fxAddresses        = preset.fxAddresses;
             Label              = preset.label;  
@@ -266,6 +285,41 @@ namespace FX
             }
           
             presetLoaded = true;
+        }
+
+        public FXGroupData GetPreset() {
+
+            FXGroupData preset = new FXGroupData();
+            preset.address            = address;
+            preset.isPinned           = isPinned;
+            preset.label              = label;
+            preset.fxAddresses        = FormattedFXAddresses;
+            preset.fxTriggerAddresses = fxTriggerAddresses;
+            preset.signalSource       = signalSource;
+
+            switch (signalSource)
+            {
+                case SignalSource.Audio:
+                    preset.audioFrequency = audioFrequency;
+                    break;
+                case SignalSource.Pattern:
+                    preset.patternType = patternType;
+                    preset.numBeats = pattern.NumBeats;
+
+                    switch (patternType)
+                    {
+                        case PatternType.Oscillator:
+                            OscillatorPattern oscillator = (OscillatorPattern)pattern;
+                            preset.oscillatorType = oscillator.Oscillator;
+                            break;
+                        case PatternType.Arpeggiator:
+                            ArpeggiatorPattern arp = (ArpeggiatorPattern)pattern;
+                            preset.arpeggiatorStyle = arp.style;
+                            break;
+                    }
+                    break;
+            }
+            return preset;
         }
 
         public void SetPatternType(PatternType newPatternType)

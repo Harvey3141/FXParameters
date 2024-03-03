@@ -177,6 +177,8 @@ namespace FX
                 if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
                 {
                     string json = message.Values[0].StringValue;
+                    FXGroupData preset = JsonUtility.FromJson<FXGroupData>(json);
+                    FXManager.Instance.CreateGroup(preset);
                 }
             }
             else if (address.ToUpper() == "/GROUP/PARAM/ADD")

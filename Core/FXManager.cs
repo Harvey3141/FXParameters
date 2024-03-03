@@ -452,31 +452,31 @@ namespace FX
 
 
         [System.Serializable]
-        public class FXPreset
+        public class FXData
         {
-            public List<FXPresetParameter<string>>  stringParameters    = new List<FXPresetParameter<string>>();
-            public List<FXPresetParameter<int>>     intParameters       = new List<FXPresetParameter<int>>();
-            public List<FXPresetParameter<float>>   floatParameters     = new List<FXPresetParameter<float>>();
-            public List<FXPresetParameter<bool>>    boolParameters      = new List<FXPresetParameter<bool>>();
-            public List<FXPresetParameter<Color>>   colorParameters     = new List<FXPresetParameter<Color>>();
-            public List<FXPresetEnumParameter>      enumParameters      = new List<FXPresetEnumParameter>();
+            public List<FXParameterData<string>>  stringParameters    = new List<FXParameterData<string>>();
+            public List<FXParameterData<int>>     intParameters       = new List<FXParameterData<int>>();
+            public List<FXParameterData<float>>   floatParameters     = new List<FXParameterData<float>>();
+            public List<FXParameterData<bool>>    boolParameters      = new List<FXParameterData<bool>>();
+            public List<FXParameterData<Color>>   colorParameters     = new List<FXParameterData<Color>>();
+            public List<FXEnumParameterData>      enumParameters      = new List<FXEnumParameterData>();
 
-            public List<FXGroupPreset> fxGroupPresets               = new List<FXGroupPreset>();
+            public List<FXGroupData> fxGroupPresets               = new List<FXGroupData>();
 
-            public List<FXPresetMethod> fXPresetMethods = new List<FXPresetMethod>();
+            public List<FXMethodData> fXPresetMethods = new List<FXMethodData>();
 
 
         }
 
         [System.Serializable]
-        public class FXPresetMethod
+        public class FXMethodData
         {
             public string key;
 
         }
 
         [System.Serializable]
-        public class FXPresetParameter<T>
+        public class FXParameterData<T>
         {
             public string key;
             public T value;
@@ -494,34 +494,15 @@ namespace FX
 
 
         [System.Serializable]
-        public class FXPresetEnumParameter : FXPresetParameter<int> 
+        public class FXEnumParameterData : FXParameterData<int> 
         {
             public List<string> availableNames = new List<string>();
-        }
-
-        [System.Serializable]
-        public class FXGroupPreset
-        {
-            public string address = null;
-            public string label = null;
-            public SignalSource signalSource = SignalSource.Default;
-            public List<string> fxAddresses        = new List<string>();
-            public List<string> fxTriggerAddresses = new List<string>();
-
-            public bool isPinned = false;
-
-            public PatternType patternType;
-            public int numBeats = 4;
-            public FX.Patterns.OscillatorPattern.OscillatorType oscillatorType;
-            public FX.Patterns.ArpeggiatorPattern.PatternStyle arpeggiatorStyle;
-
-            public AudioFrequency audioFrequency;
         }
 
 
         public void SavePreset(string presetName, bool includeAll = false)
         {
-            FXPreset preset = new FXPreset();
+            FXData preset = new FXData();
 
             foreach (var item in fxItemsByAddress_)
             {
@@ -537,7 +518,7 @@ namespace FX
 
                         if (item.Value.item is FXScaledParameter<float> scaledParamFloat)
                         {
-                            preset.floatParameters.Add(new FXPresetParameter<float>
+                            preset.floatParameters.Add(new FXParameterData<float>
                             {
                                 key = key_,
                                 value = (float)value_,
@@ -553,7 +534,7 @@ namespace FX
                         }
                         else if (item.Value.item is FXScaledParameter<Color> scaledParamColor)
                         {
-                            preset.floatParameters.Add(new FXPresetParameter<float>
+                            preset.floatParameters.Add(new FXParameterData<float>
                             {
                                 key = key_,
                                 value = (float)value_,
@@ -570,7 +551,7 @@ namespace FX
                         }
                         else if (item.Value.item is FXScaledParameter<int> scaledParamInt)
                         {
-                            preset.floatParameters.Add(new FXPresetParameter<float>
+                            preset.floatParameters.Add(new FXParameterData<float>
                             {
                                 key = key_,
                                 value = (float)value_,
@@ -587,7 +568,7 @@ namespace FX
                         }
                         else if (item.Value.item is FXScaledParameter<Vector3> scaledParamVector3)
                         {
-                            preset.floatParameters.Add(new FXPresetParameter<float>
+                            preset.floatParameters.Add(new FXParameterData<float>
                             {
                                 key = key_,
                                 value = (float)value_,
@@ -621,7 +602,7 @@ namespace FX
 
                             if (hasMinValue || hasMaxValue)
                             {
-                                preset.floatParameters.Add(new FXPresetParameter<float>
+                                preset.floatParameters.Add(new FXParameterData<float>
                                 {
                                     key = key_,
                                     value = (float)value_,
@@ -634,7 +615,7 @@ namespace FX
                             }
                             else
                             {
-                                preset.floatParameters.Add(new FXPresetParameter<float> { key = key_, value = (float)value_ });
+                                preset.floatParameters.Add(new FXParameterData<float> { key = key_, value = (float)value_ });
 
                             }
                         }
@@ -645,7 +626,7 @@ namespace FX
 
                             if (hasMinValue || hasMaxValue)
                             {
-                                preset.intParameters.Add(new FXPresetParameter<int>
+                                preset.intParameters.Add(new FXParameterData<int>
                                 {
                                     key = key_,
                                     value = (int)value_,
@@ -659,28 +640,28 @@ namespace FX
                             }
                             else
                             {
-                                preset.intParameters.Add(new FXPresetParameter<int> { key = key_, value = (int)value_ });
+                                preset.intParameters.Add(new FXParameterData<int> { key = key_, value = (int)value_ });
 
                             }
                         }
                         else if (parameter is FXParameter<string> stringParam)
                         {
-                            preset.stringParameters.Add(new FXPresetParameter<string> { key = key_, value = (string)value_ });
+                            preset.stringParameters.Add(new FXParameterData<string> { key = key_, value = (string)value_ });
                         }
                         else if (parameter is FXParameter<bool> boolParam)
                         {
-                            preset.boolParameters.Add(new FXPresetParameter<bool> { key = key_, value = (bool)value_ , defaultValue = boolParam.GetDefaultValue()});
+                            preset.boolParameters.Add(new FXParameterData<bool> { key = key_, value = (bool)value_ , defaultValue = boolParam.GetDefaultValue()});
                         }
                         else if (parameter is FXParameter<Color> colorParam)
                         {
-                            preset.colorParameters.Add(new FXPresetParameter<Color> { key = key_, value = (Color)value_ , defaultValue = colorParam.GetDefaultValue()});
+                            preset.colorParameters.Add(new FXParameterData<Color> { key = key_, value = (Color)value_ , defaultValue = colorParam.GetDefaultValue()});
                         }
                         else
                         {
                             Type valueType = value_.GetType();
                             if (valueType.IsEnum)
                             {
-                                FXPresetEnumParameter enumParameter = new FXPresetEnumParameter
+                                FXEnumParameterData enumParameter = new FXEnumParameterData
                                 {
                                     key = key_,
                                     value = (int)value_,
@@ -695,7 +676,7 @@ namespace FX
                 if (includeAll) {
 
                     if (item.Value.type == FXItemInfoType.Method) {
-                        preset.fXPresetMethods.Add(new FXPresetMethod { key = item.Key}); 
+                        preset.fXPresetMethods.Add(new FXMethodData { key = item.Key}); 
                     }
 
                 }
@@ -704,36 +685,7 @@ namespace FX
             GroupFXController[] allFXGroups = GameObject.FindObjectsOfType<GroupFXController>();
             foreach (var group in allFXGroups)
             {
-                FXGroupPreset groupPreset = new FXGroupPreset();
-                groupPreset.address            = group.address;
-                groupPreset.label              = group.label;
-                groupPreset.fxAddresses        = group.FormattedFXAddresses;
-                groupPreset.fxTriggerAddresses = group.fxTriggerAddresses;
-                groupPreset.signalSource       = group.signalSource;
-
-                switch (group.signalSource) {
-                    case SignalSource.Audio:
-                        groupPreset.audioFrequency = group.audioFrequency;
-                        break;
-                    case SignalSource.Pattern:
-                        groupPreset.patternType = group.patternType;
-                        groupPreset.numBeats    = group.pattern.NumBeats;
-
-                        switch (group.patternType)
-                        {
-                            case PatternType.Oscillator:
-                                OscillatorPattern oscillator = (OscillatorPattern)group.pattern;
-                                groupPreset.oscillatorType = oscillator.Oscillator;
-                                break;
-                            case PatternType.Arpeggiator:
-                                ArpeggiatorPattern arp = (ArpeggiatorPattern)group.pattern;
-                                groupPreset.arpeggiatorStyle = arp.style;
-                                break;
-                        }
-                        break;
-                }
-
-                preset.fxGroupPresets.Add(groupPreset);
+                preset.fxGroupPresets.Add(group.GetPreset());
             }
 
             string json = JsonUtility.ToJson(preset);
@@ -757,7 +709,7 @@ namespace FX
             if (File.Exists(filePath))
             {
                 string json = File.ReadAllText(filePath);
-                FXPreset preset = JsonUtility.FromJson<FXPreset>(json);
+                FXData preset = JsonUtility.FromJson<FXData>(json);
 
                 foreach (var param in preset.stringParameters)
                 {
@@ -796,6 +748,7 @@ namespace FX
                     .Where(item => item.Key.EndsWith("fxEnabled") && item.Value.type == FXItemInfoType.Parameter && item.Value.item is FXParameter<bool>)
                     .ToList();
 
+                // TODO - change this to set them to their default values
                 // Set FXParameter<bool> items to false if not included in the preset
                 foreach (var fxItem in relevantFXItems)
                 {
@@ -806,7 +759,7 @@ namespace FX
                     }
                 }
 
-                Dictionary<string, FXGroupPreset> fxGroupPresets = preset.fxGroupPresets.ToDictionary(p => p.address, p => p);
+                Dictionary<string, FXGroupData> fxGroupPresets = preset.fxGroupPresets.ToDictionary(p => p.address, p => p);
 
                 GroupFXController[] allFXGroups = GameObject.FindObjectsOfType<GroupFXController>();
                 foreach (var group in allFXGroups)
@@ -837,7 +790,7 @@ namespace FX
             fxAddresses.RemoveAll(fxAddress => !fxItemsByAddress_.ContainsKey(fxAddress));
         }
 
-        private bool IsAddressInPreset(string address, FXPreset preset)
+        private bool IsAddressInPreset(string address, FXData preset)
         {
             return preset.boolParameters.Any(p => p.key == address);
         }
@@ -896,45 +849,6 @@ namespace FX
             }
         }
 
-        //public GroupFXController CreateDefaultGroup(string label = "", bool isPinned = false)
-        //{
-        //    GroupFXController group = CreateGroup(label, SignalSource.Default, isPinned);
-        //    return group;
-        //}
-        //
-        //public GroupFXController CreateAudioGroup(AudioFrequency audioFrequency, string label = "", bool isPinned = false) 
-        //{
-        //    GroupFXController group = CreateGroup(label, SignalSource.Audio, isPinned);
-        //    group.audioFrequency = audioFrequency;
-        //    return group;
-        //}
-        //
-        //public GroupFXController CreateOscillatorPatternGroup(FX.Patterns.OscillatorPattern.OscillatorType oscillatorType, int numBeats = 4, string label = "", bool isPinned = false)
-        //{
-        //    GroupFXController group = CreatePatternGroup(PatternType.Oscillator ,numBeats, label, isPinned);
-        //    group.SetOscillatorPatternType(oscillatorType);
-        //    return group;
-        //}
-        //public GroupFXController CreateTapPatternGroup(int numBeats = 4, string label = "", bool isPinned = false)
-        //{
-        //    GroupFXController group = CreatePatternGroup(PatternType.Tap, numBeats, label, isPinned);
-        //    return group;
-        //}
-        //
-        //public GroupFXController CreateArpeggiatorPatternGroup(int numBeats = 4, string label = "", bool isPinned = false)
-        //{
-        //    GroupFXController group = CreatePatternGroup(PatternType.Arpeggiator, numBeats, label, isPinned);
-        //    return group;
-        //}
-        //
-        //private GroupFXController CreatePatternGroup(PatternType patternType, int numBeats = 4, string label = "", bool isPinned = false)
-        //{
-        //    GroupFXController group = CreateGroup(label, SignalSource.Pattern, isPinned);
-        //    group.SetPatternType(patternType);
-        //    group.SetPatternNumBeats(numBeats);
-        //    return group;
-        //}
-
         private GroupFXController CreateGroup()
         {
             int maxIndex = 0;
@@ -963,10 +877,10 @@ namespace FX
             return group;
         }
 
-        public GroupFXController CreateGroup(FXGroupPreset preset) {            
-            GroupFXController g = CreateGroup();
-            g.LoadPreset(preset);
-            return g;
+        public GroupFXController CreateGroup(FXGroupData preset) {            
+            GroupFXController group = CreateGroup();
+            group.LoadPreset(preset);
+            return group;
         }
 
         public void RemoveGroup(string address)
