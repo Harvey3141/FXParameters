@@ -114,6 +114,7 @@ public class FXParameterGUI : MonoBehaviour
                     {
                         GUILayout.Label("  " + item.address, paramLabelStyle);
                         floatParam.Value = GUILayout.HorizontalSlider(floatParam.Value, 0.0f, 1.0f);
+                        floatParam.InvertValue = GUILayout.Toggle(floatParam.InvertValue, "");
                     }
                     else if (item.item is FXParameter<bool> boolParam)
                     {

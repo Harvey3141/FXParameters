@@ -465,38 +465,12 @@ namespace FX
 
             public List<FXMethodData> fXPresetMethods = new List<FXMethodData>();
 
-
         }
 
         [System.Serializable]
         public class FXMethodData
         {
             public string key;
-
-        }
-
-        [System.Serializable]
-        public class FXParameterData<T>
-        {
-            public string key;
-            public T value;
-            public T defaultValue;
-            public T minValue;
-            public T maxValue;
-            public bool hasMinValue = false;
-            public bool hasMaxValue = false;
-
-            // Settings specific to FXScaledParamers 
-            public bool isScaled = false;
-            public AffectorFunction affector = AffectorFunction.Linear;
-            public bool isInverted = false;
-        }
-
-
-        [System.Serializable]
-        public class FXEnumParameterData : FXParameterData<int> 
-        {
-            public List<string> availableNames = new List<string>();
         }
 
 
@@ -506,7 +480,6 @@ namespace FX
 
             foreach (var item in fxItemsByAddress_)
             {
-
                 if (item.Value.type == FXItemInfoType.ScaledParameter)
                 {
                     var parameter = item.Value.item as IFXParameter;
@@ -518,70 +491,19 @@ namespace FX
 
                         if (item.Value.item is FXScaledParameter<float> scaledParamFloat)
                         {
-                            preset.floatParameters.Add(new FXParameterData<float>
-                            {
-                                key = key_,
-                                value = (float)value_,
-                                defaultValue = scaledParamFloat.GetDefaultValue(),
-                                minValue = scaledParamFloat.GetMinValue(),
-                                maxValue = scaledParamFloat.GetMaxValue(),
-                                hasMaxValue = scaledParamFloat.HasMaxValue,
-                                hasMinValue = scaledParamFloat.HasMinValue,
-                                isScaled = true,
-                                affector = scaledParamFloat.AffectorFunction,
-                                isInverted = scaledParamFloat.InvertValue
-                            }) ;
+                            preset.floatParameters.Add(scaledParamFloat.GetData());
                         }
                         else if (item.Value.item is FXScaledParameter<Color> scaledParamColor)
                         {
-                            preset.floatParameters.Add(new FXParameterData<float>
-                            {
-                                key = key_,
-                                value = (float)value_,
-                                defaultValue = scaledParamColor.GetDefaultValue(),
-
-                                minValue = scaledParamColor.GetMinValue(),
-                                maxValue = scaledParamColor.GetMaxValue(),
-                                hasMaxValue = scaledParamColor.HasMaxValue,
-                                hasMinValue = scaledParamColor.HasMinValue,
-                                isScaled = true,
-                                affector = scaledParamColor.AffectorFunction,
-                                isInverted = scaledParamColor.InvertValue
-                            });
+                            preset.floatParameters.Add(scaledParamColor.GetData());
                         }
                         else if (item.Value.item is FXScaledParameter<int> scaledParamInt)
                         {
-                            preset.floatParameters.Add(new FXParameterData<float>
-                            {
-                                key = key_,
-                                value = (float)value_,
-                                defaultValue = scaledParamInt.GetDefaultValue(),
-
-                                minValue = scaledParamInt.GetMinValue(),
-                                maxValue = scaledParamInt.GetMaxValue(),
-                                hasMaxValue = scaledParamInt.HasMaxValue,
-                                hasMinValue = scaledParamInt.HasMinValue,
-                                isScaled = true,
-                                affector = scaledParamInt.AffectorFunction,
-                                isInverted = scaledParamInt.InvertValue
-                            });
+                            preset.floatParameters.Add(scaledParamInt.GetData());
                         }
                         else if (item.Value.item is FXScaledParameter<Vector3> scaledParamVector3)
                         {
-                            preset.floatParameters.Add(new FXParameterData<float>
-                            {
-                                key = key_,
-                                value = (float)value_,
-                                defaultValue = scaledParamVector3.GetDefaultValue(),
-
-                                minValue = scaledParamVector3.GetMinValue(),
-                                maxValue = scaledParamVector3.GetMaxValue(),
-                                hasMaxValue = scaledParamVector3.HasMaxValue,
-                                hasMinValue = scaledParamVector3.HasMinValue,
-                                isScaled = true,
-                                affector = scaledParamVector3.AffectorFunction,
-                                isInverted = scaledParamVector3.InvertValue
-                            });
+                            preset.floatParameters.Add(scaledParamVector3.GetData());
                         }
                     }
                 }
@@ -597,64 +519,23 @@ namespace FX
 
                         if (parameter is FXParameter<float> floatParam)
                         {
-                            bool hasMinValue = floatParam.HasMinValue;
-                            bool hasMaxValue = floatParam.HasMaxValue;
-
-                            if (hasMinValue || hasMaxValue)
-                            {
-                                preset.floatParameters.Add(new FXParameterData<float>
-                                {
-                                    key = key_,
-                                    value = (float)value_,
-                                    defaultValue = floatParam.GetDefaultValue(),
-                                    minValue = floatParam.GetMinValue(),
-                                    maxValue = floatParam.GetMaxValue(),
-                                    hasMaxValue = floatParam.HasMaxValue,
-                                    hasMinValue = floatParam.HasMinValue
-                                }) ;
-                            }
-                            else
-                            {
-                                preset.floatParameters.Add(new FXParameterData<float> { key = key_, value = (float)value_ });
-
-                            }
+                            preset.floatParameters.Add(floatParam.GetData());
                         }
                         else if (parameter is FXParameter<int> intParam)
                         {
-                            bool hasMinValue = intParam.HasMinValue;
-                            bool hasMaxValue = intParam.HasMaxValue;
-
-                            if (hasMinValue || hasMaxValue)
-                            {
-                                preset.intParameters.Add(new FXParameterData<int>
-                                {
-                                    key = key_,
-                                    value = (int)value_,
-                                    defaultValue = intParam.GetDefaultValue(),
-                                    minValue = intParam.GetMinValue(),
-                                    maxValue = intParam.GetMaxValue(),
-                                    hasMaxValue = intParam.HasMaxValue,
-                                    hasMinValue = intParam.HasMinValue,
-                                });
-
-                            }
-                            else
-                            {
-                                preset.intParameters.Add(new FXParameterData<int> { key = key_, value = (int)value_ });
-
-                            }
+                            preset.intParameters.Add(intParam.GetData());
                         }
                         else if (parameter is FXParameter<string> stringParam)
                         {
-                            preset.stringParameters.Add(new FXParameterData<string> { key = key_, value = (string)value_ });
+                            preset.stringParameters.Add(stringParam.GetData());
                         }
                         else if (parameter is FXParameter<bool> boolParam)
                         {
-                            preset.boolParameters.Add(new FXParameterData<bool> { key = key_, value = (bool)value_ , defaultValue = boolParam.GetDefaultValue()});
+                            preset.boolParameters.Add(boolParam.GetData());
                         }
                         else if (parameter is FXParameter<Color> colorParam)
                         {
-                            preset.colorParameters.Add(new FXParameterData<Color> { key = key_, value = (Color)value_ , defaultValue = colorParam.GetDefaultValue()});
+                            preset.colorParameters.Add(colorParam.GetData());
                         }
                         else
                         {
@@ -669,8 +550,7 @@ namespace FX
                                 };
                                 preset.enumParameters.Add(enumParameter);
                             }
-                        }
-                        
+                        }                       
                     }
                 }
                 if (includeAll) {
@@ -685,7 +565,7 @@ namespace FX
             GroupFXController[] allFXGroups = GameObject.FindObjectsOfType<GroupFXController>();
             foreach (var group in allFXGroups)
             {
-                preset.fxGroupPresets.Add(group.GetPreset());
+                preset.fxGroupPresets.Add(group.GetData());
             }
 
             string json = JsonUtility.ToJson(preset);

@@ -287,7 +287,7 @@ namespace FX
             presetLoaded = true;
         }
 
-        public FXGroupData GetPreset() {
+        public FXGroupData GetData() {
 
             FXGroupData preset = new FXGroupData();
             preset.address            = address;

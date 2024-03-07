@@ -12,6 +12,38 @@ namespace FX
         bool ShouldSave { get; set; }
     }
 
+    public enum AffectorFunction
+    {
+        Linear,
+        EaseIn,
+        EaseOut,
+        Randomise
+    }
+
+    [System.Serializable]
+    public class FXParameterData<T>
+    {
+        public string key;
+        public T value;
+        public T defaultValue;
+        public T minValue;
+        public T maxValue;
+        public bool hasMinValue = false;
+        public bool hasMaxValue = false;
+
+        // Settings specific to FXScaledParamers 
+        public bool isScaled = false;
+        public AffectorFunction affector = AffectorFunction.Linear;
+        public bool isInverted = false;
+    }
+
+
+    [System.Serializable]
+    public class FXEnumParameterData : FXParameterData<int>
+    {
+        public List<string> availableNames = new List<string>();
+    }
+
     [System.Serializable]
     public class FXParameter<T> : IFXParameter
     {
@@ -19,7 +51,7 @@ namespace FX
         protected string address_;
         [SerializeField]
         private T value_;
-        private T defaultValue_; 
+        private T defaultValue_;
 
         [SerializeField]
         private bool shouldSave_ = true;
@@ -30,7 +62,7 @@ namespace FX
         private bool hasMinValue_ = false;
         private bool hasMaxValue_ = false;
 
-        public event Action<T> OnValueChanged; 
+        public event Action<T> OnValueChanged;
 
         public virtual T Value
         {
@@ -49,7 +81,7 @@ namespace FX
                 //    newValue = maxValue_;
                 //}
 
-                if (!EqualityComparer<T>.Default.Equals(value_, newValue)) 
+                if (!EqualityComparer<T>.Default.Equals(value_, newValue))
                 {
                     value_ = newValue;
                     OnValueChanged?.Invoke(value_);
@@ -81,8 +113,9 @@ namespace FX
         public string Address
         {
             get { return address_; }
-            set { 
-                address_ = value; 
+            set
+            {
+                address_ = value;
             }
         }
 
@@ -124,7 +157,7 @@ namespace FX
         public bool HasMinValue
         {
             get { return hasMinValue_; }
-            
+
         }
 
         public bool HasMaxValue
@@ -159,20 +192,27 @@ namespace FX
             Value = defaultValue_;
         }
 
-        public T GetDefaultValue() 
-        { 
+        public T GetDefaultValue()
+        {
             return defaultValue_;
         }
-        
+
+        public virtual FXParameterData<T> GetData()
+        {
+            return new FXParameterData<T>
+            {
+                key          = this.Address,
+                value        = this.Value,
+                defaultValue = this.GetDefaultValue(),
+                minValue     = this.GetMinValue(),
+                maxValue     = this.GetMaxValue(),
+                hasMinValue  = this.HasMinValue,
+                hasMaxValue  = this.HasMaxValue,
+                isScaled     = false
+            };
+        }
     }
 
-    public enum AffectorFunction
-    {
-        Linear,
-        EaseIn,
-        EaseOut,
-        Randomise
-    }
 
     [System.Serializable]
     public class FXScaledParameter<T> : FXParameter<float>
@@ -249,7 +289,7 @@ namespace FX
         public bool InvertValue
         {
             get { return invertValue_; }
-            private set { 
+            set { 
                 invertValue_ = value;
                 Value = Value;
             }
@@ -318,9 +358,25 @@ namespace FX
                 }
             }
         }
+
+        public override FXParameterData<float> GetData()
+        {
+            return new FXParameterData<float>
+            {
+                key          = this.Address,
+                value        = this.Value, 
+                defaultValue = this.GetDefaultValue(), 
+                minValue     = this.GetMinValue(),
+                maxValue     = this.GetMaxValue(),
+                hasMinValue  = this.HasMinValue,
+                hasMaxValue  = this.HasMaxValue,
+                affector     = this.AffectorFunction,
+                isInverted   = this.InvertValue,
+                isScaled     = true
+            };
+
+        }
     }
-
-
 
     [System.Serializable]
     public class FXEnabledParameter : FXParameter<bool>
