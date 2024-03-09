@@ -47,12 +47,12 @@ public class FXAreaLight : FXBaseWithEnabled
 
     void SetSizeX(float value)
     {
-        lightComp.areaSize = new Vector2(value, lightComp.areaSize.y);
+        //lightComp.areaSize = new Vector2(value, lightComp.areaSize.y);
     }
 
     void SetSizeY(float value)
     {
-        lightComp.areaSize = new Vector2(lightComp.areaSize.x, value);
+        //lightComp.areaSize = new Vector2(lightComp.areaSize.x, value);
     }
 
     void SetIntensity(float value)

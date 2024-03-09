@@ -1,6 +1,5 @@
 using FX;
 using System.Collections.Generic;
-using Unity.PlasticSCM.Editor.WebApi;
 using UnityEngine;
 
 public class ScaleCuboids : FXBaseWithEnabled
