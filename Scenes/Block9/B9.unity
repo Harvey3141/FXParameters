@@ -45936,68 +45936,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &906766736
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 906766738}
-  - component: {fileID: 906766737}
-  m_Layer: 0
-  m_Name: Test
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &906766737
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 906766736}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 07c6bfd3dea7fa347abce4dec7abb006, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fxAddress: 
-  fxEnabled:
-    address_: 
-    value_: 0
-    shouldSave_: 1
-  scaleType:
-    address_: 
-    value_: 3
-    shouldSave_: 1
-  scale:
-    address_: 
-    value_: 1
-    shouldSave_: 1
-    valueAtZero_: 0
-    valueAtOne_: 1
-    scaledValue_: 1
-    affectorFunction_: 0
-  targetTransforms: []
---- !u!4 &906766738
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 906766736}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.1506523, y: 2.1406121, z: 4.6446466}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 16
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!43 &907556368
 Mesh:
   m_ObjectHideFlags: 0
@@ -112714,6 +112652,14 @@ MonoBehaviour:
     valueAtOne_: 1
     scaledValue_: 0
     affectorFunction_: 0
+  slice:
+    address_: 
+    value_: 0
+    shouldSave_: 0
+    valueAtZero_: 0
+    valueAtOne_: 1
+    scaledValue_: 0
+    affectorFunction_: 0
   blockEnabled:
     address_: 
     value_: 0
@@ -112731,6 +112677,10 @@ MonoBehaviour:
     value_: 0
     shouldSave_: 0
   shakeEnabled:
+    address_: 
+    value_: 0
+    shouldSave_: 0
+  sliceEnaled:
     address_: 
     value_: 0
     shouldSave_: 0
@@ -113088,6 +113038,14 @@ MonoBehaviour:
     valueAtOne_: 1
     scaledValue_: 0
     affectorFunction_: 0
+  slice:
+    address_: 
+    value_: 0
+    shouldSave_: 0
+    valueAtZero_: 0
+    valueAtOne_: 1
+    scaledValue_: 0
+    affectorFunction_: 0
   blockEnabled:
     address_: 
     value_: 0
@@ -113105,6 +113063,10 @@ MonoBehaviour:
     value_: 0
     shouldSave_: 0
   shakeEnabled:
+    address_: 
+    value_: 0
+    shouldSave_: 0
+  sliceEnaled:
     address_: 
     value_: 0
     shouldSave_: 0

@@ -117,7 +117,6 @@ namespace FX
 
         public static void RemoveFXElements(this MonoBehaviour monoBehaviour)
         {
-
             // Remove FXParameters
             var fields = monoBehaviour.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (var field in fields)

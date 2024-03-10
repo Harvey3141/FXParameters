@@ -5,6 +5,8 @@ public abstract class FXBase : MonoBehaviour
 {
     [SerializeField]
     public string fxAddress = "";
+    private bool isQuitting = false;
+
 
     protected virtual void Awake()
     {
@@ -17,8 +19,17 @@ public abstract class FXBase : MonoBehaviour
     }
     protected virtual void OnDestroy()
     {
-        this.RemoveFXElements();
+        if (!isQuitting)
+        {
+            this.RemoveFXElements();
+        }
     }
+
+    private void OnApplicationQuit()
+    {
+        isQuitting = true;
+    }
+
 
 }
 

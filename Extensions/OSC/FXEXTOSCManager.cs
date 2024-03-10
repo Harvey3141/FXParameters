@@ -354,9 +354,11 @@ namespace FX
 
         void OnPresetListUpdated(List<string> presets) 
         {
+            string presetListString = "{" + string.Join(",", presets) + "}";
+
             foreach (var node in oscNodes)
             {
-                if (node.SendParamChanges) SendOSCMessage("/sceneList/get", node, name);
+                if (node.SendParamChanges) SendOSCMessage("/sceneList/get", node, presetListString);
             }
         }
 

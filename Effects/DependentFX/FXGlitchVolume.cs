@@ -1,7 +1,5 @@
 using FX;
 using Kino.PostProcessing;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -15,16 +13,22 @@ public class FXGlitchVolume : FXBase
     public FXScaledParameter<float> jitter = new FXScaledParameter<float>(0, 0, 1.0f,"",false);
     public FXScaledParameter<float> jump   = new FXScaledParameter<float>(0, 0, 1.0f,"",false);
     public FXScaledParameter<float> shake  = new FXScaledParameter<float>(0, 0, 1.0f,"",false);
+    public FXScaledParameter<float> slice  = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
+
 
     public FXParameter<bool> blockEnabled  = new FXParameter<bool>(false,"", false);
     public FXParameter<bool> driftEnabled  = new FXParameter<bool>(false,"", false);
     public FXParameter<bool> jitterEnabled = new FXParameter<bool>(false,"", false);
     public FXParameter<bool> jumpEnabled   = new FXParameter<bool>(false,"", false);
     public FXParameter<bool> shakeEnabled  = new FXParameter<bool>(false,"", false);
+    public FXParameter<bool> sliceEnaled   = new FXParameter<bool>(false, "", false);
+
 
 
     private Volume volume;
     private Glitch glitchEffect;
+    private Slice sliceEffect;
+
 
     protected override void Awake()
     {
@@ -41,18 +45,24 @@ public class FXGlitchVolume : FXBase
             Debug.LogError("Glitch effect not found in the Volume profile");
         }
 
+        if (!volume.profile.TryGet<Slice>(out sliceEffect))
+        {
+            Debug.LogError("Glitch effect not found in the Volume profile");
+        }
+
         block .OnScaledValueChanged   += SetBlock;
         drift .OnScaledValueChanged   += SetDrift;
         jitter.OnScaledValueChanged   += SetJitter;
         jump  .OnScaledValueChanged   += SetJump;
         shake .OnScaledValueChanged   += SetShake;
+        slice.OnScaledValueChanged    += SetSlice;
 
         blockEnabled .OnValueChanged   += SetBlockEnabled;
         driftEnabled .OnValueChanged   += SetDriftEnbled;
         jitterEnabled.OnValueChanged   += SetJitterEnbled;
         jumpEnabled  .OnValueChanged   += SetJumpEnbled;
         shakeEnabled .OnValueChanged   += SetShakeEnbled;
-
+        sliceEnaled.OnValueChanged     += SetSliceEnabled;
     }
 
     private void SetBlock(float value)
@@ -130,6 +140,21 @@ public class FXGlitchVolume : FXBase
         if (glitchEffect != null)
         {
             glitchEffect.shake.overrideState = value;
+        }
+    }
+
+    private void SetSlice(float value)
+    {
+        if (sliceEffect != null)
+        {
+            sliceEffect.displacement.value = value;
+        }
+    }
+    private void SetSliceEnabled(bool value)
+    {
+        if (sliceEffect != null)
+        {
+            sliceEffect.active = value;
         }
     }
 }
