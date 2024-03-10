@@ -114,5 +114,37 @@ namespace FX
             return computedAddressPrefix;
 
         }
+
+        public static void RemoveFXElements(this MonoBehaviour monoBehaviour)
+        {
+
+            // Remove FXParameters
+            var fields = monoBehaviour.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            foreach (var field in fields)
+            {
+                var fieldType = field.FieldType;
+                if (fieldType.IsGenericType && (fieldType.GetGenericTypeDefinition() == typeof(FXParameter<>) || (fieldType.GetGenericTypeDefinition() == typeof(FXScaledParameter<>))))
+                {
+                    var fxParameter = (IFXParameter)field.GetValue(monoBehaviour);
+                    var address = fxParameter.Address;
+
+                    FXManager.Instance?.RemoveFXItem(address);
+                   
+                }
+            }
+
+            // Remove FXMethods
+            var methods = monoBehaviour.GetType().GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            foreach (var method in methods)
+            {
+                var FXMethodAttribute = method.GetCustomAttribute<FXMethodAttribute>();
+                if (FXMethodAttribute != null)
+                {
+                    var address = FXMethodAttribute.Address;
+                    FXManager.Instance.RemoveFXItem(address);
+                    
+                }
+            }
+        }
     }
 }

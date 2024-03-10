@@ -9,7 +9,6 @@ namespace FX
     {
         [HideInInspector]
         public List<string> presets;
-
         
         public bool exportParameterListOnStart = false;
 
@@ -45,41 +44,67 @@ namespace FX
         private void Start()
         {
 
-            //FXManager.Instance.CreateDefaultGroup("Default", true);
+            FXGroupData g = new FXGroupData();
+            g.label = "Default";
+            g.isPinned = true;
+            g.signalSource = GroupFXController.SignalSource.Default;
+            FXManager.Instance.CreateGroup(g);
 
-            FXGroupData p = new FXGroupData();
-            p.label = "Default";
-            p.isPinned = true;
-            p.signalSource = GroupFXController.SignalSource.Default;
-            FXManager.Instance.CreateGroup(p);
+            g = new FXGroupData();
+            g.label = "Audio - Low";
+            g.isPinned = true;
+            g.signalSource = GroupFXController.SignalSource.Audio;
+            g.audioFrequency = GroupFXController.AudioFrequency.Low;
+            FXManager.Instance.CreateGroup(g);
 
-            p = new FXGroupData();
-            p.label = "Audio Low";
-            p.isPinned = true;
-            p.signalSource = GroupFXController.SignalSource.Audio;
-            p.audioFrequency = GroupFXController.AudioFrequency.Low;
-            FXManager.Instance.CreateGroup(p);
+            g = new FXGroupData();
+            g.label = "Audio - Mid";
+            g.isPinned = true;
+            g.signalSource = GroupFXController.SignalSource.Audio;
+            g.audioFrequency = GroupFXController.AudioFrequency.Mid;
+            FXManager.Instance.CreateGroup(g);
 
+            g = new FXGroupData();
+            g.label = "Audio - High";
+            g.isPinned = true;
+            g.signalSource = GroupFXController.SignalSource.Audio;
+            g.audioFrequency = GroupFXController.AudioFrequency.High;
+            FXManager.Instance.CreateGroup(g);
 
-            //FXManager.Instance.CreateAudioGroup(GroupFXController.AudioFrequency.Low,  "Audio Low",  true);
-            //FXManager.Instance.CreateAudioGroup(GroupFXController.AudioFrequency.Mid,  "Audio Mid",  true);
-            //FXManager.Instance.CreateAudioGroup(GroupFXController.AudioFrequency.High, "Audio High", true);
-            //
-            //FXManager.Instance.CreateOscillatorPatternGroup(OscillatorPattern.OscillatorType.Sine, 4 ,"Oscillator - Sine",  true);
-            //FXManager.Instance.CreateOscillatorPatternGroup(OscillatorPattern.OscillatorType.Square, 8, "Oscillator - Square", true);
-            //
-            //FXManager.Instance.CreateTapPatternGroup(1, "Tap", true);
-            //FXManager.Instance.CreateArpeggiatorPatternGroup(1, "Arpeggiator", true);
+            g = new FXGroupData();
+            g.label = "Oscillator - Sine";
+            g.isPinned = true;
+            g.signalSource = GroupFXController.SignalSource.Pattern;
+            g.patternType = GroupFXController.PatternType.Oscillator;
+            g.oscillatorType = OscillatorPattern.OscillatorType.Sine;
+            FXManager.Instance.CreateGroup(g);
+
+            g = new FXGroupData();
+            g.label = "Oscillator - Square";
+            g.isPinned = true;
+            g.signalSource = GroupFXController.SignalSource.Pattern;
+            g.patternType = GroupFXController.PatternType.Oscillator;
+            g.oscillatorType = OscillatorPattern.OscillatorType.Square;
+            FXManager.Instance.CreateGroup(g);
+
+            g = new FXGroupData();
+            g.label = "Tap";
+            g.isPinned = true;
+            g.signalSource = GroupFXController.SignalSource.Pattern;
+            g.patternType = GroupFXController.PatternType.Tap;
+            g.numBeats = 1;
+            FXManager.Instance.CreateGroup(g);
+
+            g = new FXGroupData();
+            g.label = "Arpeggiator";
+            g.isPinned = true;
+            g.signalSource = GroupFXController.SignalSource.Pattern;
+            g.patternType = GroupFXController.PatternType.Arpeggiator;
+            g.numBeats = 1;
+            FXManager.Instance.CreateGroup(g);
 
             if (exportParameterListOnStart) ExportParameterList();
 
-        }
-
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.T)) {
-
-            }
         }
 
         public void PopulatePresetsList()

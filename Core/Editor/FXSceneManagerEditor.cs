@@ -45,22 +45,23 @@ namespace FX
             {
                 for (int i = 0; i < fxSceneManager.presets.Count; i++)
                 {
-                    GUILayout.BeginHorizontal();
-
                     string presetName = fxSceneManager.presets[i];
+                    if (presetName != "ParameterList") {
+                        GUILayout.BeginHorizontal();
 
-                    if (GUILayout.Button(presetName))
-                    {
-                        LoadPreset(presetName);
+                        if (GUILayout.Button(presetName))
+                        {
+                            LoadPreset(presetName);
+                        }
+
+                        // Add a remove button for each preset
+                        if (GUILayout.Button("Remove", GUILayout.Width(70)))
+                        {
+                            RemovePreset(presetName);
+                        }
+
+                        GUILayout.EndHorizontal();
                     }
-
-                    // Add a remove button for each preset
-                    if (GUILayout.Button("Remove", GUILayout.Width(70)))
-                    {
-                        RemovePreset(presetName);
-                    }
-
-                    GUILayout.EndHorizontal();
                 }
 
             }

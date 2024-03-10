@@ -74,6 +74,11 @@ public class FXExample : MonoBehaviour, IFXTriggerable
         //FXManager.Instance.SetFX(fxEnabled.Address, false);
     }
 
+    private void OnDestroy()
+    {
+        this.RemoveFXElements();
+    }
+
     /// <summary>
     /// FXMethod that can be triggered by the FX system. Takes an integer as parameter.
     /// </summary>

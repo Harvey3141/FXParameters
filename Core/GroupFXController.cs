@@ -71,6 +71,9 @@ namespace FX
         [SerializeField]
         public List<string> fxTriggerAddresses;
 
+        public List<string> FormattedFXTriggerAddresses { get { return fxTriggerAddresses.Select(address => address.StartsWith("/") ? address : "/" + address).ToList(); } }
+
+
         [SerializeField]
         public FXScaledParameter<float> value = new FXScaledParameter<float>(0.0f,0.0f,1.0f, "", false);
 
@@ -190,9 +193,21 @@ namespace FX
         }
 
         public void ClearFXAdresses() 
-        { 
-            if (fxAddresses!=null) fxAddresses.Clear();
-            if (fxTriggerAddresses != null) fxTriggerAddresses.Clear();
+        {
+            if (fxAddresses != null) {
+                foreach (string address in FormattedFXAddresses) {
+                    RemoveFXParam(address);
+                }
+                fxAddresses.Clear();
+            }
+            if (fxTriggerAddresses != null) {
+                foreach (string address in FormattedFXTriggerAddresses)
+                {
+                    RemoveFXTrigger(address);
+                }
+                fxTriggerAddresses.Clear();
+
+            } 
         }
 
         public void AddFXParam(string address)
@@ -241,44 +256,38 @@ namespace FX
             return !String.IsNullOrEmpty(address) && fxAddresses.Contains(address.Substring(1));
         }
 
-        public void LoadPreset(FXGroupData preset) {
+        public void SetData(FXGroupData data) {
             ClearFXAdresses();
-            fxAddresses        = preset.fxAddresses;
-            Label              = preset.label;  
-            isPinned = preset.isPinned;
+
+            fxAddresses        = data.fxAddresses.Select(address => address.StartsWith("/") ? address.Substring(1) : address).ToList();
+            fxTriggerAddresses = data.fxTriggerAddresses.Select(address => address.StartsWith("/") ? address.Substring(1) : address).ToList();
+
+            Label = data.label;  
+            isPinned = data.isPinned;
 
 
-            for (int i = 0; i < fxAddresses.Count; i++)
-            {
-                if (fxAddresses[i].StartsWith('/'))
-                {
-                    fxAddresses[i] = fxAddresses[i].Substring(1);
-                }
-            }
+            signalSource       = data.signalSource;
 
-            fxTriggerAddresses = preset.fxTriggerAddresses;
-            signalSource       = preset.signalSource;
-
-            switch (preset.signalSource)
+            switch (data.signalSource)
             {
                 case SignalSource.Audio:
                     SetPatternType(PatternType.None);
-                    audioFrequency = preset.audioFrequency;
+                    audioFrequency = data.audioFrequency;
                     break;
                 case SignalSource.Pattern:
 
-                    SetPatternType(preset.patternType);
-                    pattern.NumBeats = preset.numBeats;
+                    SetPatternType(data.patternType);
+                    pattern.NumBeats = data.numBeats;
 
                     switch (patternType)
                     {
                         case PatternType.Oscillator:
                             OscillatorPattern oscillator = (OscillatorPattern)pattern;
-                            oscillator.Oscillator = preset.oscillatorType;
+                            oscillator.Oscillator = data.oscillatorType;
                             break;
                         case PatternType.Arpeggiator:
                             ArpeggiatorPattern arp = (ArpeggiatorPattern)pattern;
-                            arp.style = preset.arpeggiatorStyle;
+                            arp.style = data.arpeggiatorStyle;
                             break;
                     }
                     break;
@@ -289,37 +298,37 @@ namespace FX
 
         public FXGroupData GetData() {
 
-            FXGroupData preset = new FXGroupData();
-            preset.address            = address;
-            preset.isPinned           = isPinned;
-            preset.label              = label;
-            preset.fxAddresses        = FormattedFXAddresses;
-            preset.fxTriggerAddresses = fxTriggerAddresses;
-            preset.signalSource       = signalSource;
+            FXGroupData data = new FXGroupData();
+            data.address            = address;
+            data.isPinned           = isPinned;
+            data.label              = label;
+            data.fxAddresses        = FormattedFXAddresses;
+            data.fxTriggerAddresses = FormattedFXTriggerAddresses;
+            data.signalSource       = signalSource;
 
             switch (signalSource)
             {
                 case SignalSource.Audio:
-                    preset.audioFrequency = audioFrequency;
+                    data.audioFrequency = audioFrequency;
                     break;
                 case SignalSource.Pattern:
-                    preset.patternType = patternType;
-                    preset.numBeats = pattern.NumBeats;
+                    data.patternType = patternType;
+                    data.numBeats = pattern.NumBeats;
 
                     switch (patternType)
                     {
                         case PatternType.Oscillator:
                             OscillatorPattern oscillator = (OscillatorPattern)pattern;
-                            preset.oscillatorType = oscillator.Oscillator;
+                            data.oscillatorType = oscillator.Oscillator;
                             break;
                         case PatternType.Arpeggiator:
                             ArpeggiatorPattern arp = (ArpeggiatorPattern)pattern;
-                            preset.arpeggiatorStyle = arp.style;
+                            data.arpeggiatorStyle = arp.style;
                             break;
                     }
                     break;
             }
-            return preset;
+            return data;
         }
 
         public void SetPatternType(PatternType newPatternType)
@@ -438,6 +447,10 @@ namespace FX
             }
         }
 
+        void OnDestroy()
+        {
+            ClearFXAdresses();
+        }
 
     }
 }

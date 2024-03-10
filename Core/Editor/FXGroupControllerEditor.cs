@@ -16,7 +16,7 @@ namespace FX
         private ReorderableList reorderableList;
         private ReorderableList reorderableListTrigger;
 
-        private string[] paramPopupValues        = new string[] {};
+        private string[] paramPopupValues = new string[] { };
         private string[] triggerParamPopupValues = new string[] { };
 
 
@@ -31,7 +31,7 @@ namespace FX
         private SerializedProperty frequencyProperty;
 
         private bool isIndicatorOn = false;
-        private float indicatorDuration = 0.05f; 
+        private float indicatorDuration = 0.05f;
         private float timeSinceTriggered = 0f;
 
         GroupFXController controller;
@@ -43,39 +43,61 @@ namespace FX
 
         private void OnEnable()
         {
-            FXManager.Instance.OnFXItemAdded += UpdateParamPopupValues;
-            
-            controller           = (GroupFXController)target;
+            FXManager.Instance.OnFXListChaned += OnFXListChaned;
+
+            controller = (GroupFXController)target;
             controller.OnFXTriggered += HandleFXTriggered;
-            fxAddressesProperty  = serializedObject.FindProperty("fxAddresses");
-            valueProperty        = serializedObject.FindProperty("value");
-            addressProperty      = serializedObject.FindProperty("address");
-            labelProperty        = serializedObject.FindProperty("label");
-            fxTypeProperty       = serializedObject.FindProperty("fxType");
-            signalSourcePropery  = serializedObject.FindProperty("signalSource");
-            patternTypeProperty  = serializedObject.FindProperty("patternType");
-            frequencyProperty    = serializedObject.FindProperty("audioFrequency");
+            fxAddressesProperty = serializedObject.FindProperty("fxAddresses");
+            valueProperty = serializedObject.FindProperty("value");
+            addressProperty = serializedObject.FindProperty("address");
+            labelProperty = serializedObject.FindProperty("label");
+            fxTypeProperty = serializedObject.FindProperty("fxType");
+            signalSourcePropery = serializedObject.FindProperty("signalSource");
+            patternTypeProperty = serializedObject.FindProperty("patternType");
+            frequencyProperty = serializedObject.FindProperty("audioFrequency");
 
             fxTriggerAddressesProperty = serializedObject.FindProperty("fxTriggerAddresses");
 
-            reorderableList        = new ReorderableList(serializedObject, fxAddressesProperty       , true, true, true, true);
+            reorderableList = new ReorderableList(serializedObject, fxAddressesProperty, true, true, true, true);
             reorderableListTrigger = new ReorderableList(serializedObject, fxTriggerAddressesProperty, true, true, true, true);
 
 
-            reorderableList.drawElementCallback   = DrawListItems;
+            reorderableList.drawElementCallback = DrawListItems;
+            reorderableList.onRemoveCallback = OnParamRemoved;
             reorderableList.elementHeightCallback = (index) => EditorGUIUtility.singleLineHeight * 1.5f;
-            reorderableList.drawHeaderCallback    = DrawHeader;
+            reorderableList.drawHeaderCallback = DrawHeader;
 
-            reorderableListTrigger.drawElementCallback   = DrawListItems2;
+            reorderableListTrigger.drawElementCallback = DrawListItems2;
             reorderableListTrigger.elementHeightCallback = (index) => EditorGUIUtility.singleLineHeight * 1.5f;
-            reorderableListTrigger.drawHeaderCallback    = DrawHeader2;
+            reorderableListTrigger.drawHeaderCallback = DrawHeader2;
         }
 
         private void OnDisable()
         {
-            FXManager.Instance.OnFXItemAdded -= UpdateParamPopupValues;
+            FXManager.Instance.OnFXListChaned -= OnFXListChaned;
             controller.OnFXTriggered -= HandleFXTriggered;
         }
+
+        private void OnFXListChaned() {
+
+            UpdateParamPopupValues();
+        }
+
+        private void OnParamRemoved(ReorderableList l) {
+            if (l.index >= 0 && l.index < l.serializedProperty.arraySize)
+            {
+                SerializedProperty itemProperty = l.serializedProperty.GetArrayElementAtIndex(l.index);
+
+                string removedAddress = itemProperty.stringValue;
+
+                GroupFXController groupFXController = (GroupFXController)l.serializedProperty.serializedObject.targetObject;
+                groupFXController.RemoveFXParam("/" +removedAddress);
+
+                l.serializedProperty.DeleteArrayElementAtIndex(l.index);
+                l.serializedProperty.serializedObject.ApplyModifiedProperties(); 
+
+            }
+        } 
 
         private void HandleFXTriggered()
         {

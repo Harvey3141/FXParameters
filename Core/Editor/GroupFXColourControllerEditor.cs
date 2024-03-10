@@ -25,7 +25,7 @@ namespace FX
             colorOneProperty = serializedObject.FindProperty("color");
 
             UpdateFXAddressPopupValues();
-            FXManager.Instance.OnFXItemAdded += UpdateFXAddressPopupValues;
+            FXManager.Instance.OnFXListChaned += OnFXListChaned;
 
             reorderableList = new ReorderableList(serializedObject, fxAddressesProperty, true, true, true, true)
             {
@@ -36,7 +36,12 @@ namespace FX
 
         private void OnDisable()
         {
-            FXManager.Instance.OnFXItemAdded -= UpdateFXAddressPopupValues;
+            FXManager.Instance.OnFXListChaned -= OnFXListChaned;
+        }
+
+        private void OnFXListChaned()
+        {
+            UpdateFXAddressPopupValues();
         }
 
         private void DrawListItems(Rect rect, int index, bool isActive, bool isFocused)

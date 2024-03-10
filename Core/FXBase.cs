@@ -13,9 +13,12 @@ public abstract class FXBase : MonoBehaviour
 
     protected virtual void Start()
     {
+
     }
-
-
+    protected virtual void OnDestroy()
+    {
+        this.RemoveFXElements();
+    }
 
 }
 

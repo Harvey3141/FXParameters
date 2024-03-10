@@ -55,7 +55,8 @@ namespace FX
             }
         }
 
-        public event Action OnFXItemAdded;
+        // Called when an item is added or removed
+        public event Action OnFXListChaned;
 
         public static Dictionary<string, (FXItemInfoType type, object item, object fxInstance)> fxItemsByAddress_ = new Dictionary<string, (FXItemInfoType type, object item, object fxInstance)>(StringComparer.OrdinalIgnoreCase);
 
@@ -94,9 +95,29 @@ namespace FX
                 }
                 fxItemsByAddress_.Add(address, (type, item, fxInstance));
 
-                OnFXItemAdded?.Invoke();
+                OnFXListChaned?.Invoke();
             }
         }
+
+        public void RemoveFXItem(string address)
+        {
+            if (fxItemsByAddress_.ContainsKey(address))
+            {
+                GroupFXController[] allFXGroups = GameObject.FindObjectsOfType<GroupFXController>();
+
+                foreach (var g in allFXGroups)
+                {
+                    g.RemoveFXParam(address);
+                }
+
+                fxItemsByAddress_.Remove(address);
+                OnFXListChaned?.Invoke();
+            }
+            else {
+                Debug.LogError($"An FX item with address {address} is already registered.");
+            }
+        }
+
 
         public void SetFX(string address)
         {
@@ -642,18 +663,30 @@ namespace FX
                 Dictionary<string, FXGroupData> fxGroupPresets = preset.fxGroupPresets.ToDictionary(p => p.address, p => p);
 
                 GroupFXController[] allFXGroups = GameObject.FindObjectsOfType<GroupFXController>();
-                foreach (var group in allFXGroups)
+
+                foreach (var g in allFXGroups) {
+                    if (!g.isPinned) RemoveGroup(g.address);
+                }
+
+                foreach (var groupPreset in fxGroupPresets)
                 {
-                    if (fxGroupPresets.TryGetValue(group.address, out var groupPreset))
+                    var existingGroup = allFXGroups.FirstOrDefault(g => g.address == groupPreset.Key);
+
+                    CleanInvalidFXAddresses(groupPreset.Value.fxAddresses);
+
+                    if (existingGroup != null)
                     {
-                        CleanInvalidFXAddresses(groupPreset.fxAddresses);
-                        group.LoadPreset(groupPreset);
+                        // If it exists, load the preset into the existing group, these will be the pinned groups                     
+                        existingGroup.SetData(groupPreset.Value);
+                    }
+                    else
+                    {
+                        // If it doesn't exist, create a new GroupFXController with the preset
+                        CreateGroup(groupPreset.Value);
                     }
                 }
 
-                // TODO - Create groups which could nt be found
-
-                onPresetLoaded.Invoke(presetName);
+                if (onPresetLoaded != null) onPresetLoaded.Invoke(presetName);
 
                 return true;
                
@@ -674,7 +707,6 @@ namespace FX
         {
             return preset.boolParameters.Any(p => p.key == address);
         }
-
 
 
         public void AddFXParamToGroup(string groupAddress, string fxAddress)
@@ -757,9 +789,9 @@ namespace FX
             return group;
         }
 
-        public GroupFXController CreateGroup(FXGroupData preset) {            
+        public GroupFXController CreateGroup(FXGroupData data) {            
             GroupFXController group = CreateGroup();
-            group.LoadPreset(preset);
+            group.SetData(data);
             return group;
         }
 
