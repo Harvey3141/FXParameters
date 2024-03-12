@@ -50,17 +50,16 @@ namespace FX
 
             controller = (GroupFXController)target;
             controller.OnFXTriggered += HandleFXTriggered;
-            valueProperty = serializedObject.FindProperty("value");
-            addressProperty = serializedObject.FindProperty("address");
-            labelProperty = serializedObject.FindProperty("label");
-            fxTypeProperty = serializedObject.FindProperty("fxType");
-            signalSourcePropery = serializedObject.FindProperty("signalSource");
-            patternTypeProperty = serializedObject.FindProperty("patternType");
-            frequencyProperty = serializedObject.FindProperty("audioFrequency");
+            valueProperty             = serializedObject.FindProperty("value");
+            addressProperty           = serializedObject.FindProperty("address");
+            labelProperty             = serializedObject.FindProperty("label");
+            fxTypeProperty            = serializedObject.FindProperty("fxType");
+            signalSourcePropery       = serializedObject.FindProperty("signalSource");
+            patternTypeProperty       = serializedObject.FindProperty("patternType");
+            frequencyProperty         = serializedObject.FindProperty("audioFrequency");
 
             fxTriggerAddressesProperty = serializedObject.FindProperty("fxTriggerAddresses");
-
-            affectorListProperty = serializedObject.FindProperty("affectorList");
+            affectorListProperty       = serializedObject.FindProperty("affectorList");
 
 
             reorderableListTrigger = new ReorderableList(serializedObject, fxTriggerAddressesProperty, true, true, true, true);
@@ -93,9 +92,16 @@ namespace FX
 
                     rect.y += EditorGUIUtility.singleLineHeight + 2;
 
+                    EditorGUI.BeginChangeCheck(); 
+
                     EditorGUI.PropertyField(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), item.FindPropertyRelative("affector"), new GUIContent("Affector Function"));
                     rect.y += EditorGUIUtility.singleLineHeight + 2;
                     EditorGUI.PropertyField(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), item.FindPropertyRelative("invert"), new GUIContent("Invert"));
+
+                    if (EditorGUI.EndChangeCheck()) 
+                    {
+                                         
+                    }
                 },
                 drawHeaderCallback = (Rect rect) =>
                 {
