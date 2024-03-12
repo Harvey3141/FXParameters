@@ -9,6 +9,7 @@ public class FXPostProcessCompositor : CustomPostProcessVolumeComponent, IPostPr
     public TextureParameter textureB   = new TextureParameter(null);
     public TextureParameter textureKey = new TextureParameter(null);
 
+    public ClampedFloatParameter brightness = new ClampedFloatParameter(1f, 0f, 1f);
 
     private Material material;
     private const string kShaderName = "Hidden/FX/CameraCompositor";
@@ -46,6 +47,7 @@ public class FXPostProcessCompositor : CustomPostProcessVolumeComponent, IPostPr
         {
             material.SetTexture("_TextureKey", textureKey.value);
         }
+        material.SetFloat("_Brightness", brightness.value);
         HDUtils.DrawFullScreen(cmd, material, destination, null, 0);
     }
 

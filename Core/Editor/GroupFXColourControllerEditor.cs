@@ -22,7 +22,7 @@ namespace FX
         {
             controller = (GroupFXColourController)target;
             fxAddressesProperty = serializedObject.FindProperty("fxAddresses");
-            colorOneProperty = serializedObject.FindProperty("color");
+            colorOneProperty = serializedObject.FindProperty("colorOne");
 
             UpdateFXAddressPopupValues();
             FXManager.Instance.OnFXListChaned += OnFXListChaned;

@@ -6,8 +6,57 @@ using FX.Patterns;
 using System.Linq;
 using static FX.GroupFXController;
 
+
 namespace FX
 {
+    [System.Serializable]
+    public class AffectorItem {
+        public string fxAddressModified; // with leading '/' removed to work with editor script popup list
+        public string FxAddress { 
+            get { 
+                return "/" + fxAddressModified; 
+            }
+        }
+
+        public AffectorFunction affector = AffectorFunction.Linear;
+        public bool invert = false;
+
+
+        public AffectorItem(string address, AffectorFunction affector, bool invert) {
+            this.fxAddressModified = fxAddressModified.Substring(1);
+            this.affector = affector;
+            this.invert = invert;
+        }
+       
+        public float GetAffectedValue(float valueIn) {
+            float affectedValue = (invert ? (1.0f - Mathf.Clamp01(valueIn)) : Mathf.Clamp01(valueIn));
+
+            switch (affector)
+            {
+                case AffectorFunction.Linear:
+                    break;
+                case AffectorFunction.EaseIn:
+                    affectedValue = Mathf.Pow(affectedValue, 2);
+                    break;
+                case AffectorFunction.EaseOut:
+                    affectedValue = Mathf.Sqrt(affectedValue);
+                    break;
+                case AffectorFunction.Randomise:
+                    affectedValue = UnityEngine.Random.Range(0f, 1f);
+                    break;
+            }
+            return affectedValue;
+        }
+
+        public void SetFXValue(float value) {
+            FXManager.Instance.SetFX(FxAddress, GetAffectedValue(value));
+        }
+
+        public void SetDefaultFXValue() {
+            FXManager.Instance.ResetParameterToDefault(FxAddress);
+        }
+    }
+
     [System.Serializable]
     public class FXGroupData
     {
@@ -57,13 +106,20 @@ namespace FX
 
         public bool isPinned = true;
 
-        /// <summary>
-        /// Note that these addresses are stored with the leading '/' removed to work with the custom editor list
-        /// </summary>
-        [SerializeField]
-        public List<string> fxAddresses;
+        ///// <summary>
+        ///// Note that these addresses are stored with the leading '/' removed to work with the custom editor list
+        ///// </summary>
+        //[SerializeField]
+        //public List<string> fxAddresses;
 
-        public List<string> FormattedFXAddresses{get {return fxAddresses.Select(address => address.StartsWith("/") ? address : "/" + address).ToList(); }}
+        /// <summary>
+        /// Note that the key containing the fxAddresses are stored with the leading '/' removed to work with the custom editor list
+        /// </summary>
+        /// [SerializeField]
+        public List<AffectorItem> affectorList = new List<AffectorItem>();
+
+
+        //public List<string> FormattedFXAddresses{get {return fxAddresses.Select(address => address.StartsWith("/") ? address : "/" + address).ToList(); }}
 
         /// <summary>
         /// Note that these addresses are contained with the leading '/' removed to work with the custom editor list
@@ -168,11 +224,11 @@ namespace FX
         {
             if (!enabled) return;
 
-            if (fxAddresses != null) {
-                foreach (string address in fxAddresses)
+            if (affectorList != null)
+            {
+                foreach (var a in affectorList)
                 {
-                    string formattedAddress = address.StartsWith("/") ? address : "/" + address;
-                    FXManager.Instance.SetFX(formattedAddress, value);
+                    a.SetFXValue(value);
                 }
             }
         }
@@ -194,11 +250,13 @@ namespace FX
 
         public void ClearFXAdresses() 
         {
-            if (fxAddresses != null) {
-                foreach (string address in FormattedFXAddresses) {
-                    RemoveFXParam(address);
+            if (affectorList != null) {
+                foreach (var a in affectorList)
+                {
+                    a.SetDefaultFXValue();
+                    affectorList.Remove(a);
                 }
-                fxAddresses.Clear();
+                affectorList.Clear();
             }
             if (fxTriggerAddresses != null) {
                 foreach (string address in FormattedFXTriggerAddresses)
@@ -213,21 +271,24 @@ namespace FX
         public void AddFXParam(string address)
         {
             if (String.IsNullOrEmpty(address)) return;
-            string modifiedAddress = address.Substring(1);
-            if (!fxAddresses.Contains(modifiedAddress))
+
+
+            if (!affectorList.Any(a => a.FxAddress == address))
             {
-                fxAddresses.Add(modifiedAddress);
+                affectorList.Add(new AffectorItem(address, AffectorFunction.Linear, false));
             }
         }
 
         public void RemoveFXParam(string address)
         {
             if (String.IsNullOrEmpty(address)) return;
-            string modifiedAddress = address.Substring(1);
-            if (fxAddresses.Contains(modifiedAddress))
+
+            var itemToRemove = affectorList.FirstOrDefault(a => a.FxAddress == address);
+
+            if (itemToRemove != null)
             {
-                fxAddresses.Remove(modifiedAddress);
-                FXManager.Instance.ResetParameterToDefault(address);
+                itemToRemove.SetDefaultFXValue();
+                affectorList.Remove(itemToRemove);
             }
         }
 
@@ -253,13 +314,14 @@ namespace FX
 
         public bool ExistsInFxAddress(string address)
         {
-            return !String.IsNullOrEmpty(address) && fxAddresses.Contains(address.Substring(1));
+            var item = affectorList.FirstOrDefault(a => a.FxAddress == address);
+            return item != null;
         }
 
         public void SetData(FXGroupData data) {
             ClearFXAdresses();
 
-            fxAddresses        = data.fxAddresses.Select(address => address.StartsWith("/") ? address.Substring(1) : address).ToList();
+            //fxAddresses        = data.fxAddresses.Select(address => address.StartsWith("/") ? address.Substring(1) : address).ToList();
             fxTriggerAddresses = data.fxTriggerAddresses.Select(address => address.StartsWith("/") ? address.Substring(1) : address).ToList();
 
             Label = data.label;  
@@ -302,7 +364,7 @@ namespace FX
             data.address            = address;
             data.isPinned           = isPinned;
             data.label              = label;
-            data.fxAddresses        = FormattedFXAddresses;
+            //data.fxAddresses        = FormattedFXAddresses;
             data.fxTriggerAddresses = FormattedFXTriggerAddresses;
             data.signalSource       = signalSource;
 

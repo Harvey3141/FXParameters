@@ -7,6 +7,7 @@ namespace FX {
     public class GroupFXColourController : FXBase
     {
         public FXParameter<Color> color = new FXParameter<Color>(Color.white, "", false);
+
         public List<string> fxAddresses  = new List<string>();          
 
         protected override void Awake()

@@ -54,6 +54,8 @@ Shader "Hidden/FX/CameraCompositor"
     TEXTURE2D(_TextureKey); 
     SAMPLER(sampler_TextureKey); 
 
+    float _Brightness;
+
     float4 CustomPostProcess(Varyings input) : SV_Target
     {
         UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
@@ -67,6 +69,8 @@ Shader "Hidden/FX/CameraCompositor"
         float threshold = 0.01; 
         bool isKeyBlack = (colorKey.r == 1.0) && (colorKey.g == 0.0) && (colorKey.b == 1.0);
         float3 outputColor = isKeyBlack ? colorA : colorB;
+
+        outputColor *= _Brightness;
 
         return float4(outputColor, 1.0);
     }

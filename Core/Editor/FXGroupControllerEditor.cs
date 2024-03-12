@@ -13,14 +13,16 @@ namespace FX
     [CustomEditor(typeof(GroupFXController))]
     public class GroupFXControllerEditor : Editor
     {
-        private ReorderableList reorderableList;
         private ReorderableList reorderableListTrigger;
+        private ReorderableList affectorListReorderable;
+        private SerializedProperty affectorListProperty;
+
+
 
         private string[] paramPopupValues = new string[] { };
         private string[] triggerParamPopupValues = new string[] { };
 
 
-        private SerializedProperty fxAddressesProperty;
         private SerializedProperty fxTriggerAddressesProperty;
         private SerializedProperty valueProperty;
         private SerializedProperty labelProperty;
@@ -29,6 +31,7 @@ namespace FX
         private SerializedProperty signalSourcePropery;
         private SerializedProperty patternTypeProperty;
         private SerializedProperty frequencyProperty;
+
 
         private bool isIndicatorOn = false;
         private float indicatorDuration = 0.05f;
@@ -47,7 +50,6 @@ namespace FX
 
             controller = (GroupFXController)target;
             controller.OnFXTriggered += HandleFXTriggered;
-            fxAddressesProperty = serializedObject.FindProperty("fxAddresses");
             valueProperty = serializedObject.FindProperty("value");
             addressProperty = serializedObject.FindProperty("address");
             labelProperty = serializedObject.FindProperty("label");
@@ -58,18 +60,75 @@ namespace FX
 
             fxTriggerAddressesProperty = serializedObject.FindProperty("fxTriggerAddresses");
 
-            reorderableList = new ReorderableList(serializedObject, fxAddressesProperty, true, true, true, true);
+            affectorListProperty = serializedObject.FindProperty("affectorList");
+
+
             reorderableListTrigger = new ReorderableList(serializedObject, fxTriggerAddressesProperty, true, true, true, true);
 
+            affectorListReorderable = new ReorderableList(serializedObject, affectorListProperty, true, true, true, true)
+            {
+                drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
+                {
+                    SerializedProperty item = affectorListProperty.GetArrayElementAtIndex(index);
+                    SerializedProperty fxAddressProperty = item.FindPropertyRelative("fxAddressModified");
 
-            reorderableList.drawElementCallback = DrawListItems;
-            reorderableList.onRemoveCallback = OnParamRemoved;
-            reorderableList.elementHeightCallback = (index) => EditorGUIUtility.singleLineHeight * 1.5f;
-            reorderableList.drawHeaderCallback = DrawHeader;
+                    rect.y += 2;
+                    rect.height = EditorGUIUtility.singleLineHeight;
+
+                    if (paramPopupValues != null && paramPopupValues.Length > 0)
+                    {
+                        int selectedParamIndex = Array.IndexOf(paramPopupValues, fxAddressProperty.stringValue);
+                        selectedParamIndex = Mathf.Max(selectedParamIndex, 0); // Ensure the index is at least 0
+                        selectedParamIndex = EditorGUI.Popup(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), "FX Address", selectedParamIndex, paramPopupValues);
+
+                        if (selectedParamIndex >= 0 && selectedParamIndex < paramPopupValues.Length)
+                        {
+                            fxAddressProperty.stringValue = paramPopupValues[selectedParamIndex];
+                        }
+                    }
+                    else
+                    {
+                        EditorGUI.LabelField(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), "FX Address", "No options available");
+                    }
+
+                    rect.y += EditorGUIUtility.singleLineHeight + 2;
+
+                    EditorGUI.PropertyField(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), item.FindPropertyRelative("affector"), new GUIContent("Affector Function"));
+                    rect.y += EditorGUIUtility.singleLineHeight + 2;
+                    EditorGUI.PropertyField(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), item.FindPropertyRelative("invert"), new GUIContent("Invert"));
+                },
+                drawHeaderCallback = (Rect rect) =>
+                {
+                    EditorGUI.LabelField(rect, "Affectors");
+                },
+                elementHeightCallback = (int index) =>
+                {
+                    return EditorGUIUtility.singleLineHeight * 3 + 6; 
+                }
+            };
+
+            affectorListReorderable.onRemoveCallback = OnParamRemoved;
 
             reorderableListTrigger.drawElementCallback = DrawListItems2;
             reorderableListTrigger.elementHeightCallback = (index) => EditorGUIUtility.singleLineHeight * 1.5f;
             reorderableListTrigger.drawHeaderCallback = DrawHeader2;
+        }
+
+        private void OnParamRemoved(ReorderableList l)
+        {
+            if (l.index >= 0 && l.index < l.serializedProperty.arraySize)
+            {
+                SerializedProperty itemProperty = l.serializedProperty.GetArrayElementAtIndex(l.index);
+
+                string removedAddress = itemProperty.FindPropertyRelative("fxAddressModified").stringValue;
+
+                GroupFXController groupFXController = (GroupFXController)l.serializedProperty.serializedObject.targetObject;
+                groupFXController.RemoveFXParam("/" + removedAddress);
+
+                l.serializedProperty.DeleteArrayElementAtIndex(l.index);
+                l.serializedProperty.serializedObject.ApplyModifiedProperties();
+
+            }
         }
 
         private void OnDisable()
@@ -83,21 +142,6 @@ namespace FX
             UpdateParamPopupValues();
         }
 
-        private void OnParamRemoved(ReorderableList l) {
-            if (l.index >= 0 && l.index < l.serializedProperty.arraySize)
-            {
-                SerializedProperty itemProperty = l.serializedProperty.GetArrayElementAtIndex(l.index);
-
-                string removedAddress = itemProperty.stringValue;
-
-                GroupFXController groupFXController = (GroupFXController)l.serializedProperty.serializedObject.targetObject;
-                groupFXController.RemoveFXParam("/" +removedAddress);
-
-                l.serializedProperty.DeleteArrayElementAtIndex(l.index);
-                l.serializedProperty.serializedObject.ApplyModifiedProperties(); 
-
-            }
-        } 
 
         private void HandleFXTriggered()
         {
@@ -105,35 +149,12 @@ namespace FX
             timeSinceTriggered = 0f;
         }
 
-        private void DrawHeader(Rect rect)
-        {
-            EditorGUI.LabelField(rect, "Values");
-        }
 
         private void DrawHeader2(Rect rect)
         {
             EditorGUI.LabelField(rect, "Triggers");
         }
 
-        private void DrawListItems(Rect rect, int index, bool isActive, bool isFocused)
-        {
-
-            SerializedProperty element = reorderableList.serializedProperty.GetArrayElementAtIndex(index);
-
-            rect.y += 2;
-
-            EditorGUI.BeginDisabledGroup(true);
-            EditorGUI.PropertyField(new Rect(rect.x, rect.y, rect.width - 100, EditorGUIUtility.singleLineHeight), element, GUIContent.none);
-            EditorGUI.EndDisabledGroup();
-
-
-            if (Application.isPlaying)
-            {
-                int selectedParamIndex = Mathf.Max(Array.IndexOf(paramPopupValues, element.stringValue), 0);
-                selectedParamIndex = EditorGUI.Popup(new Rect(rect.width + rect.x - 90, rect.y, 90, EditorGUIUtility.singleLineHeight), selectedParamIndex, paramPopupValues);
-                element.stringValue = paramPopupValues[selectedParamIndex];
-            }
-        }
 
         private void DrawListItems2(Rect rect, int index, bool isActive, bool isFocused)
         {
@@ -207,9 +228,10 @@ namespace FX
             }
             EditorGUILayout.LabelField("Connections");
 
+
             using (var verticalScope = new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
             {
-                reorderableList.DoLayoutList();
+                affectorListReorderable.DoLayoutList();
                 GUILayout.Space(10);
                 float value = EditorGUILayout.Slider(new GUIContent("Value"), controller.value.Value, 0, 1);
                 if (EditorGUI.EndChangeCheck())
@@ -230,6 +252,8 @@ namespace FX
                 Rect lightRect = GUILayoutUtility.GetRect(20, 20);
                 EditorGUI.DrawRect(lightRect, isIndicatorOn ? Color.white : Color.gray);
             }
+
+
 
             if (isIndicatorOn)
             {
