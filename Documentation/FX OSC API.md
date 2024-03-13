@@ -45,25 +45,30 @@ Sets the current value of a specified FX parameter to its default value
 
 ### Group Management
 
+- **/GROUP/GET**  
+  Fetches group data in json format
+  **Format**: `/GROUP/GET [group_address] `  
+  **Example**: `/GROUP/GET Group/1`
+
 - **/GROUP/PARAM/ADD**  
   Adds an FX parameter to a specified group.  
   **Format**: `/GROUP/PARAM/ADD [group_address] [param_address]`  
-  **Example**: `/GROUP/PARAM/ADD Group1 /FXLight/intensity`
+  **Example**: `/GROUP/PARAM/ADD Group/1 /FXLight/intensity`
 
 - **/GROUP/PARAM/REMOVE**  
   Removes an FX parameter from a specified group.  
   **Format**: `/GROUP/PARAM/REMOVE [group_address] [param_address]`  
-  **Example**: `/GROUP/PARAM/REMOVE Group1 /FXLight/intensity`
+  **Example**: `/GROUP/PARAM/REMOVE Group/1 /FXLight/intensity`
 
 - **/GROUP/TRIGGER/ADD**  
   Adds a trigger to a specified group.  
   **Format**: `/GROUP/TRIGGER/ADD [group_address] [trigger_address]`  
-  **Example**: `/GROUP/TRIGGER/ADD Group1 /FXLight/FXTrigger`
+  **Example**: `/GROUP/TRIGGER/ADD Group/1 /FXLight/FXTrigger`
 
 - **/GROUP/TRIGGER/REMOVE**  
   Removes a trigger from a specified group.  
   **Format**: `/GROUP/TRIGGER/REMOVE [group_address] [trigger_address]`  
-  **Example**: `/GROUP/TRIGGER/REMOVE Group1 /FXLight/FXTrigger`
+  **Example**: `/GROUP/TRIGGER/REMOVE Group/1 /FXLight/FXTrigger`
 
 ### Parameter and Trigger Management
 

@@ -17,7 +17,10 @@ namespace FX
         private ReorderableList affectorListReorderable;
         private SerializedProperty affectorListProperty;
 
-
+        float minVal = -10;
+        float minLimit = -20;
+        float maxVal = 10;
+        float maxLimit = 20;
 
         private string[] paramPopupValues = new string[] { };
         private string[] triggerParamPopupValues = new string[] { };
@@ -59,7 +62,7 @@ namespace FX
             frequencyProperty         = serializedObject.FindProperty("audioFrequency");
 
             fxTriggerAddressesProperty = serializedObject.FindProperty("fxTriggerAddresses");
-            affectorListProperty       = serializedObject.FindProperty("affectorList");
+            affectorListProperty       = serializedObject.FindProperty("fxParameterControllers");
 
 
             reorderableListTrigger = new ReorderableList(serializedObject, fxTriggerAddressesProperty, true, true, true, true);
@@ -69,7 +72,7 @@ namespace FX
                 drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
                 {
                     SerializedProperty item = affectorListProperty.GetArrayElementAtIndex(index);
-                    SerializedProperty fxAddressProperty = item.FindPropertyRelative("fxAddressModified");
+                    SerializedProperty fxAddressProperty = item.FindPropertyRelative("key");
 
                     rect.y += 2;
                     rect.height = EditorGUIUtility.singleLineHeight;
@@ -126,7 +129,7 @@ namespace FX
             {
                 SerializedProperty itemProperty = l.serializedProperty.GetArrayElementAtIndex(l.index);
 
-                string removedAddress = itemProperty.FindPropertyRelative("fxAddressModified").stringValue;
+                string removedAddress = itemProperty.FindPropertyRelative("key").stringValue;
 
                 GroupFXController groupFXController = (GroupFXController)l.serializedProperty.serializedObject.targetObject;
                 groupFXController.RemoveFXParam("/" + removedAddress);
@@ -260,6 +263,7 @@ namespace FX
             }
 
 
+            EditorGUILayout.MinMaxSlider(ref minVal, ref maxVal, minLimit, maxLimit);
 
             if (isIndicatorOn)
             {

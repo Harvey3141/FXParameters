@@ -71,7 +71,7 @@ public class FXDirectionalLight : FXBaseWithEnabled, IFXTriggerable
 
     void SetIntensity(float value)
     {
-        lightData.intensity = value;
+        if (lightData) lightData.intensity = value;
     }
 
     void SetLightColour(Color colour)

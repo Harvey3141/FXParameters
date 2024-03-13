@@ -69,6 +69,9 @@ namespace FX
         public delegate void OnPresetLoaded(string name);
         public event OnPresetLoaded onPresetLoaded;
 
+        public delegate void OnFXGroupModified(FXGroupData data);
+        public event OnFXGroupModified onFXGroupModified;
+
         public enum FXItemInfoType
         {
             Method,
@@ -470,7 +473,10 @@ namespace FX
             if (onFXParamAffectorChanged != null) onFXParamAffectorChanged.Invoke(address, affector);
         }
 
-
+        public void OnGroupModified(FXGroupData data)
+        {
+            if (onFXGroupModified != null) onFXGroupModified.Invoke(data);
+        }
 
         [System.Serializable]
         public class FXData
@@ -672,7 +678,7 @@ namespace FX
                 {
                     var existingGroup = allFXGroups.FirstOrDefault(g => g.address == groupPreset.Key);
 
-                    CleanInvalidFXAddresses(groupPreset.Value.fxAddresses);
+                    //CleanInvalidFXAddresses(groupPreset.Value.fxAddresses);
 
                     if (existingGroup != null)
                     {

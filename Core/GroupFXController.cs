@@ -10,11 +10,11 @@ using static FX.GroupFXController;
 namespace FX
 {
     [System.Serializable]
-    public class AffectorItem {
-        public string fxAddressModified; // with leading '/' removed to work with editor script popup list
+    public class FXParameterController {
+        public string key; // with leading '/' removed to work with editor script popup list
         public string FxAddress { 
             get { 
-                return "/" + fxAddressModified; 
+                return "/" + key; 
             }
         }
 
@@ -22,9 +22,8 @@ namespace FX
         public bool invert = false;
 
 
-
-        public AffectorItem(string address, AffectorFunction affector, bool invert) {
-            fxAddressModified = address.Substring(1);
+        public FXParameterController(string address, AffectorFunction affector, bool invert) {
+            key = address.Substring(1);
             this.affector = affector;
             this.invert = invert;
         }
@@ -64,7 +63,7 @@ namespace FX
         public string address = null;
         public string label = null;
         public GroupFXController.SignalSource signalSource = GroupFXController.SignalSource.Default;
-        public List<AffectorItem> fxParams = new List<AffectorItem>();
+        public List<FXParameterController> fxParameterControllers = new List<FXParameterController>();
         public List<string> fxTriggerAddresses = new List<string>();
 
         public bool isPinned = false;
@@ -111,19 +110,18 @@ namespace FX
         /// Note that the key containing the fxAddresses are stored with the leading '/' removed to work with the custom editor list
         /// </summary>
         /// [SerializeField]
-        public List<AffectorItem> affectorList = new List<AffectorItem>();
+        public List<FXParameterController> fxParameterControllers = new List<FXParameterController>();
 
-        public List<AffectorItem> FormattedAffectorList
+        public List<FXParameterController> FormattedFxParameterControllers
         {
             get
             {
-                return affectorList.Select(item =>
+                return fxParameterControllers.Select(item =>
                 {
-                    // Clone the AffectorItem to avoid modifying the original list's items
-                    var clonedItem = new AffectorItem(item.FxAddress, item.affector, item.invert)
+                    var clonedItem = new FXParameterController(item.FxAddress, item.affector, item.invert)
                     {
-                        // Ensure fxAddress has a leading '/'
-                        fxAddressModified = item.fxAddressModified.StartsWith("/") ? item.fxAddressModified : "/" + item.fxAddressModified
+                        // Ensure key has a leading '/'
+                        key = item.key.StartsWith("/") ? item.key : "/" + item.key
                     };
                     return clonedItem;
                 }).ToList();
@@ -234,9 +232,9 @@ namespace FX
         {
             if (!enabled) return;
 
-            if (affectorList != null)
+            if (fxParameterControllers != null)
             {
-                foreach (var a in affectorList)
+                foreach (var a in fxParameterControllers)
                 {
                     a.SetFXValue(value);
                 }
@@ -260,12 +258,12 @@ namespace FX
 
         public void ClearFXAdresses() 
         {
-            if (affectorList != null) {
-                foreach (var a in affectorList)
+            if (fxParameterControllers != null) {
+                foreach (var a in fxParameterControllers)
                 {
                     a.SetDefaultFXValue();
                 }
-                affectorList.Clear();
+                fxParameterControllers.Clear();
             }
             if (fxTriggerAddresses != null) {
                 foreach (string address in FormattedFXTriggerAddresses)
@@ -282,9 +280,9 @@ namespace FX
             if (String.IsNullOrEmpty(address)) return;
 
 
-            if (!affectorList.Any(a => a.FxAddress == address))
+            if (!fxParameterControllers.Any(a => a.FxAddress == address))
             {
-                affectorList.Add(new AffectorItem(address, AffectorFunction.Linear, false));
+                fxParameterControllers.Add(new FXParameterController(address, AffectorFunction.Linear, false));
             }
         }
 
@@ -292,12 +290,12 @@ namespace FX
         {
             if (String.IsNullOrEmpty(address)) return;
 
-            var itemToRemove = affectorList.FirstOrDefault(a => a.FxAddress == address);
+            var itemToRemove = fxParameterControllers.FirstOrDefault(a => a.FxAddress == address);
 
             if (itemToRemove != null)
             {
                 itemToRemove.SetDefaultFXValue();
-                affectorList.Remove(itemToRemove);
+                fxParameterControllers.Remove(itemToRemove);
             }
         }
 
@@ -323,19 +321,19 @@ namespace FX
 
         public bool ExistsInFxAddress(string address)
         {
-            var item = affectorList.FirstOrDefault(a => a.FxAddress == address);
+            var item = fxParameterControllers.FirstOrDefault(a => a.FxAddress == address);
             return item != null;
         }
 
         public void SetData(FXGroupData data) {
             ClearFXAdresses();
 
-            affectorList = data.fxParams;
+            fxParameterControllers = data.fxParameterControllers;
 
-            affectorList = data.fxParams.Select(item =>
+            fxParameterControllers = data.fxParameterControllers.Select(item =>
             {
                 // Modify fxAddress to ensure it does not start with '/'
-                item.fxAddressModified = item.fxAddressModified.StartsWith("/") ? item.fxAddressModified.Substring(1) : item.fxAddressModified;
+                item.key = item.key.StartsWith("/") ? item.key.Substring(1) : item.key;
                 return item;
             }).ToList();
 
@@ -379,12 +377,12 @@ namespace FX
         public FXGroupData GetData() {
 
             FXGroupData data = new FXGroupData();
-            data.address            = address;
-            data.isPinned           = isPinned;
-            data.label              = label;
-            data.fxParams           = FormattedAffectorList;
-            data.fxTriggerAddresses = FormattedFXTriggerAddresses;
-            data.signalSource       = signalSource;
+            data.address                = address;
+            data.isPinned               = isPinned;
+            data.label                  = label;
+            data.fxParameterControllers = FormattedFxParameterControllers;
+            data.fxTriggerAddresses     = FormattedFXTriggerAddresses;
+            data.signalSource           = signalSource;
 
             switch (signalSource)
             {
@@ -414,7 +412,7 @@ namespace FX
         public void SetAffectorType(string address, AffectorFunction affectorType)
         {
 
-            var item = affectorList.FirstOrDefault(a => a.FxAddress.Equals(address, StringComparison.OrdinalIgnoreCase));
+            var item = fxParameterControllers.FirstOrDefault(a => a.FxAddress.Equals(address, StringComparison.OrdinalIgnoreCase));
             if (item != null)
             {
                 item.affector = affectorType;
@@ -425,7 +423,7 @@ namespace FX
         public void SetAffectorInvert(string address, bool invert)
         {
 
-            var item = affectorList.FirstOrDefault(a => a.FxAddress.Equals(address, StringComparison.OrdinalIgnoreCase));
+            var item = fxParameterControllers.FirstOrDefault(a => a.FxAddress.Equals(address, StringComparison.OrdinalIgnoreCase));
             if (item != null)
             {
                 item.invert = invert;
@@ -546,6 +544,9 @@ namespace FX
                 default:
                     return "Audio:Unknown";
             }
+        }
+
+        void OnGroupModified () { 
         }
 
         void OnDestroy()
