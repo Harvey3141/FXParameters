@@ -20,6 +20,7 @@ The FX API offers functionalities that include:
   **Example**: `/FXLight/intensity/GET`
   
 - **/RESET**
+
   Sets the current value of a specified FX parameter to its default value
   
   **Format**: `/[parameter_address]/RESET`
