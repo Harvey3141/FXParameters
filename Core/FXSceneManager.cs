@@ -181,6 +181,25 @@ namespace FX
                 Debug.LogError("Preset not found: " + name);
             }
         }
+
+        public void CreateNewScene()
+        {
+            GroupFXController[] allGroups = GameObject.FindObjectsOfType<GroupFXController>();
+
+            foreach (var group in allGroups)
+            {
+                if (!group.isPinned)
+                {
+                    GameObject.Destroy(group.gameObject);
+                }
+                else
+                {
+                    group.ClearFXAdresses();
+                }
+            }
+
+            FXManager.Instance.ResetAllParamsToDefault();
+        }
     }
 }
 

@@ -10,6 +10,8 @@ namespace FX
         object ObjectValue { get; set; }
         string Address { get; set; }
         bool ShouldSave { get; set; }
+        void ResetToDefaultValue();
+
     }
 
     public enum AffectorFunction
@@ -228,7 +230,6 @@ namespace FX
         private AffectorFunction affectorFunction_ = AffectorFunction.Linear;
 
         bool invertValue_ = false;
-
 
         public event Action<T> OnScaledValueChanged; 
 

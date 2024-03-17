@@ -38,15 +38,40 @@ Sets the current value of a specified FX parameter to its default value
 - **/SCENE/REMOVE**  
   Removes a preset scene by name.  
   **Format**: `/SCENE/REMOVE [scene_name]`  
-  **Example**: `/SCENE/REMOVE OldPresetScene`
+  **Example**: `/SCENE/REMOVE scene1`
 
 - **/SCENE/NEW**  
-  Creates a new scene, resetting all parameters to default.
+  Creates a new scene, resetting all parameters to default, and clearing all groups. 
+  
+- **/SCENELIST/GET**  
+  Requests the scene list, which is returned as /sceneList/get {scene1, scene2, etc}. This is also sent to subscribers whenever a scene is added or removed
+  **Format**: `/SCENELIST/GET`  
+  **Example**: `/SCENELIST/GET`
 
 ### Group Management
 
+- **/GROUP/NEW**  
+  Creates a new group with default properties.
+  **Format**: `/GROUP/NEW`  
+  **Example**: `/GROUP/NEW`
+  
+- **/GROUP/LOAD**  
+  Creates a new group and configures it using provided JSON data. 
+  **Format**: `/GROUP/LOAD [group data]`  
+  **Example**: `/GROUP/LOAD Group/1`
+  
+- **/GROUP/REMOVE**  
+  Removes specified group, unless group is pinned
+  **Format**: `/GROUP/REMOVE [group_address]`  
+  **Example**: `/GROUP/REMOVE Group/10`
+  
+- **/GROUP/CLEAR**  
+  Removes all parameters and triggers from specified group
+  **Format**: `/GROUP/CLEAR [group_address]`  
+  **Example**: `/GROUP/CLEAR Group/10`
+
 - **/GROUP/GET**  
-  Fetches group data in json format
+  Fetches group data in JSON format
   **Format**: `/GROUP/GET [group_address] `  
   **Example**: `/GROUP/GET Group/1`
 
@@ -69,6 +94,12 @@ Sets the current value of a specified FX parameter to its default value
   Removes a trigger from a specified group.  
   **Format**: `/GROUP/TRIGGER/REMOVE [group_address] [trigger_address]`  
   **Example**: `/GROUP/TRIGGER/REMOVE Group/1 /FXLight/FXTrigger`
+  
+- **/GROUPLIST/GET**  
+  Requests the group list, which is returned as /groupList/get {group/1, group/2, group/3}. This is also sent to subscribers whenever a scene is added or removed
+  **Format**: `/GROUPLIST/GET`  
+  **Example**: `/GROUPLIST/GET`
+
 
 ### Parameter and Trigger Management
 

@@ -72,6 +72,9 @@ namespace FX
         public delegate void OnFXGroupModified(FXGroupData data);
         public event OnFXGroupModified onFXGroupModified;
 
+        public delegate void OnFXGroupListModified(List<string> groupList);
+        public event OnFXGroupListModified onFXGroupListModified;
+
         public enum FXItemInfoType
         {
             Method,
@@ -405,67 +408,34 @@ namespace FX
         {
             if (fxItemsByAddress_.TryGetValue(address, out var fxItem))
             {
-                if (fxItem.type == FXItemInfoType.ScaledParameter)
+
+                if (fxItem.type == FXItemInfoType.Parameter || fxItem.type == FXItemInfoType.ScaledParameter)
                 {
-                    switch (fxItem.item)
-                    {
-                        case FXScaledParameter<float> floatParam:
-                            floatParam.ResetToDefaultValue();
-                            break;
-                        case FXScaledParameter<int> intParam:
-                            intParam.ResetToDefaultValue();
-                            break;
-                        case FXScaledParameter<bool> boolParam:
-                            boolParam.ResetToDefaultValue();
-                            break;
-                        case FXScaledParameter<Enum> enumParam:
-                            enumParam.ResetToDefaultValue();
-                            break;
-                        case FXScaledParameter<Color> colorParam:
-                            colorParam.ResetToDefaultValue();
-                            break;
-                        case FXScaledParameter<String> stringParam:
-                            stringParam.ResetToDefaultValue();
-                            break;
-                    }
+                    IFXParameter parameter = fxItem.item as IFXParameter;
+                    parameter?.ResetToDefaultValue();
                 }
-                else if (fxItem.type == FXItemInfoType.Parameter)
+            }
+            else
+            {
+                Debug.LogWarning($"No parameter found for address {address}.");
+            }
+        }
+
+        public void ResetAllParamsToDefault()
+        {
+            foreach (var item in fxItemsByAddress_)
+            {
+                if (item.Value.type == FXItemInfoType.Parameter || item.Value.type == FXItemInfoType.ScaledParameter)
                 {
-                    switch (fxItem.item)
-                    {
-                        case FXParameter<float> floatParam:
-                            floatParam.ResetToDefaultValue();
-                            break;
-                        case FXParameter<int> intParam:
-                            intParam.ResetToDefaultValue();
-                            break;
-                        case FXParameter<bool> boolParam:
-                            boolParam.ResetToDefaultValue();
-                            break;
-                        case FXParameter<Enum> enumParam:
-                            enumParam.ResetToDefaultValue();
-                            break;
-                        case FXParameter<Color> colorParam:
-                            colorParam.ResetToDefaultValue();
-                            break;
-                        case FXParameter<String> stringParam:
-                            stringParam.ResetToDefaultValue();
-                            break;
-                    }
-                }
-                else
-                {
-                    Debug.LogWarning($"No parameter found for address {address}.");
+                    IFXParameter parameter = item.Value.item as IFXParameter;
+                    parameter?.ResetToDefaultValue();
                 }
             }
         }
 
-        public void ResetAllParamsToDefault() { 
-        
-        }
 
         public void OnParameterValueChanged<T>(string address, T value) {
-            if (onFXParamValueChanged != null) onFXParamValueChanged.Invoke(address, value);    
+            if (onFXParamValueChanged != null) onFXParamValueChanged.Invoke(address, value);
         }
 
         public void OnParameterAffertorChanged(string address, AffectorFunction affector)
@@ -481,14 +451,14 @@ namespace FX
         [System.Serializable]
         public class FXData
         {
-            public List<FXParameterData<string>>  stringParameters    = new List<FXParameterData<string>>();
-            public List<FXParameterData<int>>     intParameters       = new List<FXParameterData<int>>();
-            public List<FXParameterData<float>>   floatParameters     = new List<FXParameterData<float>>();
-            public List<FXParameterData<bool>>    boolParameters      = new List<FXParameterData<bool>>();
-            public List<FXParameterData<Color>>   colorParameters     = new List<FXParameterData<Color>>();
-            public List<FXEnumParameterData>      enumParameters      = new List<FXEnumParameterData>();
+            public List<FXParameterData<string>> stringParameters = new List<FXParameterData<string>>();
+            public List<FXParameterData<int>> intParameters = new List<FXParameterData<int>>();
+            public List<FXParameterData<float>> floatParameters = new List<FXParameterData<float>>();
+            public List<FXParameterData<bool>> boolParameters = new List<FXParameterData<bool>>();
+            public List<FXParameterData<Color>> colorParameters = new List<FXParameterData<Color>>();
+            public List<FXEnumParameterData> enumParameters = new List<FXEnumParameterData>();
 
-            public List<FXGroupData> fxGroupPresets               = new List<FXGroupData>();
+            public List<FXGroupData> fxGroupPresets = new List<FXGroupData>();
 
             public List<FXMethodData> fXPresetMethods = new List<FXMethodData>();
 
@@ -499,7 +469,6 @@ namespace FX
         {
             public string key;
         }
-
 
         public void SavePreset(string presetName, bool includeAll = false)
         {
@@ -541,7 +510,7 @@ namespace FX
 
                     if (parameter.ShouldSave || includeAll)
                     {
-                        string key_   = item.Key;
+                        string key_ = item.Key;
                         object value_ = parameter.ObjectValue;
 
                         if (parameter is FXParameter<float> floatParam)
@@ -577,13 +546,13 @@ namespace FX
                                 };
                                 preset.enumParameters.Add(enumParameter);
                             }
-                        }                       
+                        }
                     }
                 }
                 if (includeAll) {
 
                     if (item.Value.type == FXItemInfoType.Method) {
-                        preset.fXPresetMethods.Add(new FXMethodData { key = item.Key}); 
+                        preset.fXPresetMethods.Add(new FXMethodData { key = item.Key });
                     }
 
                 }
@@ -611,7 +580,7 @@ namespace FX
         public bool LoadPreset(string presetName)
         {
             string directoryPath = Path.Combine(Application.streamingAssetsPath, "FX Presets"); ;
-            string filePath      = Path.Combine(directoryPath, presetName + ".json");
+            string filePath = Path.Combine(directoryPath, presetName + ".json");
 
             if (File.Exists(filePath))
             {
@@ -695,7 +664,7 @@ namespace FX
                 if (onPresetLoaded != null) onPresetLoaded.Invoke(presetName);
 
                 return true;
-               
+
             }
             else
             {
@@ -766,8 +735,7 @@ namespace FX
                 Debug.LogWarning($"Group with address {groupAddress} not found.");
             }
         }
-
-        private GroupFXController CreateGroup()
+        public GroupFXController CreateGroup()
         {
             int maxIndex = 0;
             GroupFXController[] allGroups = GameObject.FindObjectsOfType<GroupFXController>();
@@ -777,7 +745,7 @@ namespace FX
                 string groupIndexS = g.address.Substring(groupPrefix.Length);
                 bool ok = Int32.TryParse(groupIndexS, out int index);
                 if (ok) {
-                     if (index > maxIndex) maxIndex = index;
+                    if (index > maxIndex) maxIndex = index;
                 }
             }
 
@@ -785,17 +753,17 @@ namespace FX
             GameObject groupObject = new GameObject("Group - ");
             GroupFXController group = groupObject.AddComponent<GroupFXController>();
 
-            GameObject parent =  GameObject.FindObjectOfType<FXSceneManager>().gameObject;
-            if (parent != null) { 
+            GameObject parent = GameObject.FindObjectOfType<FXSceneManager>().gameObject;
+            if (parent != null) {
                 groupObject.transform.parent = parent.transform;
             }
 
-            group.address      = address;
+            group.address = address;
             group.Initialise();
             return group;
         }
 
-        public GroupFXController CreateGroup(FXGroupData data) {            
+        public GroupFXController CreateGroup(FXGroupData data) {
             GroupFXController group = CreateGroup();
             group.SetData(data);
             return group;
@@ -806,12 +774,43 @@ namespace FX
             GroupFXController group = FindGroupByAddress(address);
             if (group != null)
             {
-                if (!group.isPinned) GameObject.Destroy(group.gameObject);
+                if (!group.isPinned) {
+                    GameObject.Destroy(group.gameObject);
+                } 
                 else Debug.LogWarning($"Group with address {address} is pinned so cannot be removed");
             }
             else
             {
                 Debug.LogWarning($"Group with address {address} not found and cannot be removed.");
+            }
+        }
+
+        public List<string> GetGroupList() {
+
+            List<string> list = new List<string>();
+            GroupFXController[] allGroups = GameObject.FindObjectsOfType<GroupFXController>();
+            foreach (var group in allGroups)
+            {
+                list.Add(group.address);
+            }
+            return list;
+        }
+
+        public void ClearGroup(string address)
+        {
+            GroupFXController group = FindGroupByAddress(address);
+            if (group != null)
+            {
+                group.ClearFXAdresses();
+            }
+        }
+
+        public void ClearAllGroups()
+        {
+            GroupFXController[] allGroups = GameObject.FindObjectsOfType<GroupFXController>();
+            foreach (var group in allGroups)
+            {
+                group.ClearFXAdresses();
             }
         }
 
@@ -826,6 +825,10 @@ namespace FX
                 }
             }
             return null; 
+        }
+
+        public void OnGroupListChanged() { 
+            if(onFXGroupListModified != null) onFXGroupListModified(GetGroupList()); 
         }
     }
 

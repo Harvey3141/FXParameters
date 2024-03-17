@@ -169,7 +169,9 @@ namespace FX
 
             if (pattern == null) SetPatternType(patternType);
 
-            audioManager = FindObjectOfType<FX.AudioManager>();   
+            audioManager = FindObjectOfType<FX.AudioManager>();
+
+            FXManager.Instance.OnGroupListChanged();
         }
 
         void Update () {
@@ -547,11 +549,13 @@ namespace FX
         }
 
         void OnGroupModified () { 
+
         }
 
         void OnDestroy()
         {
             ClearFXAdresses();
+            FXManager.Instance.OnGroupListChanged();
         }
 
     }
