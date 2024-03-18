@@ -69,7 +69,7 @@ namespace FX
         public bool isPinned = false;
 
         public PatternType patternType;
-        public int numBeats = 4;
+        public float numBeats = 4;
         public FX.Patterns.OscillatorPattern.OscillatorType oscillatorType;
         public FX.Patterns.ArpeggiatorPattern.PatternStyle arpeggiatorStyle;
 
