@@ -13,10 +13,10 @@ namespace FX.Patterns
         public float _phase = 0f;
 
         [HideInInspector]
-        public int _numBeats = 1;
+        public float _numBeats = 1;
 
         public event Action OnTrigger;
-        public int NumBeats
+        public float NumBeats
         {
             get { return _numBeats; }
             set
