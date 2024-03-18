@@ -28,7 +28,7 @@ namespace FX
             TriggerSet();
         }
 
-        private void TriggerSet()
+        protected virtual void TriggerSet()
         {
             for (int i = 0; i < controlledObjects.Length; i++)
             {

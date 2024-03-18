@@ -485,6 +485,15 @@ namespace FX
             if (signalSource == SignalSource.Pattern)
             {
                 pattern.NumBeats = value;
+
+                switch (patternType)
+                {
+                    case PatternType.Tap:
+                        TapPattern tap = (TapPattern)pattern;
+                        tap.ClearTriggers();
+                        tap.AddTriggers(1);
+                        break;
+                }
             }
         }
 
