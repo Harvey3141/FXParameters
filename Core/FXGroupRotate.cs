@@ -21,11 +21,11 @@ namespace FX
         }
 
         public FXParameter<RotationDirection> rotationDirection = new FXParameter<RotationDirection>(RotationDirection.Clockwise);
-        public FXParameter<RotationAxis> rotationAxis = new FXParameter<RotationAxis>(RotationAxis.Y); 
-        public float rotationDuration = 1.0f;
+        public FXParameter<RotationAxis> rotationAxis = new FXParameter<RotationAxis>(RotationAxis.Y);
+        public FXScaledParameter<float> rotationDuration = new FXScaledParameter<float>(0.5f, 0.1f, 1.0f);
 
         private Dictionary<GameObject, Quaternion> initialRotations = new Dictionary<GameObject, Quaternion>();
-
+        private Dictionary<GameObject, Coroutine> rotationCoroutines = new Dictionary<GameObject, Coroutine>();
 
         int directionMultiplier = -1;
 
@@ -57,12 +57,15 @@ namespace FX
             ResetRotations();
         }
 
-
         protected override void ApplyEffectToObject(int index)
         {
-            if (controlledObjects[index] != null)
+            GameObject obj = controlledObjects[index];
+            if (obj != null)
             {
-                StartCoroutine(RotateObjectLocal(controlledObjects[index].transform, rotationDuration, directionMultiplier));
+                if (!rotationCoroutines.ContainsKey(obj) || rotationCoroutines[obj] == null)
+                {
+                    rotationCoroutines[obj] = StartCoroutine(RotateObjectLocal(obj.transform, rotationDuration.Value, directionMultiplier));
+                }
             }
         }
 
@@ -101,6 +104,7 @@ namespace FX
                 yield return null;
             }
             objectTransform.localRotation = finalRotation;
+            rotationCoroutines[objectTransform.gameObject] = null;
         }
 
         private Vector3 DetermineRotationAxis()
@@ -114,7 +118,7 @@ namespace FX
                 case RotationAxis.Z:
                     return Vector3.forward;
                 default:
-                    return Vector3.up; 
+                    return Vector3.up;
             }
         }
     }

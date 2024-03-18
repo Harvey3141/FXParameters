@@ -182,6 +182,7 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
                 ApplyMaterial(Wireframe);
                 SetEmissiveIntensityAll(triggerValue.ScaledValue);
                 SetColor(color.Value);
+                SetWireframeType(wireframeType.Value);
                 break;
             case MaterialType.RESOLUME:
                 ApplyMaterial(Resolume);

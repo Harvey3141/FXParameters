@@ -95,7 +95,7 @@ public class FXDirectionalLight : FXBaseWithEnabled, IFXTriggerable
 
     [FXMethod]
     public void FXTrigger() {
-        rotationX.Value = (Random.Range(0, clampX));
-        rotationY.Value = (Random.Range(0, clampY));
+        rotationX.Value = (Random.Range(initRot.eulerAngles.x, initRot.eulerAngles.x + clampX));
+        rotationY.Value = (Random.Range(initRot.eulerAngles.y, initRot.eulerAngles.y + clampY));
     }
 }
