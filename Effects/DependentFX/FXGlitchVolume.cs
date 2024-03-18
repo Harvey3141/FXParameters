@@ -2,18 +2,20 @@ using FX;
 using Kino.PostProcessing;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.HighDefinition;
 
 /// <summary>
 /// Requires - https://github.com/keijiro/Kino
 /// </summary>
 public class FXGlitchVolume : FXBase
 {
-    public FXScaledParameter<float> block  = new FXScaledParameter<float>(0, 0, 1.0f,"",false);
-    public FXScaledParameter<float> drift  = new FXScaledParameter<float>(0, 0, 1.0f,"",false);
-    public FXScaledParameter<float> jitter = new FXScaledParameter<float>(0, 0, 1.0f,"",false);
-    public FXScaledParameter<float> jump   = new FXScaledParameter<float>(0, 0, 1.0f,"",false);
-    public FXScaledParameter<float> shake  = new FXScaledParameter<float>(0, 0, 1.0f,"",false);
-    public FXScaledParameter<float> slice  = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
+    public FXScaledParameter<float> block               = new FXScaledParameter<float>(0, 0, 1.0f,"",false);
+    public FXScaledParameter<float> drift               = new FXScaledParameter<float>(0, 0, 1.0f,"",false);
+    public FXScaledParameter<float> jitter              = new FXScaledParameter<float>(0, 0, 1.0f,"",false);
+    public FXScaledParameter<float> jump                = new FXScaledParameter<float>(0, 0, 1.0f,"",false);
+    public FXScaledParameter<float> shake               = new FXScaledParameter<float>(0, 0, 1.0f,"",false);
+    public FXScaledParameter<float> slice               = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
+    public FXScaledParameter<float> chromaticAberration = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
 
 
     public FXParameter<bool> blockEnabled  = new FXParameter<bool>(false,"", false);
@@ -23,12 +25,15 @@ public class FXGlitchVolume : FXBase
     public FXParameter<bool> shakeEnabled  = new FXParameter<bool>(false,"", false);
     public FXParameter<bool> sliceEnaled   = new FXParameter<bool>(false, "", false);
 
+    public FXParameter<bool> chromaticAberrationEnabled = new FXParameter<bool>(false, "", false);
+
+
 
 
     private Volume volume;
     private Glitch glitchEffect;
     private Slice sliceEffect;
-
+    private ChromaticAberration chromaticAberrationEffect;
 
     protected override void Awake()
     {
@@ -47,22 +52,30 @@ public class FXGlitchVolume : FXBase
 
         if (!volume.profile.TryGet<Slice>(out sliceEffect))
         {
-            Debug.LogError("Glitch effect not found in the Volume profile");
+            Debug.LogError("Slice effect not found in the Volume profile");
         }
 
-        block .OnScaledValueChanged   += SetBlock;
-        drift .OnScaledValueChanged   += SetDrift;
-        jitter.OnScaledValueChanged   += SetJitter;
-        jump  .OnScaledValueChanged   += SetJump;
-        shake .OnScaledValueChanged   += SetShake;
-        slice.OnScaledValueChanged    += SetSlice;
+        if (!volume.profile.TryGet<ChromaticAberration>(out chromaticAberrationEffect))
+        {
+            Debug.LogError("Chromatic Aberration effect not found in the Volume profile");
+        }
 
-        blockEnabled .OnValueChanged   += SetBlockEnabled;
-        driftEnabled .OnValueChanged   += SetDriftEnbled;
-        jitterEnabled.OnValueChanged   += SetJitterEnbled;
-        jumpEnabled  .OnValueChanged   += SetJumpEnbled;
-        shakeEnabled .OnValueChanged   += SetShakeEnbled;
-        sliceEnaled.OnValueChanged     += SetSliceEnabled;
+        block .OnScaledValueChanged              += SetBlock;
+        drift .OnScaledValueChanged              += SetDrift;
+        jitter.OnScaledValueChanged              += SetJitter;
+        jump  .OnScaledValueChanged              += SetJump;
+        shake .OnScaledValueChanged              += SetShake;
+        slice.OnScaledValueChanged               += SetSlice;
+        chromaticAberration.OnScaledValueChanged += SetChromaticAberration;
+
+        blockEnabled .OnValueChanged              += SetBlockEnabled;
+        driftEnabled .OnValueChanged              += SetDriftEnbled;
+        jitterEnabled.OnValueChanged              += SetJitterEnbled;
+        jumpEnabled  .OnValueChanged              += SetJumpEnbled;
+        shakeEnabled .OnValueChanged              += SetShakeEnbled;
+        sliceEnaled.OnValueChanged                += SetSliceEnabled;
+        chromaticAberrationEnabled.OnValueChanged += SetChromaticAberrationEnabled;
+
     }
 
     private void SetBlock(float value)
@@ -155,6 +168,21 @@ public class FXGlitchVolume : FXBase
         if (sliceEffect != null)
         {
             sliceEffect.active = value;
+        }
+    }
+
+    private void SetChromaticAberration(float value)
+    {
+        if (chromaticAberrationEffect != null)
+        {
+            chromaticAberrationEffect.intensity.value = value;
+        }
+    }
+    private void SetChromaticAberrationEnabled(bool value)
+    {
+        if (chromaticAberrationEffect != null)
+        {
+            chromaticAberrationEffect.active = value;
         }
     }
 }

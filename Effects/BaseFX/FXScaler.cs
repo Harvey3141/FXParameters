@@ -19,6 +19,13 @@ public class FXScaler : FXBaseWithEnabled
     {
         base.Start();
         previousScaleType = scaleType.Value;
+        scaleType.OnValueChanged += OnScaleTypeChanged;
+    }
+
+    private void OnScaleTypeChanged(ScaleType obj)
+    {
+        ResetScale();
+        previousScaleType = scaleType.Value;
     }
 
     private void Update()
@@ -52,15 +59,6 @@ public class FXScaler : FXBaseWithEnabled
                         break;
                 }
             }
-        }
-    }
-
-    private void OnValidate()
-    {
-        if (scaleType.Value != previousScaleType)
-        {
-            ResetScale();
-            previousScaleType = scaleType.Value;
         }
     }
 
