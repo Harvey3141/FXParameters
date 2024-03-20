@@ -56,6 +56,42 @@ Shader "Hidden/FX/CameraCompositor"
 
     float _Brightness;
 
+    float3 RGBtoHSV(float3 rgb)
+{
+    float R = rgb.r;
+    float G = rgb.g;
+    float B = rgb.b;
+    float minRGB = min(R, min(G, B));
+    float maxRGB = max(R, max(G, B));
+    float deltaRGB = maxRGB - minRGB;
+
+    float H = 0.0;
+    float S = 0.0;
+    float V = maxRGB;
+
+    if (maxRGB > 0.0)
+    {
+        S = deltaRGB / maxRGB;
+    }
+
+    if (S > 0.0)
+    {
+        if (R == maxRGB)
+            H = (G - B) / deltaRGB;
+        else if (G == maxRGB)
+            H = 2.0 + (B - R) / deltaRGB;
+        else if (B == maxRGB)
+            H = 4.0 + (R - G) / deltaRGB;
+
+        H *= 60.0;
+        if (H < 0.0)
+            H += 360.0;
+    }
+
+    return float3(H, S, V);
+}
+
+
     float4 CustomPostProcess(Varyings input) : SV_Target
     {
         UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
@@ -66,9 +102,37 @@ Shader "Hidden/FX/CameraCompositor"
         float3 colorB = SAMPLE_TEXTURE2D(_TextureB, sampler_TextureB, input.texcoord).xyz;
         float3 colorKey = SAMPLE_TEXTURE2D(_TextureKey, sampler_TextureKey, input.texcoord).xyz;
 
-        float threshold = 0.01; 
-        bool isKeyBlack = (colorKey.r == 1.0) && (colorKey.g == 0.0) && (colorKey.b == 1.0);
-        float3 outputColor = isKeyBlack ? colorA : colorB;
+
+        //float threshold = 0.3; 
+        //bool isKeyPink = (colorKey.r == 1.0) && (colorKey.g == 0.0) && (colorKey.b == 1.0);
+        //
+        //float3 pinkColor = float3(1.0, 0.0, 1.0); // Target pink color
+        //float tolerance = 0.4; // Define a tolerance for color comparison
+        //
+        //// Calculate the absolute difference between the colorB and the target pink color
+        //float3 diff = abs(colorB - pinkColor);
+        //
+        //// Check if the color is within the tolerance for all components
+        //bool isBPink = (diff.r <= tolerance) && (diff.g <= tolerance) && (diff.b <= tolerance);
+
+        float3 targetColor = float3(1.0, 0.0, 1.0); // Pink
+        float hueTolerance = 15.0; // Adjust as needed
+        float saturationTolerance = 0.9; // Adjust as needed
+        float brightnessTolerance = 1.0; // Adjust as needed
+
+        // Convert both target and current pixel color to HSV
+        float3 targetHSV = RGBtoHSV(targetColor);
+        float3 pixelHSV = RGBtoHSV(colorB); // Assume colorB is the current pixel color
+
+        bool isKeyed = abs(targetHSV.x - pixelHSV.x) < hueTolerance && 
+        abs(targetHSV.y - pixelHSV.y) < saturationTolerance &&
+        abs(targetHSV.z - pixelHSV.z) < brightnessTolerance;
+
+
+        //bool isBPink = (colorB.r == 1.0) && (colorB.g == 0.0) && (colorB.b == 1.0);
+
+
+        float3 outputColor = isKeyed ? colorA : colorB;
 
         outputColor *= _Brightness;
 

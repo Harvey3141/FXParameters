@@ -187,19 +187,20 @@ namespace FX
                     SendOSCMessage("/sceneList/get", matchingNode, presetListString);
                 }
             }
-            else if (address.ToUpper() == "/GROUP/LOAD")
+            else if (address.ToUpper() == "/GROUP/NEW")
             {
                 string json = message.Values[0].StringValue;
-                FXGroupData preset = JsonUtility.FromJson<FXGroupData>(json);
                 FXManager.Instance.CreateGroup();               
             }
-            else if (address.ToUpper() == "/GROUP/LOAD")
+            // Could get and set without parameter list
+            else if (address.ToUpper() == "/GROUP/SET")
             {
                 if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
                 {
                     string json = message.Values[0].StringValue;
                     FXGroupData preset = JsonUtility.FromJson<FXGroupData>(json);
-                    FXManager.Instance.CreateGroup(preset);
+                    // Only set if exists
+                    //FXManager.Instance.CreateGroup(preset);
                 }
             }
             else if (address.ToUpper() == "/GROUP/REMOVE")

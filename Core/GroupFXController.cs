@@ -60,6 +60,7 @@ namespace FX
     [System.Serializable]
     public class FXGroupData
     {
+        public bool active = true;
         public string address = null;
         public string label = null;
         public GroupFXController.SignalSource signalSource = GroupFXController.SignalSource.Default;
@@ -379,6 +380,7 @@ namespace FX
         public FXGroupData GetData() {
 
             FXGroupData data = new FXGroupData();
+            
             data.address                = address;
             data.isPinned               = isPinned;
             data.label                  = label;
