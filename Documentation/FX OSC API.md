@@ -63,53 +63,65 @@ The FX API offers functionalities that include:
   **Format**: `/GROUP/NEW`  
   **Example**: `/GROUP/NEW`
   
-- **/GROUP/LOAD**  
-  Creates a new group and configures it using provided JSON data.
-  
-  **Format**: `/GROUP/LOAD [group data]`  
-  **Example**: `/GROUP/LOAD Group/1`
-  
 - **/GROUP/REMOVE**  
   Removes specified group, unless group is pinned
   
   **Format**: `/GROUP/REMOVE [group_address]`  
-  **Example**: `/GROUP/REMOVE Group/10`
+  **Example**: `/GROUP/REMOVE /Group/10`
   
 - **/GROUP/CLEAR**  
   Removes all parameters and triggers from specified group
   
   **Format**: `/GROUP/CLEAR [group_address]`  
-  **Example**: `/GROUP/CLEAR Group/10`
+  **Example**: `/GROUP/CLEAR /Group/10`
 
 - **/GROUP/GET**  
   Fetches group data in JSON format
   
   **Format**: `/GROUP/GET [group_address] `  
-  **Example**: `/GROUP/GET Group/1`
+  **Example**: `/GROUP/GET /Group/1`
+  
+- **/GROUP/SET**  
+  Sets the data of a group
+  
+  **Format**: `/GROUP/SET [group address] [group data]`  
+  **Example**: `/GROUP/SET /Group/1 {group JSON data}`  
+  
+- **/GROUP/ENABLED/SET**  
+  Sets the enabled state of a group
+  
+  **Format**: `/GROUP/ENABLED/SET [group address] [state]`  
+  **Example**: `/GROUP/ENABLED/SET /Group/1 true`  
+  
+- **/GROUP/ENABLED/GET**  
+  Fetches the enabled state of a group. This is sent to subscribers automatically
+  
+  **Format**: `/GROUP/ENABLED/GET [group address]`  
+  **Example**: `/GROUP/ENABLED/GET /Group/1 true`    
 
 - **/GROUP/PARAM/ADD**  
   Adds an FX parameter to a specified group.
   
   **Format**: `/GROUP/PARAM/ADD [group_address] [param_address]`  
-  **Example**: `/GROUP/PARAM/ADD Group/1 /FXLight/intensity`
+  **Example**: `/GROUP/PARAM/ADD /Group/1 /FXLight/intensity`
 
 - **/GROUP/PARAM/REMOVE**  
   Removes an FX parameter from a specified group.
   
   **Format**: `/GROUP/PARAM/REMOVE [group_address] [param_address]`  
-  **Example**: `/GROUP/PARAM/REMOVE Group/1 /FXLight/intensity`
+  **Example**: `/GROUP/PARAM/REMOVE /Group/1 /FXLight/intensity`
 
 - **/GROUP/TRIGGER/ADD**  
   Adds a trigger to a specified group.
   
   **Format**: `/GROUP/TRIGGER/ADD [group_address] [trigger_address]`  
-  **Example**: `/GROUP/TRIGGER/ADD Group/1 /FXLight/FXTrigger`
+  **Example**: `/GROUP/TRIGGER/ADD /Group/1 /FXLight/FXTrigger`
 
 - **/GROUP/TRIGGER/REMOVE**  
   Removes a trigger from a specified group.
   
   **Format**: `/GROUP/TRIGGER/REMOVE [group_address] [trigger_address]`  
-  **Example**: `/GROUP/TRIGGER/REMOVE Group/1 /FXLight/FXTrigger`
+  **Example**: `/GROUP/TRIGGER/REMOVE /Group/1 /FXLight/FXTrigger`
   
 - **/GROUPLIST/GET**  
   Requests the group list, which is returned as /groupList/get {group/1, group/2, group/3}. This is also sent to subscribers whenever a scene is added or removed.

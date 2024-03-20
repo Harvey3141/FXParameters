@@ -68,9 +68,10 @@ namespace FX
             FXManager.Instance.onFXParamValueChanged      += OnFXParamValueChanged;
             FXManager.Instance.onFXParamAffectorChanged   += OnFXParamAffectorChanged;
             FXManager.Instance.onPresetLoaded             += OnPresetLoaded;
-            FXManager.Instance.onFXGroupModified          += OnFXGroupModified;
-            FXManager.Instance.onFXGroupListModified      += OnFXGroupListModified;
 
+            FXManager.Instance.onFXGroupChanged           += OnFXGroupChanged;
+            FXManager.Instance.onFXGroupListChanged       += OnFXGroupListChanged;
+            FXManager.Instance.onFXGroupEnabled           += OnFXGroupEnabled;
 
 
             fxSceneManager.onPresetListUpdated        += OnPresetListUpdated;
@@ -187,20 +188,11 @@ namespace FX
                     SendOSCMessage("/sceneList/get", matchingNode, presetListString);
                 }
             }
-            else if (address.ToUpper() == "/GROUP/LOAD")
+            else if (address.ToUpper() == "/GROUP/NEW")
             {
                 string json = message.Values[0].StringValue;
                 FXGroupData preset = JsonUtility.FromJson<FXGroupData>(json);
-                FXManager.Instance.CreateGroup();               
-            }
-            else if (address.ToUpper() == "/GROUP/LOAD")
-            {
-                if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
-                {
-                    string json = message.Values[0].StringValue;
-                    FXGroupData preset = JsonUtility.FromJson<FXGroupData>(json);
-                    FXManager.Instance.CreateGroup(preset);
-                }
+                FXManager.Instance.CreateGroup();
             }
             else if (address.ToUpper() == "/GROUP/REMOVE")
             {
@@ -222,11 +214,20 @@ namespace FX
             {
                 if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
                 {
-                    GroupFXController[] allFXGroups = GameObject.FindObjectsOfType<GroupFXController>();
-                    foreach (var group in allFXGroups)
+                    GroupFXController group = FXManager.Instance.FindGroupByAddress(message.Values[0].StringValue);
+                    if (group != null)
                     {
-                        OnFXGroupModified(group.GetData());
+                        OnFXGroupChanged(group.GetData());
                     }
+                }
+            }
+            else if (address.ToUpper() == "/GROUP/SET")
+            {
+                if (message.Values.Count > 1 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String)
+                {
+                    string json = message.Values[0].StringValue;
+                    FXGroupData preset = JsonUtility.FromJson<FXGroupData>(json);
+                    FXManager.Instance.SetGroup(preset);
                 }
             }
             else if (address.ToUpper() == "/GROUPLIST/GET")
@@ -284,8 +285,29 @@ namespace FX
                     string groupAddress = message.Values[0].StringValue;
                     bool state = message.Values[1].BoolValue;
                     var g = FXManager.Instance.FindGroupByAddress(groupAddress);
-                    if (g != null) {
+                    if (g != null)
+                    {
                         g.Active = state;
+                    }
+
+                }
+            }
+            else if (address.ToUpper() == "/GROUP/ENABLED/GET")
+            {
+                if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
+                {
+                    string groupAddress = message.Values[0].StringValue;
+                    var g = FXManager.Instance.FindGroupByAddress(groupAddress);
+                    if (g != null)
+                    {
+                        bool state = g.Active;
+                        OSCNode matchingNode = oscNodes.Find(node => node.Receiver.LocalPort == port);
+                        if (matchingNode != null)
+                        {
+                            string senderIp = matchingNode.Transmitter.RemoteHost.ToString();
+                            int senderPort = matchingNode.Transmitter.RemotePort;
+                            SendOSCMessage("/group/enabled/get", matchingNode, state);
+                        }
                     }
                 }
             }
@@ -294,7 +316,7 @@ namespace FX
                 if (message.Values.Count > 1 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.Int)
                 {
                     string groupAddress = message.Values[0].StringValue;
-                    int numBeats  = message.Values[1].IntValue;
+                    int numBeats = message.Values[1].IntValue;
                     var g = FXManager.Instance.FindGroupByAddress(groupAddress);
                     if (g != null)
                     {
@@ -310,7 +332,8 @@ namespace FX
                     var g = FXManager.Instance.FindGroupByAddress(groupAddress);
                     if (g != null)
                     {
-                        if (g.signalSource == GroupFXController.SignalSource.Pattern && g.patternType == GroupFXController.PatternType.Tap) { 
+                        if (g.signalSource == GroupFXController.SignalSource.Pattern && g.patternType == GroupFXController.PatternType.Tap)
+                        {
                             TapPattern tp = (TapPattern)g.pattern;
                             tp.AddTriggerAtCurrentTime();
                         }
@@ -404,7 +427,7 @@ namespace FX
             }         
         }
 
-        void OnFXGroupModified(FXGroupData data)
+        void OnFXGroupChanged(FXGroupData data)
         {
             var message = new OSCMessage("/group/get");
             message.AddValue(OSCValue.String(data.address));
@@ -415,7 +438,18 @@ namespace FX
             }
         }
 
-        void OnFXGroupListModified(List<string> groupList)
+        void OnFXGroupEnabled(string adress, bool state)
+        {
+            var message = new OSCMessage("/group/enabled/get");
+            message.AddValue(OSCValue.String(adress));
+            message.AddValue(OSCValue.Bool(state));
+            foreach (var node in oscNodes)
+            {
+                if (node.SendParamChanges) node.MessageQueue.Enqueue(message);
+            }
+        }
+
+        void OnFXGroupListChanged(List<string> groupList)
         {
             string groupListString = "{" + string.Join(",", groupList) + "}";
 

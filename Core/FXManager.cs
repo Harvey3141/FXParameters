@@ -69,11 +69,14 @@ namespace FX
         public delegate void OnPresetLoaded(string name);
         public event OnPresetLoaded onPresetLoaded;
 
-        public delegate void OnFXGroupModified(FXGroupData data);
-        public event OnFXGroupModified onFXGroupModified;
+        public delegate void OnFXGroupChanged(FXGroupData data);
+        public event OnFXGroupChanged onFXGroupChanged;
 
-        public delegate void OnFXGroupListModified(List<string> groupList);
-        public event OnFXGroupListModified onFXGroupListModified;
+        public delegate void OnFXGroupEnabled(string address, bool state);
+        public event OnFXGroupEnabled onFXGroupEnabled;
+
+        public delegate void OnFXGroupListChanged(List<string> groupList);
+        public event OnFXGroupListChanged onFXGroupListChanged;
 
         public enum FXItemInfoType
         {
@@ -443,9 +446,9 @@ namespace FX
             if (onFXParamAffectorChanged != null) onFXParamAffectorChanged.Invoke(address, affector);
         }
 
-        public void OnGroupModified(FXGroupData data)
+        public void OnGroupChanged(FXGroupData data)
         {
-            if (onFXGroupModified != null) onFXGroupModified.Invoke(data);
+            if (onFXGroupChanged != null) onFXGroupChanged.Invoke(data);
         }
 
         [System.Serializable]
@@ -769,6 +772,19 @@ namespace FX
             return group;
         }
 
+        public bool SetGroup(FXGroupData data)
+        {
+            GroupFXController group = FindGroupByAddress(data.address);
+            if (group != null)
+            {
+                group.SetData(data);
+                return true;
+            }
+            else { 
+                return false; 
+            }
+        }
+
         public void RemoveGroup(string address)
         {
             GroupFXController group = FindGroupByAddress(address);
@@ -828,7 +844,12 @@ namespace FX
         }
 
         public void OnGroupListChanged() { 
-            if(onFXGroupListModified != null) onFXGroupListModified(GetGroupList()); 
+            if(onFXGroupListChanged != null) onFXGroupListChanged(GetGroupList()); 
+        }
+
+        public void OnGroupEnabled(string address, bool state)
+        {
+            if (onFXGroupEnabled != null) onFXGroupEnabled(address,state);
         }
     }
 

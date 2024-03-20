@@ -60,6 +60,7 @@ namespace FX
     [System.Serializable]
     public class FXGroupData
     {
+        public bool isEnabled = true;
         public string address = null;
         public string label = null;
         public GroupFXController.SignalSource signalSource = GroupFXController.SignalSource.Default;
@@ -88,6 +89,7 @@ namespace FX
             {
                 if (active != value) {
                     active = value; 
+                    FXManager.Instance.OnGroupEnabled(address, value);
                 }
             }
         }
@@ -232,7 +234,7 @@ namespace FX
 
         public void SetValue(float value)
         {
-            if (!enabled) return;
+            if (!active) return;
 
             if (fxParameterControllers != null)
             {
@@ -245,7 +247,7 @@ namespace FX
 
         public void FXTrigger()
         {
-            if (!enabled) return;
+            if (!active) return;
 
             if (fxTriggerAddresses != null) {
                 foreach (string address in fxTriggerAddresses)
@@ -374,11 +376,13 @@ namespace FX
             }
           
             presetLoaded = true;
+            Active = data.isEnabled;
         }
 
         public FXGroupData GetData() {
 
-            FXGroupData data = new FXGroupData();
+            FXGroupData data            = new FXGroupData();
+            data.isEnabled              = active;
             data.address                = address;
             data.isPinned               = isPinned;
             data.label                  = label;
@@ -557,7 +561,7 @@ namespace FX
             }
         }
 
-        void OnGroupModified () { 
+        void OnGroupChanged () { 
 
         }
 
