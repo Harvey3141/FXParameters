@@ -13,18 +13,23 @@ The FX API offers functionalities that include:
 
 ### General Messages
 
-- **/GET**  
-  Fetches the current value of a specified FX parameter.
+- **/FX/GET**  
+  Retrieves the current value of a specified FX parameter. This command requires the parameter's address as the first argument in the message.
   
-  **Format**: `/[parameter_address]/GET`  
-  **Example**: `/FXLight/intensity/GET`
+  **Format**: `/FX/GET [parameter_address]`  
+  **Example**: `/FX/GET /FXLight/intensity/GET`
   
-- **/RESET**
-
-  Sets the current value of a specified FX parameter to its default value
+- **/FX/SET**    
+  Assigns a new value to a specified FX parameter. This command takes the parameter's address as the first argument and the new value as the second argument in the message.
   
-  **Format**: `/[parameter_address]/RESET`
-  **Example**: `/FXLight/intensity/RESET`
+  **Format**: `/FX/SET [parameter_address] [new_value]`  
+  **Example**: `/FX/SET FXLight/intensity 0.5`
+  
+- **FX/RESET**
+  Resets the current value of a specified FX parameter to its default value. This command requires the parameter's address as the first argument in the message.
+  
+  **Format**: `/FX/RESET [parameter_address]`
+  **Example**: `/FX/RESET FXLight/intensity`
 
 ### Scene Management
 
