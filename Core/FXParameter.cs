@@ -281,13 +281,13 @@ namespace FX
         public T ValueAtZero
         {
             get { return valueAtZero_; }
-            private set { valueAtZero_ = value; }
+            set { valueAtZero_ = value; }
         }
 
         public T ValueAtOne
         {
             get { return valueAtOne_; }
-            private set { valueAtOne_ = value; }
+            set { valueAtOne_ = value; }
         }
 
         public bool InvertValue

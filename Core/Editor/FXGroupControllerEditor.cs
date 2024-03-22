@@ -15,10 +15,10 @@ namespace FX
         private ReorderableList affectorListReorderable;
         private SerializedProperty affectorListProperty;
 
-        float minVal = -10;
-        float minLimit = -20;
-        float maxVal = 10;
-        float maxLimit = 20;
+        float minVal = 0;
+        float minLimit = 0;
+        float maxVal = 1;
+        float maxLimit = 1;
 
         private string[] paramPopupValues = new string[] { };
         private string[] triggerParamPopupValues = new string[] { };
@@ -235,7 +235,6 @@ namespace FX
             }
             EditorGUILayout.LabelField("Connections");
 
-
             using (var verticalScope = new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
             {
                 affectorListReorderable.DoLayoutList();
@@ -245,6 +244,22 @@ namespace FX
                 {
                     controller.value.Value = value;
                     controller.SetValue(value);
+                }
+
+                EditorGUI.BeginChangeCheck();
+
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.PrefixLabel("Remap Input"); 
+
+                float min = controller.value.ValueAtZero;
+                float max = controller.value.ValueAtOne;
+                EditorGUILayout.MinMaxSlider(ref min, ref max, 0.0f, 1.0f);
+                EditorGUILayout.EndHorizontal(); 
+
+                if (EditorGUI.EndChangeCheck())
+                {
+                    controller.value.ValueAtZero = min;
+                    controller.value.ValueAtOne = max;
                 }
             }
 
@@ -260,8 +275,6 @@ namespace FX
                 EditorGUI.DrawRect(lightRect, isIndicatorOn ? Color.white : Color.gray);
             }
 
-
-            EditorGUILayout.MinMaxSlider(ref minVal, ref maxVal, minLimit, maxLimit);
 
             if (isIndicatorOn)
             {

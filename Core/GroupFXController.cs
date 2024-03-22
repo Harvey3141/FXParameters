@@ -50,13 +50,7 @@ namespace FX
             return affectedValue;
         }
 
-        public void SetFXValue(float value) {
-            fxManager.SetFX(FxAddress, GetAffectedValue(value));
-        }
 
-        public void SetDefaultFXValue() {
-            fxManager.ResetParameterToDefault(FxAddress);
-        }
     }
 
     [System.Serializable]
@@ -65,19 +59,17 @@ namespace FX
         public bool isEnabled = true;
         public string address = null;
         public string label = null;
-        public GroupFXController.SignalSource signalSource = GroupFXController.SignalSource.Default;
+        public bool isPinned = false;
         public List<FXParameterController> fxParameterControllers = new List<FXParameterController>();
         public List<string> fxTriggerAddresses = new List<string>();
 
-        public bool isPinned = false;
+        public GroupFXController.SignalSource signalSource = GroupFXController.SignalSource.Default;
+        public AudioFrequency audioFrequency;
 
         public PatternType patternType;
         public float numBeats = 4;
         public FX.Patterns.OscillatorPattern.OscillatorType oscillatorType;
         public FX.Patterns.ArpeggiatorPattern.PatternStyle arpeggiatorStyle;
-
-        public AudioFrequency audioFrequency;
-
     }
     public class GroupFXController : MonoBehaviour, IFXTriggerable
     {
@@ -166,12 +158,12 @@ namespace FX
 
         public bool presetLoaded = false;
 
-        private FXManager fXManager;
+        private FXManager fxManager;
 
 
         public void Initialise()
         {
-            fXManager = FXManager.Instance;
+            fxManager = FXManager.Instance;
             this.AddFXElements(address);         
             value.OnScaledValueChanged += SetValue;
 
@@ -179,7 +171,7 @@ namespace FX
 
             audioManager = FindObjectOfType<FX.AudioManager>();
 
-            fXManager.OnGroupListChanged();
+            fxManager.OnGroupListChanged();
         }
 
         void Update () {
@@ -238,7 +230,7 @@ namespace FX
             }     
         }
 
-        public void SetValue(float value)
+        public void SetValue(float v)
         {
             if (!active) return;
 
@@ -246,10 +238,11 @@ namespace FX
             {
                 foreach (var a in fxParameterControllers)
                 {
-                    a.SetFXValue(value);
+                    fxManager.SetFX(a.FxAddress, a.GetAffectedValue(value.ScaledValue));
                 }
             }
         }
+
 
         public void FXTrigger()
         {
@@ -259,7 +252,7 @@ namespace FX
                 foreach (string address in fxTriggerAddresses)
                 {
                     string formattedAddress = address.StartsWith("/") ? address : "/" + address;
-                    fXManager.SetFX(formattedAddress);
+                    fxManager.SetFX(formattedAddress);
                 }
             }
 
@@ -271,7 +264,7 @@ namespace FX
             if (fxParameterControllers != null) {
                 foreach (var a in fxParameterControllers)
                 {
-                    a.SetDefaultFXValue();
+                    fxManager.ResetParameterToDefault(a.FxAddress);
                 }
                 fxParameterControllers.Clear();
             }
@@ -304,7 +297,7 @@ namespace FX
 
             if (itemToRemove != null)
             {
-                itemToRemove.SetDefaultFXValue();
+                fxManager.ResetParameterToDefault(itemToRemove.FxAddress);
                 fxParameterControllers.Remove(itemToRemove);
             }
         }
@@ -574,7 +567,7 @@ namespace FX
         void OnDestroy()
         {
             ClearFXAdresses();
-            fXManager.OnGroupListChanged();
+            fxManager.OnGroupListChanged();
         }
 
     }
