@@ -116,27 +116,67 @@ namespace FX
         protected void MessageReceived(OSCMessage message, int port)
         {
             string address = message.Address;
-            if (address.ToUpper().EndsWith("/GET"))
+            if (address == "/FX/GET")
             {
-                string paramAddress = address.Substring(0, address.Length - 4);
-                object value = fXManager.GetFX(paramAddress);
-
-                if (value != null)
+                if (message.Values.Count > 0)
                 {
-                    OSCNode matchingNode = oscNodes.Find(node => node.Receiver.LocalPort == port);
-                    if (matchingNode != null)
+                    string fxAddress = message.Values[0].StringValue;
+                    object value = fXManager.GetFX(fxAddress);
+
+                    if (value != null)
                     {
-                        string senderIp = matchingNode.Transmitter.RemoteHost.ToString();
-                        int senderPort = matchingNode.Transmitter.RemotePort;
-                        SendOSCMessage(paramAddress, matchingNode, value);
+                        OSCNode matchingNode = oscNodes.Find(node => node.Receiver.LocalPort == port);
+                        if (matchingNode != null)
+                        {
+                            string senderIp = matchingNode.Transmitter.RemoteHost.ToString();
+                            int senderPort = matchingNode.Transmitter.RemotePort;
+                            SendOSCMessage(fxAddress, matchingNode, value);
+                            
+                        }
+                        // TODO - create a transmitter here to send back a response.
                     }
-                    // TODO - create transmitter 
                 }
             }
-            if (address.ToUpper().EndsWith("/RESET"))
+            else if (address.ToUpper() == "/FX/SET")
             {
-                string paramAddress = address.Substring(0, address.Length - 4);
-                fXManager.ResetParameterToDefault(paramAddress);
+                string fxAddress = message.Values[0].StringValue;
+                object[] args = new object[message.Values.Count - 1];
+
+                for (int i = 1; i < message.Values.Count; i++)
+                {
+                    int argsIndex = i - 1;
+
+                    switch (message.Values[i].Type)
+                    {
+                        case OSCValueType.Float:
+                            args[argsIndex] = message.Values[i].FloatValue;
+                            break;
+                        case OSCValueType.True:
+                            args[argsIndex] = true;
+                            break;
+                        case OSCValueType.False:
+                            args[argsIndex] = false;
+                            break;
+                        case OSCValueType.Int:
+                            args[argsIndex] = message.Values[i].IntValue;
+                            break;
+                        case OSCValueType.String:
+                            args[argsIndex] = message.Values[i].StringValue;
+                            break;
+                        case OSCValueType.Color:
+                            args[argsIndex] = message.Values[i].ColorValue;
+                            break;
+                    }
+                }
+                fXManager.SetFX(fxAddress, args);
+            }
+            else if (address == "/FX/RESET")
+            {
+                if (message.Values.Count > 0)
+                {
+                    string fxAddress = message.Values[0].StringValue;
+                    fXManager.ResetParameterToDefault(fxAddress);
+                }
             }
             else if (address.ToUpper() == "/SCENE/LOAD")
             {
@@ -374,36 +414,6 @@ namespace FX
                     }
                 }
             }
-            else
-            {
-                object[] args = new object[message.Values.Count];
-
-                for (int i = 0; i < args.Length; i++)
-                {
-                    switch (message.Values[i].Type)
-                    {
-                        case OSCValueType.Float:
-                            args[i] = message.Values[0].FloatValue;
-                            break;
-                        case OSCValueType.True:
-                            args[i] = true;
-                            break;
-                        case OSCValueType.False:
-                            args[i] = false;
-                            break;
-                        case OSCValueType.Int:
-                            args[i] = message.Values[0].IntValue;
-                            break;
-                        case OSCValueType.String:
-                            args[i] = message.Values[0].StringValue;
-                            break;
-                        case OSCValueType.Color:
-                            args[i] = message.Values[0].ColorValue;
-                            break;
-                    }
-                }
-                fXManager.SetFX(address, args);
-            }
         }
 
 
@@ -413,7 +423,7 @@ namespace FX
             {
                 foreach (var node in oscNodes)
                 {
-                    if (node.SendParamChanges) SendOSCMessage(address, node, value);
+                    if (node.SendParamChanges) SendOSCMessage("/fx/get", node, address, value);
                 }
             }
         }
@@ -508,36 +518,51 @@ namespace FX
             }
         }
 
-
-        void SendOSCMessage(string address, OSCNode node, object value)
+        void SendOSCMessage(string address, OSCNode node, object value = null)
         {
             var message = new OSCMessage(address);
-            switch (value)
+            OSCValue oscValue = CreateOSCValueFromObject(value);
+
+            if (oscValue != null)
             {
-                case float floatValue:
-                    message.AddValue(OSCValue.Float(floatValue));
-                    break;
-                case int intValue:
-                    message.AddValue(OSCValue.Int(intValue));
-                    break;
-                case string stringValue:
-                    message.AddValue(OSCValue.String(stringValue));
-                    break;
-                case bool boolValue:
-                    message.AddValue(OSCValue.Bool(boolValue));
-                    break;
-                case Enum enumValue:
-                    int enumIntValue = Convert.ToInt32(enumValue);
-                    message.AddValue(OSCValue.Int(enumIntValue));
-                    break;
-                case Color colorValue:
-                    message.AddValue(OSCValue.Color(colorValue));
-                    break;
-                default:
-                    Debug.LogWarning($"Unsupported value type for OSC message: {value.GetType()} , address: {address} ");
-                    break;
+                message.AddValue(oscValue);
             }
+            else
+            {
+                Debug.LogWarning($"Unsupported value type for OSC message: {value.GetType()}, address: {address}");
+            }
+
             node.MessageQueue.Enqueue(message);
+        }
+
+        void SendOSCMessage(string address, OSCNode node, string value1S, object value2)
+        {
+            var message = new OSCMessage(address);
+            message.AddValue(OSCValue.String(value1S));
+            OSCValue oscValue2 = CreateOSCValueFromObject(value2);
+
+            if (oscValue2 == null)
+            {
+                Debug.LogWarning($"Unsupported value type for the second value: {value2.GetType()}, address: {address}");
+                return; 
+            }          
+            message.AddValue(oscValue2);
+            node.MessageQueue.Enqueue(message);
+        }
+
+
+        OSCValue CreateOSCValueFromObject(object value)
+        {
+            return value switch
+            {
+                float floatValue => OSCValue.Float(floatValue),
+                int intValue => OSCValue.Int(intValue),
+                string stringValue => OSCValue.String(stringValue),
+                bool boolValue => OSCValue.Bool(boolValue),
+                Enum enumValue => OSCValue.Int(Convert.ToInt32(enumValue)),
+                Color colorValue => OSCValue.Color(colorValue),
+                _ => null
+            };
         }
 
     }
