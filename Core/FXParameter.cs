@@ -66,6 +66,8 @@ namespace FX
 
         public event Action<T> OnValueChanged;
 
+        protected FXManager fxManager_;
+
         public virtual T Value
         {
             get { return value_; }
@@ -87,7 +89,7 @@ namespace FX
                 {
                     value_ = newValue;
                     OnValueChanged?.Invoke(value_);
-                    FXManager.Instance.OnParameterValueChanged(address_, value);
+                    fxManager_.OnParameterValueChanged(address_, value);
                 }
             }
         }
@@ -129,6 +131,7 @@ namespace FX
 
         public FXParameter(T value, string address = "", bool shouldSave = true)
         {
+            fxManager_ = FXManager.Instance;
             if (typeof(T) == typeof(float) || typeof(T) == typeof(int) || typeof(T) == typeof(bool) || typeof(T) == typeof(string) || typeof(T) == typeof(Color) || typeof(T).IsEnum)
             {
                 Value = value;
@@ -231,7 +234,7 @@ namespace FX
 
         bool invertValue_ = false;
 
-        public event Action<T> OnScaledValueChanged; 
+        public event Action<T> OnScaledValueChanged;
 
         public FXScaledParameter(float value, T valueAtZero, T valueAtOne, string address = "", bool shouldSave = true)
             : base(value, 0.0f, 1.0f, address, shouldSave)
@@ -253,7 +256,7 @@ namespace FX
                 base.Value = value;
                 UpdateScaledValue();
                 OnScaledValueChanged?.Invoke(scaledValue_);
-                FXManager.Instance.OnParameterValueChanged(address_, value);
+                fxManager_.OnParameterValueChanged(address_, value);
             }
         }
 
@@ -263,7 +266,7 @@ namespace FX
             set
             {
                 affectorFunction_ = value;
-                FXManager.Instance.OnParameterAffertorChanged(address_, affectorFunction_);
+                fxManager_.OnParameterAffertorChanged(address_, affectorFunction_);
 
                 Value = Value;
             }

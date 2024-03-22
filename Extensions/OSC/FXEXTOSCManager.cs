@@ -11,7 +11,6 @@ using extOSC;
 using System.Collections.Generic;
 using System.Collections;
 using System.IO;
-using System.Text.RegularExpressions;
 using System;
 using FX.Patterns;
 
@@ -54,29 +53,29 @@ namespace FX
 
     public class FXEXTOSCManager : MonoBehaviour
     {
-
         public List<OSCNode> oscNodes = new List<OSCNode>();
         public float sendInterval = 0.1f;
         public int maxMessagesPerInterval = 10;
 
+        private FXManager fXManager;
         public FXSceneManager fxSceneManager;
 
         private void Start()
         {
             SetupNodes();
-            StartCoroutine(SendMessagesAtInterval(sendInterval));
-            FXManager.Instance.onFXParamValueChanged      += OnFXParamValueChanged;
-            FXManager.Instance.onFXParamAffectorChanged   += OnFXParamAffectorChanged;
-            FXManager.Instance.onPresetLoaded             += OnPresetLoaded;
+            fXManager = FXManager.Instance;
+            fXManager.onFXParamValueChanged      += OnFXParamValueChanged;
+            fXManager.onFXParamAffectorChanged   += OnFXParamAffectorChanged;
+            fXManager.onPresetLoaded             += OnPresetLoaded;
 
-            FXManager.Instance.onFXGroupChanged           += OnFXGroupChanged;
-            FXManager.Instance.onFXGroupListChanged       += OnFXGroupListChanged;
-            FXManager.Instance.onFXGroupEnabled           += OnFXGroupEnabled;
+            fXManager.onFXGroupChanged           += OnFXGroupChanged;
+            fXManager.onFXGroupListChanged       += OnFXGroupListChanged;
+            fXManager.onFXGroupEnabled           += OnFXGroupEnabled;
 
 
             fxSceneManager.onPresetListUpdated        += OnPresetListUpdated;
             fxSceneManager.onCurrentPresetNameChanged += OnCurrentPresetNameChanged;
-
+            StartCoroutine(SendMessagesAtInterval(sendInterval));
         }
 
         private void SetupNodes()
@@ -120,7 +119,7 @@ namespace FX
             if (address.ToUpper().EndsWith("/GET"))
             {
                 string paramAddress = address.Substring(0, address.Length - 4);
-                object value = FXManager.Instance.GetFX(paramAddress);
+                object value = fXManager.GetFX(paramAddress);
 
                 if (value != null)
                 {
@@ -137,7 +136,7 @@ namespace FX
             if (address.ToUpper().EndsWith("/RESET"))
             {
                 string paramAddress = address.Substring(0, address.Length - 4);
-                FXManager.Instance.ResetParameterToDefault(paramAddress);
+                fXManager.ResetParameterToDefault(paramAddress);
             }
             else if (address.ToUpper() == "/SCENE/LOAD")
             {
@@ -192,14 +191,14 @@ namespace FX
             {
                 string json = message.Values[0].StringValue;
                 FXGroupData preset = JsonUtility.FromJson<FXGroupData>(json);
-                FXManager.Instance.CreateGroup();
+                fXManager.CreateGroup();
             }
             else if (address.ToUpper() == "/GROUP/REMOVE")
             {
                 if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
                 {
                     string a = message.Values[0].StringValue;
-                    FXManager.Instance.RemoveGroup(a);
+                    fXManager.RemoveGroup(a);
                 }
             }
             else if (address.ToUpper() == "/GROUP/CLEAR")
@@ -207,14 +206,15 @@ namespace FX
                 if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
                 {
                     string a = message.Values[0].StringValue;
-                    FXManager.Instance.ClearGroup(a);
+                    fXManager.ClearGroup(a);
                 }
             }
+            // Go through manager
             else if (address.ToUpper() == "/GROUP/GET")
             {
                 if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
                 {
-                    GroupFXController group = FXManager.Instance.FindGroupByAddress(message.Values[0].StringValue);
+                    GroupFXController group = fXManager.FindGroupByAddress(message.Values[0].StringValue);
                     if (group != null)
                     {
                         OnFXGroupChanged(group.GetData());
@@ -227,12 +227,12 @@ namespace FX
                 {
                     string json = message.Values[0].StringValue;
                     FXGroupData preset = JsonUtility.FromJson<FXGroupData>(json);
-                    FXManager.Instance.SetGroup(preset);
+                    fXManager.SetGroup(preset);
                 }
             }
             else if (address.ToUpper() == "/GROUPLIST/GET")
             {
-                string groupList = "{" + string.Join(",", FXManager.Instance.GetGroupList()) + "}";
+                string groupList = "{" + string.Join(",", fXManager.GetGroupList()) + "}";
 
                 OSCNode matchingNode = oscNodes.Find(node => node.Receiver.LocalPort == port);
                 if (matchingNode != null)
@@ -248,7 +248,7 @@ namespace FX
                 {
                     string groupAddress = message.Values[0].StringValue;
                     string paramAddress = message.Values[1].StringValue;
-                    FXManager.Instance.AddFXParamToGroup(groupAddress, paramAddress);
+                    fXManager.AddFXParamToGroup(groupAddress, paramAddress);
                 }
             }
             else if (address.ToUpper() == "/GROUP/PARAM/REMOVE")
@@ -257,7 +257,7 @@ namespace FX
                 {
                     string groupAddress = message.Values[0].StringValue;
                     string paramAddress = message.Values[1].StringValue;
-                    FXManager.Instance.RemoveFXParamFromGroup(groupAddress, paramAddress);
+                    fXManager.RemoveFXParamFromGroup(groupAddress, paramAddress);
                 }
             }
             else if (address.ToUpper() == "/GROUP/TRIGGER/ADD")
@@ -266,7 +266,7 @@ namespace FX
                 {
                     string groupAddress = message.Values[0].StringValue;
                     string paramAddress = message.Values[1].StringValue;
-                    FXManager.Instance.AddFXTriggerToGroup(groupAddress, paramAddress);
+                    fXManager.AddFXTriggerToGroup(groupAddress, paramAddress);
                 }
             }
             else if (address.ToUpper() == "/GROUP/TRIGGER/REMOVE")
@@ -275,7 +275,7 @@ namespace FX
                 {
                     string groupAddress = message.Values[0].StringValue;
                     string paramAddress = message.Values[1].StringValue;
-                    FXManager.Instance.RemoveFXTriggerFromGroup(groupAddress, paramAddress);
+                    fXManager.RemoveFXTriggerFromGroup(groupAddress, paramAddress);
                 }
             }
             else if (address.ToUpper() == "/GROUP/ENABLED/SET")
@@ -284,7 +284,7 @@ namespace FX
                 {
                     string groupAddress = message.Values[0].StringValue;
                     bool state = message.Values[1].BoolValue;
-                    var g = FXManager.Instance.FindGroupByAddress(groupAddress);
+                    var g = fXManager.FindGroupByAddress(groupAddress);
                     if (g != null)
                     {
                         g.Active = state;
@@ -297,7 +297,7 @@ namespace FX
                 if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
                 {
                     string groupAddress = message.Values[0].StringValue;
-                    var g = FXManager.Instance.FindGroupByAddress(groupAddress);
+                    var g = fXManager.FindGroupByAddress(groupAddress);
                     if (g != null)
                     {
                         bool state = g.Active;
@@ -317,7 +317,7 @@ namespace FX
                 {
                     string groupAddress = message.Values[0].StringValue;
                     int numBeats = message.Values[1].IntValue;
-                    var g = FXManager.Instance.FindGroupByAddress(groupAddress);
+                    var g = fXManager.FindGroupByAddress(groupAddress);
                     if (g != null)
                     {
                         if (g.signalSource == GroupFXController.SignalSource.Pattern) g.SetPatternNumBeats(numBeats);
@@ -329,7 +329,7 @@ namespace FX
                 if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
                 {
                     string groupAddress = message.Values[0].StringValue;
-                    var g = FXManager.Instance.FindGroupByAddress(groupAddress);
+                    var g = fXManager.FindGroupByAddress(groupAddress);
                     if (g != null)
                     {
                         if (g.signalSource == GroupFXController.SignalSource.Pattern && g.patternType == GroupFXController.PatternType.Tap)
@@ -347,7 +347,7 @@ namespace FX
                     string groupAddress = message.Values[0].StringValue;
                     int numTriggers = message.Values[1].IntValue;
 
-                    var g = FXManager.Instance.FindGroupByAddress(groupAddress);
+                    var g = fXManager.FindGroupByAddress(groupAddress);
                     if (g != null)
                     {
                         if (g.signalSource == GroupFXController.SignalSource.Pattern && g.patternType == GroupFXController.PatternType.Tap)
@@ -363,7 +363,7 @@ namespace FX
                 if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
                 {
                     string groupAddress = message.Values[0].StringValue;
-                    var g = FXManager.Instance.FindGroupByAddress(groupAddress);
+                    var g = fXManager.FindGroupByAddress(groupAddress);
                     if (g != null)
                     {
                         if (g.signalSource == GroupFXController.SignalSource.Pattern && g.patternType == GroupFXController.PatternType.Tap)
@@ -402,14 +402,14 @@ namespace FX
                             break;
                     }
                 }
-                FXManager.Instance.SetFX(address, args);
+                fXManager.SetFX(address, args);
             }
         }
 
 
         void OnFXParamValueChanged(string address, object value)
         {
-            if (!string.IsNullOrEmpty(address) && !Regex.IsMatch(address, @"^/Group\d"))
+            if (!string.IsNullOrEmpty(address) && !address.Contains("/Group/"))
             {
                 foreach (var node in oscNodes)
                 {
@@ -500,8 +500,7 @@ namespace FX
                     {
                         if (node.MessageQueue.Count > 0) 
                         {
-                            OSCMessage messageToSend = node.MessageQueue.Dequeue();
-                            node.Transmitter.Send(messageToSend);
+                            node.Transmitter.Send(node.MessageQueue.Dequeue());
                         }
                     }
                 }

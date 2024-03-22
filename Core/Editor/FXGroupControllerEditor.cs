@@ -95,7 +95,7 @@ namespace FX
 
                     EditorGUI.BeginChangeCheck(); 
 
-                    EditorGUI.PropertyField(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), item.FindPropertyRelative("affector"), new GUIContent("Affector Function"));
+                    EditorGUI.PropertyField(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), item.FindPropertyRelative("affectorType"), new GUIContent("Affector Function"));
                     rect.y += EditorGUIUtility.singleLineHeight + 2;
                     EditorGUI.PropertyField(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), item.FindPropertyRelative("invert"), new GUIContent("Invert"));
 

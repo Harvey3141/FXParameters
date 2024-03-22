@@ -18,20 +18,22 @@ namespace FX
             }
         }
 
-        public AffectorFunction affector = AffectorFunction.Linear;
+        public AffectorFunction affectorType = AffectorFunction.Linear;
         public bool invert = false;
 
+        FXManager fxManager;
 
         public FXParameterController(string address, AffectorFunction affector, bool invert) {
+            fxManager = FXManager.Instance;
             key = address.Substring(1);
-            this.affector = affector;
+            this.affectorType = affector;
             this.invert = invert;
         }
        
         public float GetAffectedValue(float valueIn) {
             float affectedValue = (invert ? (1.0f - Mathf.Clamp01(valueIn)) : Mathf.Clamp01(valueIn));
 
-            switch (affector)
+            switch (affectorType)
             {
                 case AffectorFunction.Linear:
                     break;
@@ -49,11 +51,11 @@ namespace FX
         }
 
         public void SetFXValue(float value) {
-            FXManager.Instance.SetFX(FxAddress, GetAffectedValue(value));
+            fxManager.SetFX(FxAddress, GetAffectedValue(value));
         }
 
         public void SetDefaultFXValue() {
-            FXManager.Instance.ResetParameterToDefault(FxAddress);
+            fxManager.ResetParameterToDefault(FxAddress);
         }
     }
 
@@ -75,6 +77,7 @@ namespace FX
         public FX.Patterns.ArpeggiatorPattern.PatternStyle arpeggiatorStyle;
 
         public AudioFrequency audioFrequency;
+
     }
     public class GroupFXController : MonoBehaviour, IFXTriggerable
     {
@@ -120,7 +123,7 @@ namespace FX
             {
                 return fxParameterControllers.Select(item =>
                 {
-                    var clonedItem = new FXParameterController(item.FxAddress, item.affector, item.invert)
+                    var clonedItem = new FXParameterController(item.FxAddress, item.affectorType, item.invert)
                     {
                         // Ensure key has a leading '/'
                         key = item.key.StartsWith("/") ? item.key : "/" + item.key
@@ -163,9 +166,12 @@ namespace FX
 
         public bool presetLoaded = false;
 
+        private FXManager fXManager;
+
 
         public void Initialise()
         {
+            fXManager = FXManager.Instance;
             this.AddFXElements(address);         
             value.OnScaledValueChanged += SetValue;
 
@@ -173,7 +179,7 @@ namespace FX
 
             audioManager = FindObjectOfType<FX.AudioManager>();
 
-            FXManager.Instance.OnGroupListChanged();
+            fXManager.OnGroupListChanged();
         }
 
         void Update () {
@@ -253,7 +259,7 @@ namespace FX
                 foreach (string address in fxTriggerAddresses)
                 {
                     string formattedAddress = address.StartsWith("/") ? address : "/" + address;
-                    FXManager.Instance.SetFX(formattedAddress);
+                    fXManager.SetFX(formattedAddress);
                 }
             }
 
@@ -421,7 +427,7 @@ namespace FX
             var item = fxParameterControllers.FirstOrDefault(a => a.FxAddress.Equals(address, StringComparison.OrdinalIgnoreCase));
             if (item != null)
             {
-                item.affector = affectorType;
+                item.affectorType = affectorType;
             }
         }
 
@@ -568,7 +574,7 @@ namespace FX
         void OnDestroy()
         {
             ClearFXAdresses();
-            FXManager.Instance.OnGroupListChanged();
+            fXManager.OnGroupListChanged();
         }
 
     }

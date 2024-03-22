@@ -7,6 +7,8 @@ namespace FX
 {
     public class FXSceneManager : MonoBehaviour
     {
+
+        FXManager fXManager;
         [HideInInspector]
         public List<string> presets;
         
@@ -37,6 +39,7 @@ namespace FX
 
         private void Awake()
         {
+            fXManager = FXManager.Instance;
             presets = new List<string>();
             PopulatePresetsList();
         }
@@ -48,28 +51,28 @@ namespace FX
             g.label = "Default";
             g.isPinned = true;
             g.signalSource = GroupFXController.SignalSource.Default;
-            FXManager.Instance.CreateGroup(g);
+            fXManager.CreateGroup(g);
 
             g = new FXGroupData();
             g.label = "Audio - Low";
             g.isPinned = true;
             g.signalSource = GroupFXController.SignalSource.Audio;
             g.audioFrequency = GroupFXController.AudioFrequency.Low;
-            FXManager.Instance.CreateGroup(g);
+            fXManager.CreateGroup(g);
 
             g = new FXGroupData();
             g.label = "Audio - Mid";
             g.isPinned = true;
             g.signalSource = GroupFXController.SignalSource.Audio;
             g.audioFrequency = GroupFXController.AudioFrequency.Mid;
-            FXManager.Instance.CreateGroup(g);
+            fXManager.CreateGroup(g);
 
             g = new FXGroupData();
             g.label = "Audio - High";
             g.isPinned = true;
             g.signalSource = GroupFXController.SignalSource.Audio;
             g.audioFrequency = GroupFXController.AudioFrequency.High;
-            FXManager.Instance.CreateGroup(g);
+            fXManager.CreateGroup(g);
 
             g = new FXGroupData();
             g.label = "Oscillator - Sine";
@@ -77,7 +80,7 @@ namespace FX
             g.signalSource = GroupFXController.SignalSource.Pattern;
             g.patternType = GroupFXController.PatternType.Oscillator;
             g.oscillatorType = OscillatorPattern.OscillatorType.Sine;
-            FXManager.Instance.CreateGroup(g);
+            fXManager.CreateGroup(g);
 
             g = new FXGroupData();
             g.label = "Oscillator - Square";
@@ -85,7 +88,7 @@ namespace FX
             g.signalSource = GroupFXController.SignalSource.Pattern;
             g.patternType = GroupFXController.PatternType.Oscillator;
             g.oscillatorType = OscillatorPattern.OscillatorType.Square;
-            FXManager.Instance.CreateGroup(g);
+            fXManager.CreateGroup(g);
 
             g = new FXGroupData();
             g.label = "Tap";
@@ -93,7 +96,7 @@ namespace FX
             g.signalSource = GroupFXController.SignalSource.Pattern;
             g.patternType = GroupFXController.PatternType.Tap;
             g.numBeats = 1;
-            FXManager.Instance.CreateGroup(g);
+            fXManager.CreateGroup(g);
 
             g = new FXGroupData();
             g.label = "Arpeggiator";
@@ -101,7 +104,7 @@ namespace FX
             g.signalSource = GroupFXController.SignalSource.Pattern;
             g.patternType = GroupFXController.PatternType.Arpeggiator;
             g.numBeats = 1;
-            FXManager.Instance.CreateGroup(g);
+            fXManager.CreateGroup(g);
 
             if (exportParameterListOnStart) ExportParameterList();
 
@@ -134,7 +137,7 @@ namespace FX
 
         public bool LoadPreset(string name)
         {
-            return FXManager.Instance.LoadPreset(name);
+            return fXManager.LoadPreset(name);
 
         }
 
@@ -150,13 +153,13 @@ namespace FX
 
         public void SavePreset(string name)
         {
-            FXManager.Instance.SavePreset(name);
+            fXManager.SavePreset(name);
             PopulatePresetsList();
         }
 
         public void ExportParameterList()
         {
-            FXManager.Instance.SavePreset("ParameterList",true);
+            fXManager.SavePreset("ParameterList",true);
         }
 
         public void RemovePreset(string name)
@@ -198,7 +201,7 @@ namespace FX
                 }
             }
 
-            FXManager.Instance.ResetAllParamsToDefault();
+            fXManager.ResetAllParamsToDefault();
         }
     }
 }

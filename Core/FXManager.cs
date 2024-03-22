@@ -455,15 +455,15 @@ namespace FX
         public class FXData
         {
             public List<FXParameterData<string>> stringParameters = new List<FXParameterData<string>>();
-            public List<FXParameterData<int>> intParameters = new List<FXParameterData<int>>();
-            public List<FXParameterData<float>> floatParameters = new List<FXParameterData<float>>();
-            public List<FXParameterData<bool>> boolParameters = new List<FXParameterData<bool>>();
-            public List<FXParameterData<Color>> colorParameters = new List<FXParameterData<Color>>();
-            public List<FXEnumParameterData> enumParameters = new List<FXEnumParameterData>();
+            public List<FXParameterData<int>> intParameters       = new List<FXParameterData<int>>();
+            public List<FXParameterData<float>> floatParameters   = new List<FXParameterData<float>>();
+            public List<FXParameterData<bool>> boolParameters     = new List<FXParameterData<bool>>();
+            public List<FXParameterData<Color>> colorParameters   = new List<FXParameterData<Color>>();
+            public List<FXEnumParameterData> enumParameters       = new List<FXEnumParameterData>();
 
-            public List<FXGroupData> fxGroupPresets = new List<FXGroupData>();
-
-            public List<FXMethodData> fXPresetMethods = new List<FXMethodData>();
+            // FXGroups 
+            public List<FXGroupData> fxGroupPresets               = new List<FXGroupData>();
+            public List<FXMethodData> fXPresetMethods             = new List<FXMethodData>();
 
         }
 
