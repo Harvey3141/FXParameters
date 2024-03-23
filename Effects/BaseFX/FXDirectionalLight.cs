@@ -1,6 +1,7 @@
 using UnityEngine;
 using FX;
-using UnityEngine.Rendering.HighDefinition; 
+using UnityEngine.Rendering.HighDefinition;
+using System;
 
 
 public class FXDirectionalLight : FXBaseWithEnabled, IFXTriggerable
@@ -16,21 +17,20 @@ public class FXDirectionalLight : FXBaseWithEnabled, IFXTriggerable
     public FXScaledParameter<float> rotationSpeedY = new FXScaledParameter<float>(0.0f, 0.0f, 100.0f);
 
     private Light lightComp;
-    private Quaternion initRot;
+    private Vector3 initRot;
     public float clampX = 360f;
     public float clampY = 360f;
 
+    public Vector3[] rotationSet; 
 
     protected override void Awake()
     {
         base.Awake();
 
-        initRot = transform.localRotation;
+        initRot = transform.localEulerAngles;
 
         intensity.OnScaledValueChanged += SetIntensity;
         color.OnValueChanged += SetLightColour;
-        rotationX.OnValueChanged += SetRotationX;
-        rotationY.OnValueChanged += SetRotationY;
 
         if (GetComponent<Light>()) lightComp = GetComponent<Light>();
         else
@@ -46,13 +46,14 @@ public class FXDirectionalLight : FXBaseWithEnabled, IFXTriggerable
 
     private void Update()
     {
+        if (rotationSpeedX.ScaledValue != 0 || rotationSpeedY.ScaledValue != 0) {
+            rotationX.Value += rotationSpeedX.ScaledValue;
+            if (rotationX.Value > clampX) rotationX.Value = 0;
+            rotationY.Value += rotationSpeedY.ScaledValue;
+            if (rotationY.Value > clampY) rotationY.Value = 0;
+        }
 
-        rotationX.Value += Mathf.Clamp(rotationSpeedX.ScaledValue, 0, 1);
-        if (rotationX.Value > clampX) rotationX.Value = 0;
-        rotationY.Value += Mathf.Clamp(rotationSpeedY.ScaledValue, 0, 1);
-        if (rotationY.Value > clampY) rotationY.Value = 0;
-
-        transform.rotation = initRot * Quaternion.Euler(new Vector3((rotationX.Value - 0.5f), (rotationY.Value - 0.5f), 0.0f));
+        transform.localEulerAngles = new Vector3(rotationX.Value, rotationY.Value, 0.0f);
         
         lightComp.color = color.Value;
     }
@@ -79,23 +80,19 @@ public class FXDirectionalLight : FXBaseWithEnabled, IFXTriggerable
         lightComp.color = colour;
     }
 
-    void SetRotationX(float value)
-    {
-        Vector3 currentRotation = transform.rotation.eulerAngles;
-        currentRotation.x = value;
-        transform.rotation = Quaternion.Euler(currentRotation);
-    }
-
-    void SetRotationY(float value)
-    {
-        Vector3 currentRotation = transform.rotation.eulerAngles;
-        currentRotation.y = value;
-        transform.rotation = Quaternion.Euler(currentRotation);
-    }
-
     [FXMethod]
     public void FXTrigger() {
-        rotationX.Value = (Random.Range(initRot.eulerAngles.x, initRot.eulerAngles.x + clampX));
-        rotationY.Value = (Random.Range(initRot.eulerAngles.y, initRot.eulerAngles.y + clampY));
+
+
+        int index = UnityEngine.Random.Range(0, rotationSet.Length-1);
+
+        Vector3 currentRotation = transform.rotation.eulerAngles;
+        currentRotation.x = rotationSet[index].x;
+        currentRotation.y = rotationSet[index].y;
+        currentRotation.z = rotationSet[index].z;
+
+        rotationX.Value = rotationSet[index].x;
+        rotationY.Value = rotationSet[index].y;
+
     }
 }
