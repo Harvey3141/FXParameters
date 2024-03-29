@@ -7,9 +7,9 @@ public class FXChasingLights : FXBaseWithEnabled, IFXTriggerable
     public enum LightPattern { SineWave, EveryOther, MiddleOut }
     public FXParameter<LightPattern> currentPattern = new FXParameter<LightPattern>(LightPattern.SineWave);
 
-    public FXScaledParameter<float> spanProportion = new FXScaledParameter<float>(0.5f,0.0f,0.99f);
-    public FXScaledParameter<float> chaseSpeed     = new FXScaledParameter<float>(1.0f, 0.0f, 10.0f);
-    public FXParameter<bool> forwardDirection = new FXParameter<bool>(true);
+    public float spanProportion = 0.99f;
+    public FXScaledParameter<float> chaseSpeed      = new FXScaledParameter<float>(1.0f, 0.0f, 10.0f);
+    public FXParameter<bool> forwardDirection       = new FXParameter<bool>(true);
     public FXScaledParameter<float> fadeSpeed       = new FXScaledParameter<float>(0.05f, 1.0f, 100.0f);
     public FXScaledParameter<float> targetIntensity = new FXScaledParameter<float>(0.5f, 0.0f, 2.0f);
 
@@ -39,6 +39,8 @@ public class FXChasingLights : FXBaseWithEnabled, IFXTriggerable
 
     private void Update()
     {
+        if (!fxEnabled.Value) return;
+
         if (chaseSpeed.ScaledValue > 0)
         {
             timeSinceLastTrigger += Time.deltaTime;
@@ -87,7 +89,7 @@ public class FXChasingLights : FXBaseWithEnabled, IFXTriggerable
                 for (int i = 0; i < lightsArray.Length; i++)
                 {
                     float sinValue = 0.5f * Mathf.Sin(frequency * (i + currentLeadIndex)) + 0.5f;
-                    targetIntensities[i] = sinValue > spanProportion.ScaledValue ? targetIntensity.ScaledValue : 0f;
+                    targetIntensities[i] = sinValue > spanProportion ? targetIntensity.ScaledValue : 0f;
                 }
                 break;
 
@@ -151,8 +153,10 @@ public class FXChasingLights : FXBaseWithEnabled, IFXTriggerable
 
     protected override void OnFXEnabled(bool state)
     {
+
         foreach (Light light in lightsArray)
         {
+            light.intensity = 0.0f;
             light.enabled = state;
         }
     }

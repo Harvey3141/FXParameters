@@ -84,7 +84,7 @@ namespace FX
             {
                 if (active != value) {
                     active = value; 
-                    FXManager.Instance.OnGroupEnabled(address, value);
+                    fxManager.OnGroupEnabled(address, value);
                 }
             }
         }

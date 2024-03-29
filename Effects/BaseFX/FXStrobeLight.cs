@@ -6,7 +6,7 @@ public class FXStrobeLight : FXBaseWithEnabled, IFXTriggerable
     private Light lightComp;
     public FXScaledParameter<float> strobeFrequency = new FXScaledParameter<float>(1.0f, 0.1f, 20.0f);
     public FXScaledParameter<float> intensityOn     = new FXScaledParameter<float>(1.0f, 0.0f, 6.0f);
-    public FXScaledParameter<float> intensityOff    = new FXScaledParameter<float>(0.0f,0.0f,2.0f);
+    public float intensityOff = 0.0f;
     public FXScaledParameter<float> fadeSpeedOn     = new FXScaledParameter<float>(0.05f, 1.0f, 100.0f);
     public FXScaledParameter<float> fadeSpeedOff    = new FXScaledParameter<float>(0.05f, 1.0f, 20.0f);
 
@@ -32,7 +32,7 @@ public class FXStrobeLight : FXBaseWithEnabled, IFXTriggerable
         }
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         float fadeSpeed = isStrobeOn ? fadeSpeedOn.ScaledValue : fadeSpeedOff.ScaledValue;
 
@@ -42,7 +42,7 @@ public class FXStrobeLight : FXBaseWithEnabled, IFXTriggerable
         if (isStrobeOn && Mathf.Abs(currentIntensity - intensityOn.ScaledValue) < 0.01f)
         {
             isStrobeOn = false;
-            targetIntensity = intensityOff.Value;
+            targetIntensity = intensityOff;
         }
 
         if (strobeFrequency.ScaledValue > 0)
@@ -73,7 +73,7 @@ public class FXStrobeLight : FXBaseWithEnabled, IFXTriggerable
         else
         {
             lightComp.enabled = false;
-            currentIntensity = intensityOff.Value;
+            currentIntensity = intensityOff;
             lightComp.intensity = currentIntensity;
         }
     }

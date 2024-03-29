@@ -452,6 +452,39 @@ namespace FX
         }
 
         [System.Serializable]
+        public class FXGroupEnumData
+        {
+            public List<string> signalTypes       = new List<string>();
+            public List<string> patternTypes      = new List<string>();
+            public List<string> oscillatorTypes   = new List<string>();
+            public List<string> arpeggiatorTypes  = new List<string>();
+        }
+
+        private FXGroupEnumData GetFXGroupEnumData() {
+            FXGroupEnumData data = new FXGroupEnumData();
+
+            SignalSource s = SignalSource.Default;
+            Type tS = s.GetType();
+
+            PatternType p = PatternType.None;
+            Type tP = s.GetType();
+
+            OscillatorPattern.OscillatorType o = OscillatorPattern.OscillatorType.Sine;
+            Type tO = o.GetType();
+
+            ArpeggiatorPattern.PatternStyle a = ArpeggiatorPattern.PatternStyle.Up;
+            Type tA = a.GetType();
+
+
+            data.signalTypes = Enum.GetNames(tS).ToList();
+            data.patternTypes = Enum.GetNames(tP).ToList();
+            data.oscillatorTypes = Enum.GetNames(tO).ToList();
+            data.arpeggiatorTypes = Enum.GetNames(tA).ToList();
+            return data;
+        }
+
+
+        [System.Serializable]
         public class FXData
         {
             public List<FXParameterData<string>> stringParameters = new List<FXParameterData<string>>();
@@ -462,6 +495,7 @@ namespace FX
             public List<FXEnumParameterData> enumParameters       = new List<FXEnumParameterData>();
 
             // FXGroups 
+            public FXGroupEnumData fXGroupEnumData = new FXGroupEnumData();    
             public List<FXGroupData> fxGroupPresets               = new List<FXGroupData>();
             public List<FXMethodData> fXPresetMethods             = new List<FXMethodData>();
 
@@ -560,6 +594,8 @@ namespace FX
 
                 }
             }
+
+            preset.fXGroupEnumData = GetFXGroupEnumData();
 
             GroupFXController[] allFXGroups = GameObject.FindObjectsOfType<GroupFXController>();
             foreach (var group in allFXGroups)

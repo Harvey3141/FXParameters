@@ -46,6 +46,7 @@ namespace FX
         public List<string> availableNames = new List<string>();
     }
 
+
     [System.Serializable]
     public class FXParameter<T> : IFXParameter
     {

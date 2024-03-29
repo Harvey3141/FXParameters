@@ -5,8 +5,6 @@ using UnityEngine.Rendering.HighDefinition;
 public class FXAreaLight : FXBaseWithEnabled
 {
     private HDAdditionalLightData lightData;
-    public FXScaledParameter<float> sizeX     = new FXScaledParameter<float>(1.0f, 0.1f, 10.0f);
-    public FXScaledParameter<float> sizeY     = new FXScaledParameter<float>(1.0f, 0.1f, 10.0f);
     public FXScaledParameter<float> intensity = new FXScaledParameter<float>(1.0f, 0.0f, 100.0f);
     public FXParameter<Color> color           = new FXParameter<Color>(Color.white);
 
@@ -15,8 +13,6 @@ public class FXAreaLight : FXBaseWithEnabled
     protected override void Awake()
     {
         base.Awake();
-        sizeX.OnScaledValueChanged += SetSizeX;
-        sizeY.OnScaledValueChanged += SetSizeY;
         intensity.OnScaledValueChanged += SetIntensity;
         color.OnValueChanged += SetLightColor;
 
@@ -34,25 +30,9 @@ public class FXAreaLight : FXBaseWithEnabled
         }
     }
 
-    private void Update()
-    {
-        //lightData.intensity = intensity.Value;
-        //lightData.color = color.Value;
-    }
-
     protected override void OnFXEnabled(bool state)
     {
         lightComp.enabled = state;
-    }
-
-    void SetSizeX(float value)
-    {
-        //lightComp.areaSize = new Vector2(value, lightComp.areaSize.y);
-    }
-
-    void SetSizeY(float value)
-    {
-        //lightComp.areaSize = new Vector2(lightComp.areaSize.x, value);
     }
 
     void SetIntensity(float value)
