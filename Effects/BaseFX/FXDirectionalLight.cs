@@ -84,15 +84,17 @@ public class FXDirectionalLight : FXBaseWithEnabled, IFXTriggerable
     public void FXTrigger() {
 
 
-        int index = UnityEngine.Random.Range(0, rotationSet.Length-1);
+        int index = UnityEngine.Random.Range(0, rotationSet.Length);
 
-        Vector3 currentRotation = transform.rotation.eulerAngles;
+        Vector3 currentRotation = transform.localEulerAngles;
         currentRotation.x = rotationSet[index].x;
         currentRotation.y = rotationSet[index].y;
         currentRotation.z = rotationSet[index].z;
 
         rotationX.Value = rotationSet[index].x;
         rotationY.Value = rotationSet[index].y;
+        transform.localEulerAngles = new Vector3(rotationX.Value, rotationY.Value, 0.0f);
+
 
     }
 }

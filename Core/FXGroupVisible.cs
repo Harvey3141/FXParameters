@@ -4,6 +4,25 @@ namespace FX
 {
     public class FXGroupVisible : FXGroupObjectTrigger
     {
+
+        protected override void Start()
+        {
+            base.Start();
+            triggerPattern.OnValueChanged += OnTriggerPatternChanged;
+        }
+
+        private void OnTriggerPatternChanged (TriggerPattern pattern)
+        {
+            foreach (var obj in controlledObjects)
+            {
+                Renderer renderer = obj.GetComponent<Renderer>();
+                if (renderer != null)
+                {
+                    renderer.enabled = true;
+                }
+            }
+        }
+
         protected override void ApplyEffectToObject(int index)
         {
             if (controlledObjects[index] != null)
