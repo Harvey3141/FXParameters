@@ -14,6 +14,10 @@ public class FXPostProcessVolume : FXBase
     private Slice sliceEffect;
     private ChromaticAberration chromaticAberrationEffect;
     private LimitlessDistortion1Vol_2 limitlessDistortion1Vol_2;
+    private LimitlessDistortion10Vol_2 limitlessDistortion10Vol_2;
+    private LimitlessDistortion7Vol_2 limitlessDistortion7Vol_2;
+
+
 
     public FXParameter<bool> blockEnabled = new FXParameter<bool>(false, "", false);
     public FXScaledParameter<float> block = new FXScaledParameter<float>(0, 0, 1.0f,"",false);
@@ -37,10 +41,14 @@ public class FXPostProcessVolume : FXBase
     public FXScaledParameter<float> chromaticAberration = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
 
 
-    public FXParameter<bool> trippyEnabled         = new FXParameter<bool>(false, "", false);
-    public FXScaledParameter<float> trippyStrength = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
-    public FXScaledParameter<float> trippySpeed    = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
-    public FXScaledParameter<float> trippySize     = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
+    public FXParameter<bool> trippyEnabled = new FXParameter<bool>(false, "", false);
+    public FXScaledParameter<float> trippy = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
+
+    public FXParameter<bool> wobbleEnabled = new FXParameter<bool>(false, "", false);
+    public FXScaledParameter<float> wobble = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
+
+    public FXParameter<bool> splitRotateEnabled = new FXParameter<bool>(false, "", false);
+    public FXScaledParameter<float> splitRotate = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
 
 
     protected override void Awake()
@@ -73,6 +81,16 @@ public class FXPostProcessVolume : FXBase
             Debug.LogError("limitlessDistortion1Vol_2 effect not found in the Volume profile");
         }
 
+        if (!volume.profile.TryGet<LimitlessDistortion10Vol_2>(out limitlessDistortion10Vol_2))
+        {
+            Debug.LogError("limitlessDistortion10Vol_2 effect not found in the Volume profile");
+        }
+
+        if (!volume.profile.TryGet<LimitlessDistortion7Vol_2>(out limitlessDistortion7Vol_2))
+        {
+            Debug.LogError("limitlessDistortion7Vol_2 effect not found in the Volume profile");
+        }
+
 
         blockEnabled.OnValueChanged               += SetBlockEnabled;
         driftEnabled.OnValueChanged               += SetDriftEnbled;
@@ -82,7 +100,8 @@ public class FXPostProcessVolume : FXBase
         sliceEnabled.OnValueChanged               += SetSliceEnabled;
         chromaticAberrationEnabled.OnValueChanged += SetChromaticAberrationEnabled;
         trippyEnabled.OnValueChanged              += SetTrippyEnabled;
-
+        wobbleEnabled.OnValueChanged              += SetWobbleEnabled;
+        splitRotateEnabled.OnValueChanged         += SetSplitRotateEnabled;
 
         block.OnScaledValueChanged  += SetBlock;
         drift.OnScaledValueChanged  += SetDrift;
@@ -91,9 +110,10 @@ public class FXPostProcessVolume : FXBase
         shake.OnScaledValueChanged  += SetShake;
         slice.OnScaledValueChanged               += SetSlice;
         chromaticAberration.OnScaledValueChanged += SetChromaticAberration;
-        trippySize.OnScaledValueChanged          += SetTrippySize;
-        trippyStrength.OnScaledValueChanged      += SetTrippyStrength;
-        trippySpeed.OnScaledValueChanged         += SetTrippySpeed;    
+        trippy.OnScaledValueChanged          += SetTrippy;
+        wobble.OnScaledValueChanged              += SetWobble;
+        splitRotate.OnScaledValueChanged         += SetSplitRotate;
+
 
     }
 
@@ -213,27 +233,46 @@ public class FXPostProcessVolume : FXBase
         }
     }
 
-    private void SetTrippyStrength(float value)
-    {
-        if (limitlessDistortion1Vol_2 != null)
-        {
-            limitlessDistortion1Vol_2.strength.value = value;
-        }
-    }
 
-    private void SetTrippySpeed(float value)
-    {
-        if (limitlessDistortion1Vol_2 != null)
-        {
-            limitlessDistortion1Vol_2.speed.value = value;
-        }
-    }
-
-    private void SetTrippySize(float value)
+    private void SetTrippy(float value)
     {
         if (limitlessDistortion1Vol_2 != null)
         {
             limitlessDistortion1Vol_2.size.value = value;
+            limitlessDistortion1Vol_2.strength.value = value * 1.5f;
+
+        }
+    }
+
+    private void SetWobbleEnabled(bool value)
+    {
+        if (limitlessDistortion10Vol_2 != null)
+        {
+            limitlessDistortion10Vol_2.active = value;
+        }
+    }
+
+    private void SetWobble(float value)
+    {
+        if (limitlessDistortion10Vol_2 != null)
+        {
+            limitlessDistortion10Vol_2.fade.value = value;
+        }
+    }
+
+    private void SetSplitRotateEnabled(bool value)
+    {
+        if (limitlessDistortion7Vol_2 != null)
+        {
+            limitlessDistortion7Vol_2.active = value;
+        }
+    }
+
+    private void SetSplitRotate(float value)
+    {
+        if (limitlessDistortion7Vol_2 != null)
+        {
+            limitlessDistortion7Vol_2.speed.value = value;
         }
     }
 

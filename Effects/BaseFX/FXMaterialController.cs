@@ -219,7 +219,7 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
                         renderer.material.SetColor("_EmissiveColor", color.Value * Mathf.GammaToLinearSpace(intensity * 2.0f));
                         break;
                     case MaterialType.WIREFRAME:
-                        renderer.material.SetFloat("_Wireframe_ColorEmissionStrength", intensity);
+                        renderer.material.SetFloat("_Wireframe_ColorEmissionStrength", intensity* 2.0f);
                         break;
                     case MaterialType.DISSOLVE:
                             renderer.material.SetFloat("_EdgeColorIntensity", Mathf.GammaToLinearSpace(intensity * 2.0f));                       
