@@ -86,7 +86,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEngine.Texture3D, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
-      m_SerializableObject: '{"obj":{"fileID":11700000,"guid":"e92dfb541ce307a4e88e242f86969b03","type":2}}'
+      m_SerializableObject: 
     min: -Infinity
     max: Infinity
     enumValues: []
@@ -100,7 +100,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEngine.Texture3D, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
-      m_SerializableObject: '{"obj":{"fileID":6775435000000457311,"guid":"a3c618d3fc60b4730aeb80b167767f6c","type":3}}'
+      m_SerializableObject: 
     min: -Infinity
     max: Infinity
     enumValues: []
@@ -114,7 +114,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEngine.Texture3D, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
-      m_SerializableObject: '{"obj":{"fileID":6775435000000457311,"guid":"776229e658c80b88bb8676b1857c7621","type":3}}'
+      m_SerializableObject: 
     min: -Infinity
     max: Infinity
     enumValues: []
@@ -134,7 +134,7 @@ MonoBehaviour:
     enumValues: []
     descendantCount: 0
   m_ImportDependencies: []
-  m_GraphVersion: 8
+  m_GraphVersion: 9
   m_ResourceVersion: 1
   m_SubgraphDependencies: []
   m_CategoryPath: 
@@ -559,7 +559,7 @@ MonoBehaviour:
   stripCapacity: 16
   particlePerStripCount: 16
   needsComputeBounds: 0
-  boundsSettingMode: 1
+  boundsMode: 1
   m_Space: 0
 --- !u!114 &8926484042661614802
 MonoBehaviour:
@@ -815,8 +815,7 @@ MonoBehaviour:
       m_SerializableType: UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
   m_Direction: 0
-  m_LinkedSlots:
-  - {fileID: 8926484042661615636}
+  m_LinkedSlots: []
 --- !u!114 &8926484042661615253
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1971,8 +1970,7 @@ MonoBehaviour:
       m_SerializableType: UnityEngine.Vector4, UnityEngine.CoreModule, Version=0.0.0.0,
         Culture=neutral, PublicKeyToken=null
   m_Direction: 1
-  m_LinkedSlots:
-  - {fileID: 8926484042661615252}
+  m_LinkedSlots: []
 --- !u!114 &8926484042661615637
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3587,7 +3585,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
-  m_Parent: {fileID: 0}
+  m_Parent: {fileID: 114350483966674976}
   m_Children: []
   m_UIPosition: {x: 0, y: 0}
   m_UICollapsed: 1
@@ -3948,7 +3946,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_UIIgnoredErrors: []
-  m_Parent: {fileID: 0}
+  m_Parent: {fileID: 114350483966674976}
   m_Children: []
   m_UIPosition: {x: 0, y: 0}
   m_UICollapsed: 1
@@ -3963,7 +3961,7 @@ MonoBehaviour:
   stripCapacity: 4096
   particlePerStripCount: 32
   needsComputeBounds: 0
-  boundsSettingMode: 1
+  boundsMode: 1
   m_Space: 0
 --- !u!114 &8926484042661615751
 MonoBehaviour:

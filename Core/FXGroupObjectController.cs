@@ -10,7 +10,9 @@ namespace FX
         ODD_EVEN,
         SEQUENTIAL,
         RANDOM_SINGLE,
-        RANDOM_MULTI
+        RANDOM_MULTI,
+        ROWS,
+        COLUMNS
     }
 
     public abstract class FXGroupObjectController : FXBaseWithEnabled, IFXTriggerable

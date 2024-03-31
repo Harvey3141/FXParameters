@@ -15,11 +15,6 @@ namespace FX
         private ReorderableList affectorListReorderable;
         private SerializedProperty affectorListProperty;
 
-        float minVal = 0;
-        float minLimit = 0;
-        float maxVal = 1;
-        float maxLimit = 1;
-
         private string[] paramPopupValues = new string[] { };
         private string[] triggerParamPopupValues = new string[] { };
 

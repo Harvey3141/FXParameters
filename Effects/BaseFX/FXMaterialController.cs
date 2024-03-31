@@ -1,5 +1,6 @@
 using FX;
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public enum MaterialType
@@ -52,6 +53,8 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
 
     public FXParameter<Color> color = new FXParameter<Color>(Color.white);
 
+    public FXParameter<bool> emissiveLightsEnabled = new FXParameter<bool>(false);
+
     public FXScaledParameter<float> cutoutWidth  = new FXScaledParameter<float>(1.0f,0.0f,1.0f);
     public FXScaledParameter<float> cutoutHeight = new FXScaledParameter<float>(1.0f, 0.0f, 1.0f);
     public FXParameter<bool> cutoutInvert = new FXParameter<bool>(false);
@@ -70,6 +73,8 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
         materialType.OnValueChanged += SetMaterial;
         triggerValue.OnScaledValueChanged += SetEmissiveIntensityAll;
         color.OnValueChanged += SetColor;
+
+        emissiveLightsEnabled.OnValueChanged += SetEmissiveLightsEnabled;
 
         cutoutWidth.OnValueChanged += SetCutoutWidth;
         cutoutHeight.OnValueChanged += SetCutoutHeight;
@@ -213,7 +218,12 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
                     case MaterialType.EMISSIVE:
                         //Color emissiveColorLDR = renderer.material.GetColor("_EmissiveColorLDR");
                         //Color emissiveColor = new Color(Mathf.GammaToLinearSpace(emissiveColorLDR.r), Mathf.GammaToLinearSpace(emissiveColorLDR.g), Mathf.GammaToLinearSpace(emissiveColorLDR.b));
-                        renderer.material.SetColor("_EmissiveColor", color.Value * Mathf.GammaToLinearSpace(intensity * 2.0f));                      
+                        renderer.material.SetColor("_EmissiveColor", color.Value * Mathf.GammaToLinearSpace(intensity * 2.0f));
+                        
+                        if (obj.GetComponent<Light>() != null) {
+                            obj.GetComponent<Light>().intensity = intensity * 0.8f;
+                        }
+                        
                         break;
                     case MaterialType.CUTOUT:
                         renderer.material.SetColor("_EmissiveColor", color.Value * Mathf.GammaToLinearSpace(intensity * 2.0f));
@@ -229,6 +239,15 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
                 }
             }
         }
+    }
+
+    public void SetEmissiveLightsEnabled(bool value) {      
+        for (int i = 0; i < controlledObjects.Length; i++)
+        {
+            GameObject obj = controlledObjects[i];
+            if (obj.GetComponent<Light>() != null) obj.GetComponent<Light>().enabled = value;
+
+        }      
     }
 
     protected override void SetLerpValueToObject(int index, float value)
@@ -256,6 +275,9 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
                             //Color emissiveColorLDR = renderer.material.GetColor("_EmissiveColorLDR");
                             //Color emissiveColor = new Color(Mathf.GammaToLinearSpace(value.r), Mathf.GammaToLinearSpace(value.g), Mathf.GammaToLinearSpace(value.b));
                             renderer.material.SetColor("_EmissiveColor", value * Mathf.GammaToLinearSpace(triggerValue.ScaledValue * 2.0f));
+                            if (obj.GetComponent<Light>() != null) {
+                                obj.GetComponent<Light>().color = value;
+                            } 
                             break;
                         case MaterialType.CUTOUT:
                             renderer.material.SetColor("_EmissiveColor", value * Mathf.GammaToLinearSpace(triggerValue.ScaledValue * 2.0f));

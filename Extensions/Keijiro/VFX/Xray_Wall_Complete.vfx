@@ -3566,7 +3566,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 1
+      m_SerializableObject: 2
     m_Space: 2147483647
   m_Property:
     name: Lifetime
@@ -3628,7 +3628,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEditor.VFX.Vector, Unity.VisualEffectGraph.Editor,
           Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      m_SerializableObject: '{"vector":{"x":0.0,"y":0.0,"z":-2.0}}'
+      m_SerializableObject: '{"vector":{"x":0.0,"y":0.0,"z":-1.0}}'
     m_Space: 0
   m_Property:
     name: Velocity
@@ -4565,7 +4565,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEngine.AnimationCurve, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
-      m_SerializableObject: '{"frames":[{"time":0.0,"value":0.0,"inTangent":27.31698226928711,"outTangent":27.31698226928711,"tangentMode":0,"leftTangentMode":0,"rightTangentMode":0,"broken":false},{"time":0.10000000149011612,"value":1.0,"inTangent":0.0,"outTangent":0.0,"tangentMode":0,"leftTangentMode":0,"rightTangentMode":0,"broken":false},{"time":1.0,"value":0.0,"inTangent":-3.3548130989074709,"outTangent":-3.3548130989074709,"tangentMode":0,"leftTangentMode":0,"rightTangentMode":0,"broken":false}],"preWrapMode":8,"postWrapMode":8,"version":1}'
+      m_SerializableObject: '{"frames":[{"time":0.002902984619140625,"value":0.3675537109375,"inTangent":27.31698226928711,"outTangent":27.31698226928711,"tangentMode":0,"leftTangentMode":0,"rightTangentMode":0,"broken":false},{"time":0.01146850734949112,"value":0.9701995849609375,"inTangent":0.0,"outTangent":0.0,"tangentMode":0,"leftTangentMode":0,"rightTangentMode":0,"broken":false},{"time":0.99127197265625,"value":0.03973388671875,"inTangent":-3.3548130989074709,"outTangent":-3.3548130989074709,"tangentMode":0,"leftTangentMode":0,"rightTangentMode":0,"broken":false}],"preWrapMode":8,"postWrapMode":8,"version":1}'
     m_Space: 2147483647
   m_Property:
     name: Size
