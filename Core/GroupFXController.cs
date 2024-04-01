@@ -64,6 +64,9 @@ namespace FX
         public List<string> fxTriggerAddresses = new List<string>();
 
         public GroupFXController.SignalSource signalSource = GroupFXController.SignalSource.Default;
+        public float valueAtZero = 0.0f;
+        public float valueAtOne = 1.0f;
+
         public AudioFrequency audioFrequency;
 
         public PatternType patternType;
@@ -346,6 +349,8 @@ namespace FX
             Label = data.label;  
             isPinned = data.isPinned;
 
+            value.ValueAtZero = data.valueAtZero; 
+            value.ValueAtOne = data.valueAtOne;
 
             signalSource       = data.signalSource;
 
@@ -387,6 +392,9 @@ namespace FX
             data.label                  = label;
             data.fxParameterControllers = FormattedFxParameterControllers;
             data.fxTriggerAddresses     = FormattedFXTriggerAddresses;
+            data.valueAtZero            = value.ValueAtZero;
+            data.valueAtOne             = value.ValueAtOne;
+
             data.signalSource           = signalSource;
 
             switch (signalSource)

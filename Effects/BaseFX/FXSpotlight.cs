@@ -1,4 +1,5 @@
 using FX;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 
@@ -30,25 +31,14 @@ public class FXSpotlight : FXBaseWithEnabled
         lightData = gameObject.GetComponent<HDAdditionalLightData>();
     }
 
-
+   
     private void Update()
     {
-        lightData.color = color.Value;
+
     }
     protected override void OnFXEnabled(bool state)
     {
-        if (state)
-        {
-            lightComp.enabled = true;
-            SetIntensity(intensity.ScaledValue);
-            SetSpotAngle(spotAngle.ScaledValue);
-            SetLightColour(color.Value);
-
-        }
-        else if (!state)
-        {
-            lightComp.enabled = false;
-        }
+        lightComp.enabled = state;
     }
 
     void SetIntensity(float value)
@@ -62,21 +52,22 @@ public class FXSpotlight : FXBaseWithEnabled
 
     }
 
+    void SetLightColour(Color value)
+    {
+        lightComp.color = value;
+    }
+
+    
+
     void SetLightHue(float value)
     {
         value = Mathf.Clamp(value, 0.0f, 1.0f);
         HSBColor tmpCol = new HSBColor(color.Value);
         tmpCol.h = value;
         tmpCol.s = value == 0 ? 0 : 1;
-        SetLightColour(tmpCol.ToColor());
+        color.Value = tmpCol.ToColor();
     }
 
-
-    void SetLightColour(Color colour)
-    {
-        color.Value = colour;
-        lightData.color = colour;
-    }
 
 
 }

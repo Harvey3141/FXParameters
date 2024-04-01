@@ -48,10 +48,13 @@ namespace FX.Patterns {
 
             if (_previousPlayhead > _phase)
             {
-                foreach (float key in triggers.Keys.ToList())
-                {
-                    triggers[key] = true;
+                if (triggers != null) {
+                    foreach (float key in triggers.Keys.ToList())
+                    {
+                        triggers[key] = true;
+                    }
                 }
+
             }
             _previousPlayhead = _phase;
 

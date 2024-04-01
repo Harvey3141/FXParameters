@@ -55,34 +55,48 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
 
     public FXParameter<bool> emissiveLightsEnabled = new FXParameter<bool>(false);
 
-    public FXScaledParameter<float> cutoutWidth  = new FXScaledParameter<float>(1.0f,0.0f,1.0f);
-    public FXScaledParameter<float> cutoutHeight = new FXScaledParameter<float>(1.0f, 0.0f, 1.0f);
-    public FXParameter<bool> cutoutInvert = new FXParameter<bool>(false);
+    public FXScaledParameter<float> cutoutWidth    = new FXScaledParameter<float>(1.0f,0.0f,1.0f);
+    public FXScaledParameter<float> cutoutHeight   = new FXScaledParameter<float>(1.0f, 0.0f, 1.0f);
+    public FXParameter<bool> cutoutInvert          = new FXParameter<bool>(false);
 
 
     public FXScaledParameter<float> dissolveEdgeWidth = new FXScaledParameter<float>(0.0f, -12.0f, 0.0f);
     public FXScaledParameter<float> dissolveOffset    = new FXScaledParameter<float>(0.0f, 0.0f, 1.0f);
-    public FXParameter<DissolveType> dissolveType = new FXParameter<DissolveType>(DissolveType.ONE);
+    public FXParameter<DissolveType> dissolveType     = new FXParameter<DissolveType>(DissolveType.ONE);
 
     public FXParameter<WireframType> wireframeType = new FXParameter<WireframType>(WireframType.LIT);
+
+    private Light[] lightComponents;
+    private Renderer[] rendererComponents;
+
 
 
     protected override void Awake()
     {
+        lightComponents    = new Light[controlledObjects.Length];
+        rendererComponents = new Renderer[controlledObjects.Length];  
+        for (int i                = 0; i < controlledObjects.Length; i++) {            
+            var lightComponent    = controlledObjects[i].GetComponent<Light>();
+            var rendererComponent = controlledObjects[i].GetComponent<Renderer>();
+
+            lightComponents[i]    = lightComponent;
+            rendererComponents[i] = rendererComponent;         
+        }
+
         base.Awake();
+
         materialType.OnValueChanged += SetMaterial;
         triggerValue.OnScaledValueChanged += SetEmissiveIntensityAll;
         color.OnValueChanged += SetColor;
 
         emissiveLightsEnabled.OnValueChanged += SetEmissiveLightsEnabled;
 
-        cutoutWidth.OnValueChanged += SetCutoutWidth;
+        cutoutWidth.OnValueChanged  += SetCutoutWidth;
         cutoutHeight.OnValueChanged += SetCutoutHeight;
         cutoutInvert.OnValueChanged += SetCutoutInvert;
 
-
         dissolveEdgeWidth.OnScaledValueChanged += SetDissolveEdgeWidth;
-        dissolveOffset.OnScaledValueChanged += SetDissolveOffset;
+        dissolveOffset.OnScaledValueChanged    += SetDissolveOffset;
 
         wireframeType.OnValueChanged += SetWireframeType; 
     }
@@ -135,16 +149,12 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
     private bool ApplyMaterial(Material material)
     {
         if (material == null) return false;
-        foreach (var obj in controlledObjects)
+        foreach (var r in rendererComponents)
         {
-            if (obj != null)
+            if (r != null)
             {
-                Renderer renderer = obj.GetComponent<Renderer>();
-                if (renderer != null)
-                {
-                    Material uniqueMaterial = new Material(material);
-                    renderer.material = uniqueMaterial;
-                }
+                Material uniqueMaterial = new Material(material);
+                r.material = uniqueMaterial;            
             }
         }
         return true;
@@ -207,47 +217,40 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
 
     void SetEmissiveIntensityAtIndex(int index, float intensity)
     {
-        GameObject obj = controlledObjects[index];
-        if (obj != null)
+        var renderer = rendererComponents[index];
+        if (renderer != null)
         {
-            Renderer renderer = obj.GetComponent<Renderer>();
-            if (renderer != null)
+            switch (materialType.Value)
             {
-                switch (materialType.Value)
-                {
-                    case MaterialType.EMISSIVE:
-                        //Color emissiveColorLDR = renderer.material.GetColor("_EmissiveColorLDR");
-                        //Color emissiveColor = new Color(Mathf.GammaToLinearSpace(emissiveColorLDR.r), Mathf.GammaToLinearSpace(emissiveColorLDR.g), Mathf.GammaToLinearSpace(emissiveColorLDR.b));
-                        renderer.material.SetColor("_EmissiveColor", color.Value * Mathf.GammaToLinearSpace(intensity * 2.0f));
-                        
-                        if (obj.GetComponent<Light>() != null) {
-                            obj.GetComponent<Light>().intensity = intensity * 0.8f;
-                        }
-                        
-                        break;
-                    case MaterialType.CUTOUT:
-                        renderer.material.SetColor("_EmissiveColor", color.Value * Mathf.GammaToLinearSpace(intensity * 2.0f));
-                        break;
-                    case MaterialType.WIREFRAME:
-                        renderer.material.SetFloat("_Wireframe_ColorEmissionStrength", intensity* 2.0f);
-                        break;
-                    case MaterialType.DISSOLVE:
-                            renderer.material.SetFloat("_EdgeColorIntensity", Mathf.GammaToLinearSpace(intensity * 2.0f));                       
-                        break;
-                    default:
-                        break;
-                }
+                case MaterialType.EMISSIVE:
+                    //Color emissiveColorLDR = renderer.material.GetColor("_EmissiveColorLDR");
+                    //Color emissiveColor = new Color(Mathf.GammaToLinearSpace(emissiveColorLDR.r), Mathf.GammaToLinearSpace(emissiveColorLDR.g), Mathf.GammaToLinearSpace(emissiveColorLDR.b));
+                    renderer.material.SetColor("_EmissiveColor", color.Value * Mathf.GammaToLinearSpace(intensity * 2.0f));
+                    if (lightComponents[index] != null) lightComponents[index].intensity = intensity * 0.8f;
+                    break;
+                case MaterialType.CUTOUT:
+                    renderer.material.SetColor("_EmissiveColor", color.Value * Mathf.GammaToLinearSpace(intensity * 2.0f));
+                    break;
+                case MaterialType.WIREFRAME:
+                    renderer.material.SetFloat("_Wireframe_ColorEmissionStrength", intensity* 2.0f);
+                    break;
+                case MaterialType.DISSOLVE:
+                        renderer.material.SetFloat("_EdgeColorIntensity", Mathf.GammaToLinearSpace(intensity * 2.0f));                       
+                    break;
+                default:
+                    break;
             }
-        }
+        }       
     }
 
-    public void SetEmissiveLightsEnabled(bool value) {      
-        for (int i = 0; i < controlledObjects.Length; i++)
+    public void SetEmissiveLightsEnabled(bool value) {
+        foreach (var lightComponent in lightComponents)
         {
-            GameObject obj = controlledObjects[i];
-            if (obj.GetComponent<Light>() != null) obj.GetComponent<Light>().enabled = value;
-
-        }      
+            if (lightComponent != null)
+            {
+                lightComponent.enabled = value;
+            }
+        }
     }
 
     protected override void SetLerpValueToObject(int index, float value)
@@ -262,87 +265,72 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
 
     void SetColor(Color value)
     {
-        for (int i = 0; i < controlledObjects.Length; i++)
+        for (int i = 0; i < rendererComponents.Length; i++)
         {
-            GameObject obj = controlledObjects[i];
-            if (obj != null)
+            var renderer = rendererComponents[i];
+            if (renderer != null)
             {
-                Renderer renderer = obj.GetComponent<Renderer>();
-                if (renderer != null)
-                {
-                    switch (materialType.Value) {
-                        case MaterialType.EMISSIVE:
-                            //Color emissiveColorLDR = renderer.material.GetColor("_EmissiveColorLDR");
-                            //Color emissiveColor = new Color(Mathf.GammaToLinearSpace(value.r), Mathf.GammaToLinearSpace(value.g), Mathf.GammaToLinearSpace(value.b));
-                            renderer.material.SetColor("_EmissiveColor", value * Mathf.GammaToLinearSpace(triggerValue.ScaledValue * 2.0f));
-                            if (obj.GetComponent<Light>() != null) {
-                                obj.GetComponent<Light>().color = value;
-                            } 
-                            break;
-                        case MaterialType.CUTOUT:
-                            renderer.material.SetColor("_EmissiveColor", value * Mathf.GammaToLinearSpace(triggerValue.ScaledValue * 2.0f));
-                            break;
-                        case MaterialType.WIREFRAME:
-                            renderer.material.SetColor("_Wireframe_Color", value);
-                            break;
-                        case MaterialType.DISSOLVE:
-                            renderer.material.SetColor("_EdgeColor", value * Mathf.GammaToLinearSpace(triggerValue.ScaledValue*2.0f));
-                            break;
+                switch (materialType.Value) {
+                    case MaterialType.EMISSIVE:
+                        //Color emissiveColorLDR = renderer.material.GetColor("_EmissiveColorLDR");
+                        //Color emissiveColor = new Color(Mathf.GammaToLinearSpace(value.r), Mathf.GammaToLinearSpace(value.g), Mathf.GammaToLinearSpace(value.b));
+                        renderer.material.SetColor("_EmissiveColor", value * Mathf.GammaToLinearSpace(triggerValue.ScaledValue * 2.0f));
+                        if (lightComponents[i] != null) lightComponents[i].color = value;
 
-                    }                 
-                }
+                        break;
+                    case MaterialType.CUTOUT:
+                        renderer.material.SetColor("_EmissiveColor", value * Mathf.GammaToLinearSpace(triggerValue.ScaledValue * 2.0f));
+                        break;
+                    case MaterialType.WIREFRAME:
+                        renderer.material.SetColor("_Wireframe_Color", value);
+                        break;
+                    case MaterialType.DISSOLVE:
+                        renderer.material.SetColor("_EdgeColor", value * Mathf.GammaToLinearSpace(triggerValue.ScaledValue*2.0f));
+                        break;
+
+                }                 
             }
+           
         }
     }
 
 
     void SetPropertyFloat(string name, float value)
     {
-        for (int i = 0; i < controlledObjects.Length; i++)
+        for (int i = 0; i < rendererComponents.Length; i++)
         {
-            GameObject obj = controlledObjects[i];
-            if (obj != null)
+            var renderer = rendererComponents[i];
+            if (renderer != null)
             {
-                Renderer renderer = obj.GetComponent<Renderer>();
-                if (renderer != null)
-                {
-                    renderer.material.SetFloat(name, value);
+                renderer.material.SetFloat(name, value);
 
-                }
             }
         }
     }
 
     void SetPropertyVector2(string name, Vector2 value)
     {
-        for (int i = 0; i < controlledObjects.Length; i++)
+
+        for (int i = 0; i < rendererComponents.Length; i++)
         {
-            GameObject obj = controlledObjects[i];
-            if (obj != null)
+            var renderer = rendererComponents[i];
+            if (renderer != null)
             {
-                Renderer renderer = obj.GetComponent<Renderer>();
-                if (renderer != null)
-                {
-                    renderer.material.SetVector(name, value);                    
-                }
+                renderer.material.SetVector(name, value);
             }
         }
     }
 
     void SetDissolvePropertyVector(string name, Vector4 value)
     {
-        for (int i = 0; i < controlledObjects.Length; i++)
+        for (int i = 0; i < rendererComponents.Length; i++)
         {
-            GameObject obj = controlledObjects[i];
-            if (obj != null)
+            var renderer = rendererComponents[i];
+            if (renderer != null)
             {
-                Renderer renderer = obj.GetComponent<Renderer>();
-                if (renderer != null)
+                if (Disolve != null)
                 {
-                    if (Disolve != null)
-                    {
-                        renderer.material.SetVector(name, value);
-                    }
+                    renderer.material.SetVector(name, value);
                 }
             }
         }
@@ -351,21 +339,18 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
     void SetDissolvePropertyColor(string name, Color value)
     {
         if (materialType.Value != MaterialType.DISSOLVE) return;
+        //renderer.material.SetColor(name, value);
+        // Color emissiveColorLDR = renderer.material.GetColor(name);
+        // emissiveColor = new Color(Mathf.GammaToLinearSpace(emissiveColorLDR.r), Mathf.GammaToLinearSpace(emissiveColorLDR.g), Mathf.GammaToLinearSpace(emissiveColorLDR.b));
 
-        for (int i = 0; i < controlledObjects.Length; i++)
+        for (int i = 0; i < rendererComponents.Length; i++)
         {
-            GameObject obj = controlledObjects[i];
-            if (obj != null)
+            var renderer = rendererComponents[i];
+            if (renderer != null)
             {
-                Renderer renderer = obj.GetComponent<Renderer>();
-                if (renderer != null)
+                if (Disolve != null)
                 {
-
-                    //renderer.material.SetColor(name, value);
-                    // Color emissiveColorLDR = renderer.material.GetColor(name);
-                    // emissiveColor = new Color(Mathf.GammaToLinearSpace(emissiveColorLDR.r), Mathf.GammaToLinearSpace(emissiveColorLDR.g), Mathf.GammaToLinearSpace(emissiveColorLDR.b));
                     renderer.material.SetColor(name, value * Mathf.GammaToLinearSpace(6));
-                    
                 }
             }
         }
