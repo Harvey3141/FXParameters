@@ -626,6 +626,33 @@ namespace FX
                 string json = File.ReadAllText(filePath);
                 FXData preset = JsonUtility.FromJson<FXData>(json);
 
+                Dictionary<string, FXGroupData> fxGroupPresets = preset.fxGroupPresets.ToDictionary(p => p.address, p => p);
+
+                GroupFXController[] allFXGroups = GameObject.FindObjectsOfType<GroupFXController>();
+
+                foreach (var g in allFXGroups)
+                {
+                    if (!g.isPinned) RemoveGroup(g.address);
+                }
+
+                foreach (var groupPreset in fxGroupPresets)
+                {
+                    var existingGroup = allFXGroups.FirstOrDefault(g => g.address == groupPreset.Key);
+
+                    //CleanInvalidFXAddresses(groupPreset.Value.fxAddresses);
+
+                    if (existingGroup != null)
+                    {
+                        // If it exists, load the preset into the existing group, these will be the pinned groups                     
+                        existingGroup.SetData(groupPreset.Value);
+                    }
+                    else
+                    {
+                        // If it doesn't exist, create a new GroupFXController with the preset
+                        CreateGroup(groupPreset.Value);
+                    }
+                }
+
                 foreach (var param in preset.stringParameters)
                 {
                     SetFX(param.key, param.value);
@@ -674,31 +701,7 @@ namespace FX
                     }
                 }
 
-                Dictionary<string, FXGroupData> fxGroupPresets = preset.fxGroupPresets.ToDictionary(p => p.address, p => p);
 
-                GroupFXController[] allFXGroups = GameObject.FindObjectsOfType<GroupFXController>();
-
-                foreach (var g in allFXGroups) {
-                    if (!g.isPinned) RemoveGroup(g.address);
-                }
-
-                foreach (var groupPreset in fxGroupPresets)
-                {
-                    var existingGroup = allFXGroups.FirstOrDefault(g => g.address == groupPreset.Key);
-
-                    //CleanInvalidFXAddresses(groupPreset.Value.fxAddresses);
-
-                    if (existingGroup != null)
-                    {
-                        // If it exists, load the preset into the existing group, these will be the pinned groups                     
-                        existingGroup.SetData(groupPreset.Value);
-                    }
-                    else
-                    {
-                        // If it doesn't exist, create a new GroupFXController with the preset
-                        CreateGroup(groupPreset.Value);
-                    }
-                }
 
                 if (onPresetLoaded != null) onPresetLoaded.Invoke(presetName);
 
