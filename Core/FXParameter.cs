@@ -253,7 +253,10 @@ namespace FX
             get { return base.Value; }
             set
             {
-
+                if (base.Value.Equals(value))
+                {
+                    return;
+                }
                 base.Value = value;
                 UpdateScaledValue();
                 OnScaledValueChanged?.Invoke(scaledValue_);
