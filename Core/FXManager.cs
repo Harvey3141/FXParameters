@@ -377,6 +377,9 @@ namespace FX
                     }
                     else if (parameterType.IsEnum)
                     {
+                        if (arg is float f) {
+                            arg = (int) f;
+                        }
                         if (arg is int enumInt)
                         {
                             if (Enum.IsDefined(parameterType, enumInt))
