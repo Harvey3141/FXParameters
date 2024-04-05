@@ -24,6 +24,8 @@ namespace FX
         public string remoteHost;
         public int remotePort;
         public bool sendParamChanges;
+        public bool sendColoursAsJson;
+
     }
 
     [System.Serializable]
@@ -40,14 +42,16 @@ namespace FX
         public Queue<OSCMessage> MessageQueue { get; private set; }
         public OSCTransmitter Transmitter { get; private set; }
 
-        public bool SendParamChanges;
+        public bool SendParamChanges = true;
+        public bool SendColoursAsJson = false;
 
-        public OSCNode(OSCReceiver receiver, OSCTransmitter transmitter, bool sendParamChanges)
+        public OSCNode(OSCReceiver receiver, OSCTransmitter transmitter, bool sendParamChanges, bool sendColoursAsJson)
         {
-            Receiver = receiver;
-            MessageQueue = new Queue<OSCMessage>();
-            Transmitter = transmitter;
-            SendParamChanges = sendParamChanges;
+            Receiver          = receiver;
+            MessageQueue      = new Queue<OSCMessage>();
+            Transmitter       = transmitter;
+            SendParamChanges  = sendParamChanges;
+            SendColoursAsJson = sendColoursAsJson;
         }
     }
 
@@ -101,7 +105,7 @@ namespace FX
                     transmitter.RemoteHost = nodeData.remoteHost;
                     transmitter.RemotePort = nodeData.remotePort;
 
-                    OSCNode node = new OSCNode(receiver, transmitter, nodeData.sendParamChanges);
+                    OSCNode node = new OSCNode(receiver, transmitter, nodeData.sendParamChanges, nodeData.sendColoursAsJson);
                     oscNodes.Add(node);
                 }
             }
@@ -529,7 +533,7 @@ namespace FX
         void SendOSCMessage(string address, OSCNode node, object value = null)
         {
             var message = new OSCMessage(address);
-            OSCValue oscValue = CreateOSCValueFromObject(value);
+            OSCValue oscValue = CreateOSCValueFromObject(value, node.SendColoursAsJson);
 
             if (oscValue != null)
             {
@@ -547,7 +551,7 @@ namespace FX
         {
             var message = new OSCMessage(address);
             message.AddValue(OSCValue.String(value1S));
-            OSCValue oscValue2 = CreateOSCValueFromObject(value2);
+            OSCValue oscValue2 = CreateOSCValueFromObject(value2, node.SendColoursAsJson);
 
             if (oscValue2 == null)
             {
@@ -559,18 +563,31 @@ namespace FX
         }
 
 
-        OSCValue CreateOSCValueFromObject(object value)
+        OSCValue CreateOSCValueFromObject(object value, bool sendColoursAsJson)
         {
             return value switch
             {
-                float floatValue => OSCValue.Float(floatValue),
-                int intValue => OSCValue.Int(intValue),
-                string stringValue => OSCValue.String(stringValue),
-                bool boolValue => OSCValue.Bool(boolValue),
-                Enum enumValue => OSCValue.Int(Convert.ToInt32(enumValue)),
-                Color colorValue => OSCValue.Color(colorValue),
-                _ => null
+                float floatValue                        => OSCValue.Float(floatValue),
+                int intValue                            => OSCValue.Int(intValue),
+                string stringValue                      => OSCValue.String(stringValue),
+                bool boolValue                          => OSCValue.Bool(boolValue),
+                Enum enumValue                          => OSCValue.Int(Convert.ToInt32(enumValue)),
+                Color colorValue when sendColoursAsJson => OSCValue.String(ColorToJson(colorValue)),
+                Color colorValue                        => OSCValue.Color(colorValue),
+                _                                       => null
             };
+        }
+
+        private string ColorToJson(Color color)
+        {
+            ColorData colorData = new ColorData
+            {
+                r = Mathf.RoundToInt(color.r * 255),
+                g = Mathf.RoundToInt(color.g * 255),
+                b = Mathf.RoundToInt(color.b * 255),
+                a = color.a
+            };
+            return JsonUtility.ToJson(colorData);
         }
 
         private bool TryGetColorFromJsonString(string jsonString, out Color color)
