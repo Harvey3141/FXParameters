@@ -161,7 +161,15 @@ namespace FX
                             args[argsIndex] = message.Values[i].IntValue;
                             break;
                         case OSCValueType.String:
-                            args[argsIndex] = message.Values[i].StringValue;
+                            string stringValue = message.Values[i].StringValue;
+                            if (TryGetColorFromJsonString(stringValue, out Color colorValue))
+                            {
+                                args[argsIndex] = colorValue; 
+                            }
+                            else
+                            {
+                                args[argsIndex] = stringValue;
+                            }
                             break;
                         case OSCValueType.Color:
                             args[argsIndex] = message.Values[i].ColorValue;
@@ -564,6 +572,36 @@ namespace FX
                 _ => null
             };
         }
+
+        private bool TryGetColorFromJsonString(string jsonString, out Color color)
+        {
+            color = default;
+            try
+            {
+                ColorData colorData = JsonUtility.FromJson<ColorData>(jsonString);
+                if (colorData != null && colorData.r >= 0 && colorData.g >= 0 && colorData.b >= 0)
+                {
+                    float alpha = colorData.a >= 0 ? colorData.a : 1f; 
+                    color = new Color(colorData.r / 255f, colorData.g / 255f, colorData.b / 255f, alpha);
+                    return true;
+                }
+            }
+            catch
+            {
+               
+            }
+            return false;
+        }
+
+        [System.Serializable]
+        private class ColorData
+        {
+            public float r;
+            public float g;
+            public float b;
+            public float a = 1;
+        }
+
 
     }
 }
