@@ -93,7 +93,8 @@ namespace FX
                     EditorGUI.PropertyField(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), item.FindPropertyRelative("affectorType"), new GUIContent("Affector Function"));
                     rect.y += EditorGUIUtility.singleLineHeight + 2;
                     EditorGUI.PropertyField(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), item.FindPropertyRelative("invert"), new GUIContent("Invert"));
-
+                    rect.y += EditorGUIUtility.singleLineHeight + 2;
+                    EditorGUI.PropertyField(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), item.FindPropertyRelative("enabled"), new GUIContent("Enabled"));
                     if (EditorGUI.EndChangeCheck()) 
                     {
                                          
@@ -101,20 +102,36 @@ namespace FX
                 },
                 drawHeaderCallback = (Rect rect) =>
                 {
-                    EditorGUI.LabelField(rect, "Affectors");
+                    EditorGUI.LabelField(rect, "FX Controllers");
                 },
                 elementHeightCallback = (int index) =>
                 {
-                    return EditorGUIUtility.singleLineHeight * 3 + 6; 
+                   // return EditorGUIUtility.singleLineHeight * 3 + 6;
+                    return EditorGUIUtility.singleLineHeight * 4 + 2 * 3; 
+
                 }
             };
 
             affectorListReorderable.onRemoveCallback = OnParamRemoved;
+            affectorListReorderable.onAddCallback = OnParamAdded;
 
             reorderableListTrigger.drawElementCallback = DrawListItems2;
             reorderableListTrigger.elementHeightCallback = (index) => EditorGUIUtility.singleLineHeight * 1.5f;
             reorderableListTrigger.drawHeaderCallback = DrawHeader2;
         }
+
+
+        private void OnParamAdded(ReorderableList l)
+        {
+            var groupFXController = target as GroupFXController;
+            groupFXController.AddFXParam("/");
+            serializedObject.Update();
+            int newIndex = groupFXController.fxParameterControllers.Count - 1;
+            l.index = newIndex;
+            serializedObject.ApplyModifiedProperties();
+
+        }
+
 
         private void OnParamRemoved(ReorderableList l)
         {
@@ -154,7 +171,7 @@ namespace FX
 
         private void DrawHeader2(Rect rect)
         {
-            EditorGUI.LabelField(rect, "Triggers");
+            EditorGUI.LabelField(rect, "FX Triggers");
         }
 
 

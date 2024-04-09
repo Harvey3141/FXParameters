@@ -18,16 +18,15 @@ namespace FX
             }
         }
 
-        public AffectorFunction affectorType = AffectorFunction.Linear;
+        public AffectorFunction affectorType = AffectorFunction.Randomise;
         public bool invert = false;
+        public bool enabled = true;
 
-        FXManager fxManager;
-
-        public FXParameterController(string address, AffectorFunction affector, bool invert) {
-            fxManager = FXManager.Instance;
+        public FXParameterController(string address, AffectorFunction affector, bool invert, bool enabled = true) {
             key = address.Substring(1);
+            this.enabled      = enabled;
             this.affectorType = affector;
-            this.invert = invert;
+            this.invert       = invert;
         }
        
         public float GetAffectedValue(float valueIn) {
@@ -49,8 +48,6 @@ namespace FX
             }
             return affectedValue;
         }
-
-
     }
 
     [System.Serializable]
@@ -241,7 +238,9 @@ namespace FX
             {
                 foreach (var a in fxParameterControllers)
                 {
-                    fxManager.SetFX(a.FxAddress, a.GetAffectedValue(value.ScaledValue));
+                    if (a.enabled) {
+                        fxManager.SetFX(a.FxAddress, a.GetAffectedValue(value.ScaledValue));
+                    }                   
                 }
             }
         }
