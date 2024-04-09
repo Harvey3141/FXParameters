@@ -83,7 +83,7 @@ Material:
     - _DstBlend: 10
     - _ENUM: 1
     - _EmissionEnabled: 1
-    - _EnableBlendModePreserveSpecularLighting: 1
+    - _EnableBlendModePreserveSpecularLighting: 0
     - _EnableFogOnTransparent: 1
     - _Height: 0
     - _OpaqueCullMode: 2
@@ -117,6 +117,7 @@ Material:
     - _TransparentZWrite: 0
     - _UseShadowThreshold: 0
     - _Value: 0
+    - _Width: 1
     - _ZTestDepthEqualForOpaque: 4
     - _ZTestGBuffer: 4
     - _ZTestTransparent: 4

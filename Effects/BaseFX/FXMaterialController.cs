@@ -55,10 +55,10 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
 
     public FXParameter<bool> emissiveLightsEnabled = new FXParameter<bool>(false);
 
-    public FXScaledParameter<float> cutoutWidth    = new FXScaledParameter<float>(1.0f,0.0f,1.0f);
-    public FXScaledParameter<float> cutoutHeight   = new FXScaledParameter<float>(1.0f, 0.0f, 1.0f);
-    public FXParameter<bool> cutoutInvert          = new FXParameter<bool>(false);
-
+    public FXScaledParameter<float> cutoutSize     = new FXScaledParameter<float>(1.0f,0.0f,1.0f);
+    public FXScaledParameter<float> cutoutLines    = new FXScaledParameter<float>(1.0f, 0.0f, 1.0f);
+    public FXScaledParameter<float> cutoutOffset   = new FXScaledParameter<float>(1.0f, 0.0f, 1.0f);
+    public FXScaledParameter<float> cutoutRotation = new FXScaledParameter<float>(1.0f, 0.0f, 90.0f);
 
     public FXScaledParameter<float> dissolveEdgeWidth = new FXScaledParameter<float>(0.0f, -12.0f, 0.0f);
     public FXScaledParameter<float> dissolveOffset    = new FXScaledParameter<float>(0.0f, 0.0f, 1.0f);
@@ -91,9 +91,11 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
 
         emissiveLightsEnabled.OnValueChanged += SetEmissiveLightsEnabled;
 
-        cutoutWidth.OnValueChanged  += SetCutoutWidth;
-        cutoutHeight.OnValueChanged += SetCutoutHeight;
-        cutoutInvert.OnValueChanged += SetCutoutInvert;
+        cutoutSize.OnScaledValueChanged   += SetCutoutSize;
+        cutoutLines.OnScaledValueChanged  += SetCutoutLines;
+        cutoutOffset.OnScaledValueChanged += SetCutoutOffset;
+        cutoutRotation.OnScaledValueChanged += SetCutoutRotation;
+
 
         dissolveEdgeWidth.OnScaledValueChanged += SetDissolveEdgeWidth;
         dissolveOffset.OnScaledValueChanged    += SetDissolveOffset;
@@ -225,7 +227,7 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
                 case MaterialType.EMISSIVE:
                     //Color emissiveColorLDR = renderer.material.GetColor("_EmissiveColorLDR");
                     //Color emissiveColor = new Color(Mathf.GammaToLinearSpace(emissiveColorLDR.r), Mathf.GammaToLinearSpace(emissiveColorLDR.g), Mathf.GammaToLinearSpace(emissiveColorLDR.b));
-                    renderer.material.SetColor("_EmissiveColor", color.Value * Mathf.GammaToLinearSpace(intensity * 2.0f));
+                    renderer.material.SetColor("_EmissiveColor", color.Value * Mathf.GammaToLinearSpace(intensity * 5.0f));
                     if (lightComponents[index] != null) lightComponents[index].intensity = intensity * 0.8f;
                     break;
                 case MaterialType.CUTOUT:
@@ -400,20 +402,25 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
        
     }
 
-    public void SetCutoutWidth(float value)
+    public void SetCutoutSize(float value)
     {
-        if (materialType.Value == MaterialType.CUTOUT) SetPropertyFloat("_Width", value);
+        if (materialType.Value == MaterialType.CUTOUT) SetPropertyFloat("_Size", value);
     }
 
 
-    public void SetCutoutHeight(float value)
+    public void SetCutoutLines(float value)
     {
-        if (materialType.Value == MaterialType.CUTOUT) SetPropertyFloat("_Height", value);
+        if (materialType.Value == MaterialType.CUTOUT) SetPropertyFloat("_Lines", value);
     }
 
-    public void SetCutoutInvert(bool value)
+    public void SetCutoutRotation(float value)
     {
-        if (materialType.Value == MaterialType.CUTOUT) SetPropertyFloat("_Invert", value ? 1.0f : 0.0f);
+        if (materialType.Value == MaterialType.CUTOUT) SetPropertyFloat("_Rotation", value);
+    }
+
+    public void SetCutoutOffset(float value)
+    {
+        if (materialType.Value == MaterialType.CUTOUT) SetPropertyFloat("_Offset", value);
     }
 
     public void SetWireframeType(WireframType type)

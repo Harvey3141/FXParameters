@@ -82,7 +82,7 @@ Material:
     - _DoubleSidedNormalMode: 2
     - _DstBlend: 10
     - _ENUM: 0
-    - _EnableBlendModePreserveSpecularLighting: 1
+    - _EnableBlendModePreserveSpecularLighting: 0
     - _EnableFogOnTransparent: 1
     - _Height: 1
     - _OpaqueCullMode: 2
