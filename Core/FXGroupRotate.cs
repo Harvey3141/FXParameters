@@ -29,6 +29,8 @@ namespace FX
 
         int directionMultiplier = -1;
 
+        public float rotationDegrees = 90.0f;
+
         protected override void Start()
         {
             base.Start();
@@ -94,7 +96,7 @@ namespace FX
         {
             Quaternion initialRotation = objectTransform.localRotation;
             Vector3 rotationAxisVector = DetermineRotationAxis();
-            Quaternion finalRotation = initialRotation * Quaternion.Euler(rotationAxisVector * 90 * directionMultiplier);
+            Quaternion finalRotation = initialRotation * Quaternion.Euler(rotationAxisVector * rotationDegrees * directionMultiplier);
 
             float elapsedTime = 0;
             while (elapsedTime < duration)
