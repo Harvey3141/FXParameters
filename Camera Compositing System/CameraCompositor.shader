@@ -67,8 +67,8 @@ Shader "Hidden/FX/CameraCompositor"
         float3 colorKey = SAMPLE_TEXTURE2D(_TextureKey, sampler_TextureKey, input.texcoord).xyz;
 
         float threshold = 0.01; 
-        bool isKeyBlack = (colorKey.r == 1.0) && (colorKey.g == 0.0) && (colorKey.b == 1.0);
-        float3 outputColor = isKeyBlack ? colorA : colorB;
+        bool isKeyColourPink = (colorKey.r == 1.0) && (colorKey.g == 0.0) && (colorKey.b == 1.0);
+        float3 outputColor = isKeyColourPink ? colorA : colorB;
 
         outputColor *= _Brightness;
 
