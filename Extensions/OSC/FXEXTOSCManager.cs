@@ -13,6 +13,7 @@ using System.Collections;
 using System.IO;
 using System;
 using FX.Patterns;
+using Newtonsoft.Json;
 
 namespace FX
 {
@@ -240,8 +241,7 @@ namespace FX
             else if (address.ToUpper() == "/SCENELIST/GET")
             {
 
-                SceneList sl = new SceneList { sceneList = fxSceneManager.presets };
-                string json = JsonUtility.ToJson(sl);
+                string json = JsonConvert.SerializeObject(fxSceneManager.presets);
 
                 OSCNode matchingNode = oscNodes.Find(node => node.Receiver.LocalPort == port);
                 if (matchingNode != null)
@@ -307,9 +307,7 @@ namespace FX
             }
             else if (address.ToUpper() == "/GROUPLIST/GET")
             {
-
-                GroupList gl = new GroupList { groupList = fXManager.GetGroupList() };
-                string json = JsonUtility.ToJson(gl);
+                string json = JsonConvert.SerializeObject(fXManager.GetGroupList());
 
                 OSCNode matchingNode = oscNodes.Find(node => node.Receiver.LocalPort == port);
                 if (matchingNode != null)
@@ -553,8 +551,7 @@ namespace FX
         void OnFXGroupListChanged(List<string> groupListIn)
         {
 
-            GroupList gl = new GroupList { groupList = groupListIn };
-            string json = JsonUtility.ToJson(gl);
+            string json = JsonConvert.SerializeObject(groupListIn);
 
             var message = new OSCMessage("/groupList/get");
             message.AddValue(OSCValue.String(json));
@@ -576,8 +573,7 @@ namespace FX
         void OnPresetListUpdated(List<string> presets) 
         {
 
-            SceneList sl = new SceneList { sceneList = presets};
-            string json = JsonUtility.ToJson(sl);
+            string json = JsonConvert.SerializeObject(presets);
 
             foreach (var node in oscNodes)
             {
@@ -702,16 +698,5 @@ namespace FX
             public float a = 1;
         }
 
-        [Serializable]
-        public class GroupList
-        {
-            public List<string> groupList;
-        }
-
-        [Serializable]
-        public class SceneList
-        {
-            public List<string> sceneList;
-        }
     }
 }
