@@ -97,12 +97,12 @@ namespace FX
                     EditorGUI.PropertyField(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), item.FindPropertyRelative("enabled"), new GUIContent("Enabled"));
                     if (EditorGUI.EndChangeCheck()) 
                     {
-                                         
+                        controller.OnGroupChanged();             
                     }
                 },
                 drawHeaderCallback = (Rect rect) =>
                 {
-                    EditorGUI.LabelField(rect, "FX Controllers");
+                    EditorGUI.LabelField(rect, "FX Parameter Controllers");
                 },
                 elementHeightCallback = (int index) =>
                 {

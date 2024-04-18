@@ -36,6 +36,9 @@ namespace FX
         public delegate void OnCurrentPresetNameChanged(string newName);
         public event OnCurrentPresetNameChanged onCurrentPresetNameChanged;
 
+        public delegate void OnPresetRemoved(string newName);
+        public event OnPresetRemoved onPresetRemoved;
+
 
         private void Awake()
         {

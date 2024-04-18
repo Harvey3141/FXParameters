@@ -198,6 +198,16 @@ namespace FX
                     fxSceneManager.LoadPreset(sceneName);
                 }
             }
+            else if (address.ToUpper() == "/SCENE/NAME/GET")
+            {
+                OSCNode matchingNode = oscNodes.Find(node => node.Receiver.LocalPort == port);
+                if (matchingNode != null)
+                {
+                    string senderIp = matchingNode.Transmitter.RemoteHost.ToString();
+                    int senderPort = matchingNode.Transmitter.RemotePort;
+                    SendOSCMessage("/scene/name/get", matchingNode, fxSceneManager.CurrentPresetName);
+                }
+            }
             else if (address.ToUpper() == "/SCENE/NAME/SET")
             {
                 if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
@@ -229,14 +239,16 @@ namespace FX
             }
             else if (address.ToUpper() == "/SCENELIST/GET")
             {
-                string presetListString = "{" + string.Join(",", fxSceneManager.presets) + "}";
+
+                SceneList sl = new SceneList { sceneList = fxSceneManager.presets };
+                string json = JsonUtility.ToJson(sl);
 
                 OSCNode matchingNode = oscNodes.Find(node => node.Receiver.LocalPort == port);
                 if (matchingNode != null)
                 {
                     string senderIp = matchingNode.Transmitter.RemoteHost.ToString();
                     int senderPort = matchingNode.Transmitter.RemotePort;
-                    SendOSCMessage("/sceneList/get", matchingNode, presetListString);
+                    SendOSCMessage("/sceneList/get", matchingNode, json);
                 }
             }
             else if (address.ToUpper() == "/GROUP/NEW")
@@ -259,6 +271,17 @@ namespace FX
                 {
                     string a = message.Values[0].StringValue;
                     fXManager.ClearGroup(a);
+                }
+            }
+            else if (address.ToUpper() == "/GROUP/RESET")
+            {
+                if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
+                {
+                    GroupFXController group = fXManager.FindGroupByAddress(message.Values[0].StringValue);
+                    if (group != null)
+                    {
+                        group.ResetGroupToLastLoadedState();
+                    }
                 }
             }
             // Go through manager
@@ -284,14 +307,16 @@ namespace FX
             }
             else if (address.ToUpper() == "/GROUPLIST/GET")
             {
-                string groupList = "{" + string.Join(",", fXManager.GetGroupList()) + "}";
+
+                GroupList gl = new GroupList { groupList = fXManager.GetGroupList() };
+                string json = JsonUtility.ToJson(gl);
 
                 OSCNode matchingNode = oscNodes.Find(node => node.Receiver.LocalPort == port);
                 if (matchingNode != null)
                 {
                     string senderIp = matchingNode.Transmitter.RemoteHost.ToString();
                     int senderPort = matchingNode.Transmitter.RemotePort;
-                    SendOSCMessage("/groupList/get", matchingNode, groupList);
+                    SendOSCMessage("/groupList/get", matchingNode, json);
                 }
             }
             else if (address.ToUpper() == "/GROUP/PARAM/ADD")
@@ -310,6 +335,67 @@ namespace FX
                     string groupAddress = message.Values[0].StringValue;
                     string paramAddress = message.Values[1].StringValue;
                     fXManager.RemoveFXParamFromGroup(groupAddress, paramAddress);
+                }
+            }
+            else if (address.ToUpper() == "/GROUP/PARAM/GET")
+            {
+                if (message.Values.Count > 1 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String)
+                {
+                    FXParameterController param = fXManager.GetGroupFXParam(message.Values[0].StringValue, message.Values[1].StringValue);
+                    if (param != null)
+                    {
+                        string json = JsonUtility.ToJson(param);
+                        OSCNode matchingNode = oscNodes.Find(node => node.Receiver.LocalPort == port);
+                        if (matchingNode != null)
+                        {
+                            string senderIp = matchingNode.Transmitter.RemoteHost.ToString();
+                            int senderPort = matchingNode.Transmitter.RemotePort;
+                            SendOSCMessage("/group/param/get", matchingNode, json);
+                        }
+                    }
+                }
+            }
+            else if (address.ToUpper() == "/GROUP/PARAM/SET")
+            {
+                if (message.Values.Count > 2 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String && message.Values[2].Type == OSCValueType.String)
+                {
+                    FXParameterController param = fXManager.GetGroupFXParam(message.Values[0].StringValue, message.Values[1].StringValue);
+                    if (param != null)
+                    {
+                        string json = JsonUtility.ToJson(param);
+                        OSCNode matchingNode = oscNodes.Find(node => node.Receiver.LocalPort == port);
+                        if (matchingNode != null)
+                        {
+                            string senderIp = matchingNode.Transmitter.RemoteHost.ToString();
+                            int senderPort = matchingNode.Transmitter.RemotePort;
+                            SendOSCMessage("/group/param/get", matchingNode, json);
+                        }
+                    }
+                }
+            }
+            else if (address.ToUpper() == "/GROUP/PARAM/ENABLED/GET")
+            {
+                if (message.Values.Count > 1 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String)
+                {
+                    FXParameterController param = fXManager.GetGroupFXParam(message.Values[0].StringValue, message.Values[1].StringValue);
+                    if (param != null) 
+                    {
+                        OSCNode matchingNode = oscNodes.Find(node => node.Receiver.LocalPort == port);
+                        if (matchingNode != null)
+                        {
+                            string senderIp = matchingNode.Transmitter.RemoteHost.ToString();
+                            int senderPort = matchingNode.Transmitter.RemotePort;
+                            SendOSCMessage("/group/param/enabled/get", matchingNode, param.enabled);
+                        }
+                    }
+                }
+            }
+            else if (address.ToUpper() == "/GROUP/PARAM/ENABLED/SET")
+            {
+                if (message.Values.Count > 2 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String && (message.Values[2].Type == OSCValueType.True || message.Values[2].Type == OSCValueType.False))
+                {
+                    GroupFXController group = fXManager.FindGroupByAddress(message.Values[0].StringValue);
+                    group.SetParameterEnabled(message.Values[1].StringValue, message.Values[2].BoolValue);
                 }
             }
             else if (address.ToUpper() == "/GROUP/TRIGGER/ADD")
@@ -471,12 +557,14 @@ namespace FX
             }
         }
 
-        void OnFXGroupListChanged(List<string> groupList)
+        void OnFXGroupListChanged(List<string> groupListIn)
         {
-            string groupListString = "{" + string.Join(",", groupList) + "}";
+
+            GroupList gl = new GroupList { groupList = groupListIn };
+            string json = JsonUtility.ToJson(gl);
 
             var message = new OSCMessage("/groupList/get");
-            message.AddValue(OSCValue.String(groupListString));
+            message.AddValue(OSCValue.String(json));
 
             foreach (var node in oscNodes)
             {
@@ -488,17 +576,19 @@ namespace FX
         {
             foreach (var node in oscNodes)
             {
-                if (node.SendParamChanges) SendOSCMessage("/scene/loaded", node, name);
+                if (node.SendParamChanges) SendOSCMessage("/scene/load", node, name);
             }
         }
 
         void OnPresetListUpdated(List<string> presets) 
         {
-            string presetListString = "{" + string.Join(",", presets) + "}";
+
+            SceneList sl = new SceneList { sceneList = presets};
+            string json = JsonUtility.ToJson(sl);
 
             foreach (var node in oscNodes)
             {
-                if (node.SendParamChanges) SendOSCMessage("/sceneList/get", node, presetListString);
+                if (node.SendParamChanges) SendOSCMessage("/sceneList/get", node, json);
             }
         }
 
@@ -509,7 +599,6 @@ namespace FX
                 if (node.SendParamChanges) SendOSCMessage("/scene/name/get", node, name);
             }
         }
-
 
         IEnumerator SendMessagesAtInterval(float interval)
         {
@@ -544,6 +633,7 @@ namespace FX
                 Debug.LogWarning($"Unsupported value type for OSC message: {value.GetType()}, address: {address}");
             }
 
+            /// TODO - optimisation, replace messages with matching address 
             node.MessageQueue.Enqueue(message);
         }
 
@@ -619,6 +709,16 @@ namespace FX
             public float a = 1;
         }
 
+        [Serializable]
+        public class GroupList
+        {
+            public List<string> groupList;
+        }
 
+        [Serializable]
+        public class SceneList
+        {
+            public List<string> sceneList;
+        }
     }
 }

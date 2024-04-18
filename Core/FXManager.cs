@@ -455,22 +455,23 @@ namespace FX
         }
 
         [System.Serializable]
-        public class FXGroupEnumData
+        public class FXEnumData
         {
             public List<string> signalTypes       = new List<string>();
             public List<string> patternTypes      = new List<string>();
             public List<string> oscillatorTypes   = new List<string>();
             public List<string> arpeggiatorTypes  = new List<string>();
+            public List<string> affectorTypes     = new List<string>();
         }
 
-        private FXGroupEnumData GetFXGroupEnumData() {
-            FXGroupEnumData data = new FXGroupEnumData();
+        private FXEnumData GetFXEnumData() {
+            FXEnumData data = new FXEnumData();
 
             SignalSource s = SignalSource.Default;
             Type tS = s.GetType();
 
             PatternType p = PatternType.None;
-            Type tP = s.GetType();
+            Type tP = p.GetType();
 
             OscillatorPattern.OscillatorType o = OscillatorPattern.OscillatorType.Sine;
             Type tO = o.GetType();
@@ -478,11 +479,15 @@ namespace FX
             ArpeggiatorPattern.PatternStyle a = ArpeggiatorPattern.PatternStyle.Up;
             Type tA = a.GetType();
 
+            AffectorFunction af = AffectorFunction.Linear;
+            Type tAF = af.GetType();
 
-            data.signalTypes = Enum.GetNames(tS).ToList();
-            data.patternTypes = Enum.GetNames(tP).ToList();
-            data.oscillatorTypes = Enum.GetNames(tO).ToList();
+            data.signalTypes      = Enum.GetNames(tS).ToList();
+            data.patternTypes     = Enum.GetNames(tP).ToList();
+            data.oscillatorTypes  = Enum.GetNames(tO).ToList();
             data.arpeggiatorTypes = Enum.GetNames(tA).ToList();
+            data.affectorTypes    = Enum.GetNames(tAF).ToList();
+            
             return data;
         }
 
@@ -498,7 +503,7 @@ namespace FX
             public List<FXEnumParameterData> enumParameters       = new List<FXEnumParameterData>();
 
             // FXGroups 
-            public FXGroupEnumData fXGroupEnumData = new FXGroupEnumData();    
+            public FXEnumData fXEnumData = new FXEnumData();    
             public List<FXGroupData> fxGroupPresets               = new List<FXGroupData>();
             public List<FXMethodData> fXPresetMethods             = new List<FXMethodData>();
 
@@ -598,7 +603,7 @@ namespace FX
                 }
             }
 
-            preset.fXGroupEnumData = GetFXGroupEnumData();
+            preset.fXEnumData = GetFXEnumData();
 
             GroupFXController[] allFXGroups = GameObject.FindObjectsOfType<GroupFXController>();
             foreach (var group in allFXGroups)
@@ -748,6 +753,33 @@ namespace FX
             if (group != null)
             {
                 group.RemoveFXParam(fxAddress);
+            }
+            else
+            {
+                Debug.LogWarning($"Group with address {groupAddress} not found.");
+            }
+        }
+
+        public FXParameterController GetGroupFXParam(string groupAddress, string fxAddress)
+        {
+            GroupFXController group = FindGroupByAddress(groupAddress);
+            if (group != null)
+            {
+                return group.GetParameterController(fxAddress);
+            }
+            else
+            {
+                Debug.LogWarning($"Group with address {groupAddress} not found.");
+                return null;
+            }
+        }
+
+        public void SetGroupFXParam(string groupAddress, string fxAddress, FXParameterController param)
+        {
+            GroupFXController group = FindGroupByAddress(groupAddress);
+            if (group != null)
+            {
+                group.GetParameterController(fxAddress);
             }
             else
             {

@@ -115,7 +115,7 @@ namespace FX
             {
                 return fxParameterControllers.Select(item =>
                 {
-                    var clonedItem = new FXParameterController(item.FxAddress, item.affectorType, item.invert)
+                    var clonedItem = new FXParameterController(item.FxAddress, item.affectorType, item.invert, item.enabled)
                     {
                         // Ensure key has a leading '/'
                         key = item.key.StartsWith("/") ? item.key : "/" + item.key
@@ -160,10 +160,12 @@ namespace FX
 
         private FXManager fxManager;
 
+        private FXGroupData lastLoadedState = null;
 
         public void Initialise()
         {
             fxManager = FXManager.Instance;
+            lastLoadedState = null;
             this.AddFXElements(address);         
             value.OnScaledValueChanged += SetValue;
 
@@ -378,8 +380,9 @@ namespace FX
                     break;
             }
           
-            presetLoaded = true;
-            Active = data.isEnabled;
+            presetLoaded    = true;
+            Active          = data.isEnabled;
+            lastLoadedState = data;
         }
 
         public FXGroupData GetData() {
@@ -421,24 +424,12 @@ namespace FX
             return data;
         }
 
-        public void SetAffectorType(string address, AffectorFunction affectorType)
+
+        public void ResetGroupToLastLoadedState()
         {
-
-            var item = fxParameterControllers.FirstOrDefault(a => a.FxAddress.Equals(address, StringComparison.OrdinalIgnoreCase));
-            if (item != null)
+            if (lastLoadedState != null)
             {
-                item.affectorType = affectorType;
-            }
-        }
-
-
-        public void SetAffectorInvert(string address, bool invert)
-        {
-
-            var item = fxParameterControllers.FirstOrDefault(a => a.FxAddress.Equals(address, StringComparison.OrdinalIgnoreCase));
-            if (item != null)
-            {
-                item.invert = invert;
+                SetData(lastLoadedState);
             }
         }
 
@@ -567,9 +558,53 @@ namespace FX
             }
         }
 
-        void OnGroupChanged () { 
-
+        public void OnGroupChanged () {
+            fxManager.OnGroupChanged(GetData());
         }
+
+        public FXParameterController GetParameterController(string fxAddress) {
+
+            var item = fxParameterControllers.FirstOrDefault(a => a.FxAddress.Equals(fxAddress, StringComparison.OrdinalIgnoreCase));
+            if (item != null)
+            {
+                return item;
+            }
+            else return null;
+        }
+
+        public void SetParameterEnabled(string address, bool enabled)
+        {
+
+            var item = fxParameterControllers.FirstOrDefault(a => a.FxAddress.Equals(address, StringComparison.OrdinalIgnoreCase));
+            if (item != null)
+            {
+                item.enabled = enabled;
+                OnGroupChanged();
+            }
+        }
+
+        public void SetParameterInvert(string address, bool invert)
+        {
+
+            var item = fxParameterControllers.FirstOrDefault(a => a.FxAddress.Equals(address, StringComparison.OrdinalIgnoreCase));
+            if (item != null)
+            {
+                item.invert = invert;
+                OnGroupChanged();
+            }
+        }
+
+        public void SetParameterAffectorType(string address, AffectorFunction affectorType)
+        {
+
+            var item = fxParameterControllers.FirstOrDefault(a => a.FxAddress.Equals(address, StringComparison.OrdinalIgnoreCase));
+            if (item != null)
+            {
+                item.affectorType = affectorType;
+                OnGroupChanged();
+            }
+        }
+
 
         void OnDestroy()
         {
