@@ -300,7 +300,7 @@ namespace FX
             {
                 if (message.Values.Count > 1 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String)
                 {
-                    string json = message.Values[0].StringValue;
+                    string json = message.Values[1].StringValue;
                     FXGroupData preset = JsonUtility.FromJson<FXGroupData>(json);
                     fXManager.SetGroup(preset);
                 }
@@ -362,14 +362,7 @@ namespace FX
                     FXParameterController param = fXManager.GetGroupFXParam(message.Values[0].StringValue, message.Values[1].StringValue);
                     if (param != null)
                     {
-                        string json = JsonUtility.ToJson(param);
-                        OSCNode matchingNode = oscNodes.Find(node => node.Receiver.LocalPort == port);
-                        if (matchingNode != null)
-                        {
-                            string senderIp = matchingNode.Transmitter.RemoteHost.ToString();
-                            int senderPort = matchingNode.Transmitter.RemotePort;
-                            SendOSCMessage("/group/param/get", matchingNode, json);
-                        }
+
                     }
                 }
             }

@@ -97,6 +97,7 @@ namespace FX
                     EditorGUI.PropertyField(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), item.FindPropertyRelative("enabled"), new GUIContent("Enabled"));
                     if (EditorGUI.EndChangeCheck()) 
                     {
+                        serializedObject.ApplyModifiedProperties();
                         controller.OnGroupChanged();             
                     }
                 },

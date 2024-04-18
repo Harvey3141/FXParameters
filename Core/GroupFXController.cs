@@ -572,6 +572,17 @@ namespace FX
             else return null;
         }
 
+        public void SetParameterController(FXParameterController param)
+        {
+            var item = fxParameterControllers.FirstOrDefault(a => a.FxAddress.Equals(param.FxAddress, StringComparison.OrdinalIgnoreCase));
+            if (item != null)
+            {
+                item.invert = param.invert;
+                item.enabled = param.enabled;
+                item.affectorType = param.affectorType;
+            }
+        }
+
         public void SetParameterEnabled(string address, bool enabled)
         {
 
