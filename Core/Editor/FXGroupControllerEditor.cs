@@ -339,6 +339,7 @@ namespace FX
                 {
                     if (kvp.Value.item is FXParameter<float> ||
                         kvp.Value.item is FXParameter<bool> ||
+                        kvp.Value.item is FXParameter<Color> ||
                         kvp.Value.item is FXParameter<int>)
                     {
                         string address = kvp.Key;

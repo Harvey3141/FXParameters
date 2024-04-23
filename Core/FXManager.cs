@@ -384,6 +384,13 @@ namespace FX
                     {
                         ((FXParameter<Color>)parameter).Value = cValue;
                     }
+                    else if (parameterType == typeof(Color) && arg is float fValue)
+                    {
+                        var param = (FXParameter<Color>)parameter; 
+                        var hsbColor = new HSBColor(param.Value);  
+                        hsbColor.h = fValue;                       
+                        param.Value = hsbColor.ToColor();          
+                    }
                     else if (parameterType.IsEnum)
                     {
                         if (arg is float f) {
