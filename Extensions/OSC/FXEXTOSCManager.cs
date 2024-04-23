@@ -383,11 +383,17 @@ namespace FX
             }
             else if (address.ToUpper() == "/GROUP/PARAM/ENABLED/SET")
             {
-                if (message.Values.Count > 2 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String && (message.Values[2].Type == OSCValueType.True || message.Values[2].Type == OSCValueType.False))
+                if (message.Values.Count > 2 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String && (message.Values[2].Type == OSCValueType.True || message.Values[2].Type == OSCValueType.False ))
                 {
                     GroupFXController group = fXManager.FindGroupByAddress(message.Values[0].StringValue);
                     group.SetParameterEnabled(message.Values[1].StringValue, message.Values[2].BoolValue);
                 }
+                else if (message.Values.Count > 2 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String && (message.Values[2].Type == OSCValueType.Int))
+                {
+                    GroupFXController group = fXManager.FindGroupByAddress(message.Values[0].StringValue);
+                    group.SetParameterEnabled(message.Values[1].StringValue, message.Values[2].IntValue == 0 ? false : true);
+                }
+
             }
             else if (address.ToUpper() == "/GROUP/TRIGGER/ADD")
             {
