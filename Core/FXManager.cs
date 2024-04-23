@@ -127,6 +127,15 @@ namespace FX
             }
         }
 
+        public bool FXExists(string address)
+        {
+            if (fxItemsByAddress_.TryGetValue(address, out var fxItem))
+            {
+                return fxItem.type == FXItemInfoType.Parameter || fxItem.type == FXItemInfoType.ScaledParameter;
+            }
+            return false;
+        }
+
 
         public void SetFX(string address)
         {
@@ -779,7 +788,7 @@ namespace FX
             GroupFXController group = FindGroupByAddress(groupAddress);
             if (group != null)
             {
-                group.GetParameterController(fxAddress);
+                group.SetParameterController(param);
             }
             else
             {

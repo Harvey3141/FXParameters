@@ -577,10 +577,28 @@ namespace FX
             var item = fxParameterControllers.FirstOrDefault(a => a.FxAddress.Equals(param.FxAddress, StringComparison.OrdinalIgnoreCase));
             if (item != null)
             {
-                item.invert = param.invert;
-                item.enabled = param.enabled;
+                item.invert       = param.invert;
+                item.enabled      = param.enabled;
                 item.affectorType = param.affectorType;
             }
+            else {
+                if (fxManager.FXExists(param.FxAddress))
+                {
+                    AddFXParam(param.FxAddress);
+                    var item2 = fxParameterControllers.FirstOrDefault(a => a.FxAddress.Equals(param.FxAddress, StringComparison.OrdinalIgnoreCase));
+                    if (item2 != null)
+                    {
+                        item2.invert = param.invert;
+                        item2.enabled = param.enabled;
+                        item2.affectorType = param.affectorType;
+                    }
+
+                }
+                else {
+                    Debug.LogWarning($"Param with address {param.FxAddress} not found.");
+                }
+            }
+
         }
 
         public void SetParameterEnabled(string address, bool enabled)

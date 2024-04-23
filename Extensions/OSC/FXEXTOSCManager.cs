@@ -357,11 +357,11 @@ namespace FX
             {
                 if (message.Values.Count > 2 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String && message.Values[2].Type == OSCValueType.String)
                 {
-                    FXParameterController param = fXManager.GetGroupFXParam(message.Values[0].StringValue, message.Values[1].StringValue);
-                    if (param != null)
-                    {
-
-                    }
+                    string json = message.Values[2].StringValue;
+                    FXParameterController param = JsonUtility.FromJson<FXParameterController>(json);
+                    // TODO - param key has double leading // - why ? 
+                    param.key =  message.Values[1].StringValue.Substring(1);
+                    fXManager.SetGroupFXParam(message.Values[0].StringValue, message.Values[1].StringValue, param);
                 }
             }
             else if (address.ToUpper() == "/GROUP/PARAM/ENABLED/GET")
@@ -391,7 +391,7 @@ namespace FX
                 else if (message.Values.Count > 2 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String && (message.Values[2].Type == OSCValueType.Int))
                 {
                     GroupFXController group = fXManager.FindGroupByAddress(message.Values[0].StringValue);
-                    group.SetParameterEnabled(message.Values[1].StringValue, message.Values[2].IntValue == 0 ? false : true);
+                    group.SetParameterEnabled(message.Values[1].StringValue, message.Values[2].IntValue == 0 ? false : true );
                 }
 
             }
