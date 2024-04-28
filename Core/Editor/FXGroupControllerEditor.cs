@@ -96,7 +96,7 @@ namespace FX
                     if (minValue != null && maxValue != null) {
                         float rangeMin = minValue.floatValue;
                         float rangeMax = maxValue.floatValue;
-                        EditorGUI.MinMaxSlider(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), new GUIContent("Range"), ref rangeMin, ref rangeMax, 0f, 1f);
+                        EditorGUI.MinMaxSlider(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), new GUIContent("Remap Input"), ref rangeMin, ref rangeMax, 0f, 1f);
                         minValue.floatValue = rangeMin;
                         maxValue.floatValue = rangeMax;
                         rect.y += EditorGUIUtility.singleLineHeight + 2;

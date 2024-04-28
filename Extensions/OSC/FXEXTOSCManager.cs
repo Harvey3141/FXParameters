@@ -253,7 +253,7 @@ namespace FX
             }
             else if (address.ToUpper() == "/GROUP/NEW")
             {
-                string json = message.Values[2].StringValue;
+                string json = message.Values[0].StringValue;
                 FXGroupData preset = JsonConvert.DeserializeObject<FXGroupData>(json);
                 fXManager.CreateGroup(preset);
             }

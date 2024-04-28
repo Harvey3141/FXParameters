@@ -25,6 +25,7 @@ namespace FX
     [System.Serializable]
     public class FXParameterData<T>
     {
+        // Any modifications must also be applied to 'ColorHandler.cs' 
         public string key;
         public T value;
         public T defaultValue;

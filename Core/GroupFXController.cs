@@ -90,8 +90,6 @@ namespace FX
             }
         }
 
-
-
         public FXParameterControllerData GetData() {
             FXParameterControllerData data = new FXParameterControllerData();
             data.key          = FxAddress; 
@@ -104,7 +102,8 @@ namespace FX
         }
 
         public float GetAffectedValue(float valueIn) {
-            float affectedValue = (invert ? (1.0f - Mathf.Clamp01(valueIn)) : Mathf.Clamp01(valueIn));
+            float remapped = Mathf.Lerp(valueAtZero, valueAtOne, valueIn);  
+            float affectedValue = (invert ? (1.0f - Mathf.Clamp01(remapped)) : Mathf.Clamp01(remapped));
 
             switch (affectorType)
             {
@@ -303,7 +302,6 @@ namespace FX
                 }
             }
         }
-
 
         public void FXTrigger()
         {
