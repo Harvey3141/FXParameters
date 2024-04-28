@@ -253,9 +253,9 @@ namespace FX
             }
             else if (address.ToUpper() == "/GROUP/NEW")
             {
-                string json = message.Values[0].StringValue;
-                FXGroupData preset = JsonUtility.FromJson<FXGroupData>(json);
-                fXManager.CreateGroup();
+                string json = message.Values[2].StringValue;
+                FXGroupData preset = JsonConvert.DeserializeObject<FXGroupData>(json);
+                fXManager.CreateGroup(preset);
             }
             else if (address.ToUpper() == "/GROUP/REMOVE")
             {
@@ -284,7 +284,6 @@ namespace FX
                     }
                 }
             }
-            // Go through manager
             else if (address.ToUpper() == "/GROUP/GET")
             {
                 if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
@@ -301,7 +300,7 @@ namespace FX
                 if (message.Values.Count > 1 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String)
                 {
                     string json = message.Values[1].StringValue;
-                    FXGroupData preset = JsonUtility.FromJson<FXGroupData>(json);
+                    FXGroupData preset = JsonConvert.DeserializeObject<FXGroupData>(json);
                     fXManager.SetGroup(preset);
                 }
             }
@@ -339,10 +338,10 @@ namespace FX
             {
                 if (message.Values.Count > 1 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String)
                 {
-                    FXParameterController param = fXManager.GetGroupFXParam(message.Values[0].StringValue, message.Values[1].StringValue);
+                    FXParameterControllerData param = fXManager.GetGroupFXParamData(message.Values[0].StringValue, message.Values[1].StringValue);
                     if (param != null)
                     {
-                        string json = JsonUtility.ToJson(param);
+                        string json = JsonConvert.SerializeObject(param);
                         OSCNode matchingNode = oscNodes.Find(node => node.Receiver.LocalPort == port);
                         if (matchingNode != null)
                         {
@@ -358,9 +357,8 @@ namespace FX
                 if (message.Values.Count > 2 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String && message.Values[2].Type == OSCValueType.String)
                 {
                     string json = message.Values[2].StringValue;
-                    FXParameterController param = JsonUtility.FromJson<FXParameterController>(json);
-                    // TODO - param key has double leading // - why ? 
-                    param.key =  message.Values[1].StringValue.Substring(1);
+                    FXParameterControllerData param = JsonConvert.DeserializeObject<FXParameterControllerData>(json);
+                    if (string.IsNullOrEmpty(param.key)) param.key = message.Values[1].StringValue;
                     fXManager.SetGroupFXParam(message.Values[0].StringValue, message.Values[1].StringValue, param);
                 }
             }
@@ -368,7 +366,7 @@ namespace FX
             {
                 if (message.Values.Count > 1 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String)
                 {
-                    FXParameterController param = fXManager.GetGroupFXParam(message.Values[0].StringValue, message.Values[1].StringValue);
+                    FXParameterControllerData param = fXManager.GetGroupFXParamData(message.Values[0].StringValue, message.Values[1].StringValue);
                     if (param != null) 
                     {
                         OSCNode matchingNode = oscNodes.Find(node => node.Receiver.LocalPort == port);
@@ -536,7 +534,7 @@ namespace FX
         {
             var message = new OSCMessage("/group/get");
             message.AddValue(OSCValue.String(data.address));
-            message.AddValue(OSCValue.String(JsonUtility.ToJson(data)));
+            message.AddValue(OSCValue.String(JsonConvert.SerializeObject(data)));
             foreach (var node in oscNodes)
             {
                 if (node.SendParamChanges) node.MessageQueue.Enqueue(message);

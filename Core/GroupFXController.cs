@@ -5,10 +5,23 @@ using static FX.FXManager;
 using FX.Patterns;
 using System.Linq;
 using static FX.GroupFXController;
+using System.Data.Common;
+using Newtonsoft.Json;
 
 
 namespace FX
 {
+    [System.Serializable]
+    public class FXParameterControllerData
+    {
+        public string key;
+        public AffectorFunction? affectorType;
+        public bool? invert;
+        public bool? enabled;
+        public float? valueAtZero;  
+        public float? valueAtOne;   
+    }
+
     [System.Serializable]
     public class FXParameterController {
         public string key; // with leading '/' removed to work with editor script popup list
@@ -21,14 +34,75 @@ namespace FX
         public AffectorFunction affectorType = AffectorFunction.Randomise;
         public bool invert = false;
         public bool enabled = true;
+        public float valueAtZero = 0f;
+        public float valueAtOne  = 1f;
 
-        public FXParameterController(string address, AffectorFunction affector, bool invert, bool enabled = true) {
+
+        public FXParameterController(string address, AffectorFunction affector, bool invert, bool enabled = true, float valueAtZero = 0f, float valueAtOne = 1f) {
             key = address.Substring(1);
             this.enabled      = enabled;
             this.affectorType = affector;
             this.invert       = invert;
+            this.valueAtZero  = valueAtZero;
+            this.valueAtOne   = valueAtOne;
         }
-       
+
+        public FXParameterController(FXParameterControllerData data)
+        {
+            key          = data.key.Substring(1);
+            enabled      = data.enabled ?? true;  
+            affectorType = data.affectorType ?? AffectorFunction.Linear;  
+            invert       = data.invert ?? false; 
+            valueAtZero  = data.valueAtZero ?? 0f; 
+            valueAtOne   = data.valueAtOne ?? 1f; 
+        }
+
+        public void SetData(FXParameterControllerData data)
+        {
+            if (!string.IsNullOrEmpty(data.key))
+            {
+                key = data.key.Substring(1);
+            }
+
+            if (data.enabled.HasValue)
+            {
+                enabled = data.enabled.Value;
+            }
+
+            if (data.affectorType.HasValue)
+            {
+                affectorType = data.affectorType.Value;
+            }
+
+            if (data.invert.HasValue)
+            {
+                invert = data.invert.Value;
+            }
+
+            if (data.valueAtZero.HasValue)
+            {
+                valueAtZero = data.valueAtZero.Value;
+            }
+
+            if (data.valueAtOne.HasValue)
+            {
+                valueAtOne = data.valueAtOne.Value;
+            }
+        }
+
+
+
+        public FXParameterControllerData GetData() {
+            FXParameterControllerData data = new FXParameterControllerData();
+            data.key          = FxAddress; 
+            data.affectorType = affectorType;
+            data.invert       = invert;
+            data.enabled      = enabled;
+            data.valueAtZero  = valueAtZero;
+            data.valueAtOne   = valueAtOne;
+            return data;
+        }
+
         public float GetAffectedValue(float valueIn) {
             float affectedValue = (invert ? (1.0f - Mathf.Clamp01(valueIn)) : Mathf.Clamp01(valueIn));
 
@@ -57,7 +131,7 @@ namespace FX
         public string address = null;
         public string label = null;
         public bool isPinned = false;
-        public List<FXParameterController> fxParameterControllers = new List<FXParameterController>();
+        public List<FXParameterControllerData> fxParameterControllers = new List<FXParameterControllerData>();
         public List<string> fxTriggerAddresses = new List<string>();
 
         public GroupFXController.SignalSource signalSource = GroupFXController.SignalSource.Default;
@@ -108,23 +182,6 @@ namespace FX
         /// </summary>
         /// [SerializeField]
         public List<FXParameterController> fxParameterControllers = new List<FXParameterController>();
-
-        public List<FXParameterController> FormattedFxParameterControllers
-        {
-            get
-            {
-                return fxParameterControllers.Select(item =>
-                {
-                    var clonedItem = new FXParameterController(item.FxAddress, item.affectorType, item.invert, item.enabled)
-                    {
-                        // Ensure key has a leading '/'
-                        key = item.key.StartsWith("/") ? item.key : "/" + item.key
-                    };
-                    return clonedItem;
-                }).ToList();
-            }
-        }
-
 
         /// <summary>
         /// Note that these addresses are contained with the leading '/' removed to work with the custom editor list
@@ -286,10 +343,10 @@ namespace FX
         {
             if (String.IsNullOrEmpty(address)) return;
 
-
             if (!fxParameterControllers.Any(a => a.FxAddress == address))
             {
-                fxParameterControllers.Add(new FXParameterController(address, AffectorFunction.Linear, false));
+                FXParameterController p = new FXParameterController(address, AffectorFunction.Linear, false, true, 0f, 1f);
+                fxParameterControllers.Add(p);
             }
         }
 
@@ -335,15 +392,7 @@ namespace FX
         public void SetData(FXGroupData data) {
             ClearFXAdresses();
 
-            fxParameterControllers = data.fxParameterControllers;
-
-            fxParameterControllers = data.fxParameterControllers.Select(item =>
-            {
-                // Modify fxAddress to ensure it does not start with '/'
-                item.key = item.key.StartsWith("/") ? item.key.Substring(1) : item.key;
-                return item;
-            }).ToList();
-
+            fxParameterControllers.AddRange(data.fxParameterControllers.Select(p => new FXParameterController(p)));
 
             fxTriggerAddresses = data.fxTriggerAddresses.Select(address => address.StartsWith("/") ? address.Substring(1) : address).ToList();
 
@@ -385,6 +434,7 @@ namespace FX
             lastLoadedState = data;
         }
 
+
         public FXGroupData GetData() {
 
             FXGroupData data            = new FXGroupData();
@@ -392,11 +442,10 @@ namespace FX
             data.address                = address;
             data.isPinned               = isPinned;
             data.label                  = label;
-            data.fxParameterControllers = FormattedFxParameterControllers;
+            data.fxParameterControllers = fxParameterControllers.Select(controller => controller.GetData()).ToList();
             data.fxTriggerAddresses     = FormattedFXTriggerAddresses;
             data.valueAtZero            = value.ValueAtZero;
             data.valueAtOne             = value.ValueAtOne;
-
             data.signalSource           = signalSource;
 
             switch (signalSource)
@@ -562,44 +611,40 @@ namespace FX
             fxManager.OnGroupChanged(GetData());
         }
 
-        public FXParameterController GetParameterController(string fxAddress) {
+        public FXParameterControllerData GetParameterController(string fxAddress) {
 
             var item = fxParameterControllers.FirstOrDefault(a => a.FxAddress.Equals(fxAddress, StringComparison.OrdinalIgnoreCase));
             if (item != null)
             {
-                return item;
+                return item.GetData();
             }
             else return null;
         }
 
-        public void SetParameterController(FXParameterController param)
+        public void SetParameterController(FXParameterControllerData data)
         {
-            var item = fxParameterControllers.FirstOrDefault(a => a.FxAddress.Equals(param.FxAddress, StringComparison.OrdinalIgnoreCase));
-            if (item != null)
+            var controller = fxParameterControllers.FirstOrDefault(c => c.FxAddress.Equals(data.key, StringComparison.OrdinalIgnoreCase));
+
+            if (controller != null)
             {
-                item.invert       = param.invert;
-                item.enabled      = param.enabled;
-                item.affectorType = param.affectorType;
+                controller.SetData(data);
+                return;
             }
-            else {
-                if (fxManager.FXExists(param.FxAddress))
+
+            if (fxManager.FXExists(data.key))
+            {
+                AddFXParam(data.key);
+                controller = fxParameterControllers.FirstOrDefault(c => c.FxAddress.Equals(data.key, StringComparison.OrdinalIgnoreCase));
+                if (controller != null)
                 {
-                    AddFXParam(param.FxAddress);
-                    var item2 = fxParameterControllers.FirstOrDefault(a => a.FxAddress.Equals(param.FxAddress, StringComparison.OrdinalIgnoreCase));
-                    if (item2 != null)
-                    {
-                        item2.invert = param.invert;
-                        item2.enabled = param.enabled;
-                        item2.affectorType = param.affectorType;
-                    }
-
+                    controller.SetData(data);
                 }
-                else {
-                    Debug.LogWarning($"Param with address {param.FxAddress} not found.");
-                }
+                return;
             }
 
+            Debug.LogWarning($"Param with address {data.key} not found.");
         }
+
 
         public void SetParameterEnabled(string address, bool enabled)
         {

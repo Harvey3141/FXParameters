@@ -88,7 +88,19 @@ namespace FX
 
                     rect.y += EditorGUIUtility.singleLineHeight + 2;
 
-                    EditorGUI.BeginChangeCheck(); 
+                    EditorGUI.BeginChangeCheck();
+
+                    SerializedProperty minValue = item.FindPropertyRelative("valueAtZero");
+                    SerializedProperty maxValue = item.FindPropertyRelative("valueAtOne");
+
+                    if (minValue != null && maxValue != null) {
+                        float rangeMin = minValue.floatValue;
+                        float rangeMax = maxValue.floatValue;
+                        EditorGUI.MinMaxSlider(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), new GUIContent("Range"), ref rangeMin, ref rangeMax, 0f, 1f);
+                        minValue.floatValue = rangeMin;
+                        maxValue.floatValue = rangeMax;
+                        rect.y += EditorGUIUtility.singleLineHeight + 2;
+                    }
 
                     EditorGUI.PropertyField(new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight), item.FindPropertyRelative("affectorType"), new GUIContent("Affector Function"));
                     rect.y += EditorGUIUtility.singleLineHeight + 2;
@@ -108,7 +120,7 @@ namespace FX
                 elementHeightCallback = (int index) =>
                 {
                    // return EditorGUIUtility.singleLineHeight * 3 + 6;
-                    return EditorGUIUtility.singleLineHeight * 4 + 2 * 3; 
+                    return EditorGUIUtility.singleLineHeight * 6 + 2 * 5; 
 
                 }
             };
@@ -340,6 +352,7 @@ namespace FX
                     if (kvp.Value.item is FXParameter<float> ||
                         kvp.Value.item is FXParameter<bool> ||
                         kvp.Value.item is FXParameter<Color> ||
+                        kvp.Value.item is FXParameter<MaterialType> ||
                         kvp.Value.item is FXParameter<int>)
                     {
                         string address = kvp.Key;

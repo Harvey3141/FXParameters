@@ -149,11 +149,6 @@ namespace FX
             if (!string.IsNullOrEmpty(CurrentPresetName)) SavePreset(CurrentPresetName);
         }
 
-        public void NewScene()
-        { 
-            
-        }
-
         public void SavePreset(string name)
         {
             fXManager.SavePreset(name);

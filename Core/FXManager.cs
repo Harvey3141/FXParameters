@@ -6,6 +6,8 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using static FX.GroupFXController;
+using Newtonsoft.Json;
+
 
 namespace FX
 {
@@ -394,7 +396,17 @@ namespace FX
                     else if (parameterType.IsEnum)
                     {
                         if (arg is float f) {
-                            arg = (int) f;
+                            if (f > 0.0f && f < 1.0f)
+                            {
+                                var enumValues = Enum.GetValues(parameterType);
+                                int numValues = enumValues.Length;
+
+                                int enumIndex = (int)(f * (numValues - 1));
+                                arg = enumIndex;
+                            }
+                            else {
+                                arg = (int)f;
+                            } 
                         }
                         if (arg is int enumInt)
                         {
@@ -522,7 +534,6 @@ namespace FX
             public FXEnumData fXEnumData = new FXEnumData();    
             public List<FXGroupData> fxGroupPresets               = new List<FXGroupData>();
             public List<FXMethodData> fXPresetMethods             = new List<FXMethodData>();
-
         }
 
         [System.Serializable]
@@ -627,7 +638,14 @@ namespace FX
                 preset.fxGroupPresets.Add(group.GetData());
             }
 
-            string json = JsonUtility.ToJson(preset);
+            var settings = new JsonSerializerSettings
+            {
+                Converters = new List <JsonConverter> {
+                    new ColourHandler() 
+                },               
+            };
+
+            string json = JsonConvert.SerializeObject(preset, settings);
 
             string directoryPath = Path.Combine(Application.streamingAssetsPath, "FX Presets");
             if (!Directory.Exists(directoryPath))
@@ -648,7 +666,13 @@ namespace FX
             if (File.Exists(filePath))
             {
                 string json = File.ReadAllText(filePath);
-                FXData preset = JsonUtility.FromJson<FXData>(json);
+                var settings = new JsonSerializerSettings
+                {
+                    Converters = new List<JsonConverter> {
+                    new ColourHandler()
+                },
+                };
+                FXData preset = JsonConvert.DeserializeObject<FXData>(json,settings);
 
                 Dictionary<string, FXGroupData> fxGroupPresets = preset.fxGroupPresets.ToDictionary(p => p.address, p => p);
 
@@ -661,6 +685,12 @@ namespace FX
 
                 foreach (var groupPreset in fxGroupPresets)
                 {
+                    foreach (var paramController in groupPreset.Value.fxParameterControllers)
+                    {
+                        if (!paramController.valueAtZero.HasValue) paramController.valueAtZero = 0.0f;
+                        if (!paramController.valueAtOne.HasValue) paramController.valueAtOne = 1.0f;
+                    }
+
                     var existingGroup = allFXGroups.FirstOrDefault(g => g.address == groupPreset.Key);
 
                     //CleanInvalidFXAddresses(groupPreset.Value.fxAddresses);
@@ -724,11 +754,7 @@ namespace FX
                         ((FXParameter<bool>)parameter).Value = false;
                     }
                 }
-
-
-
                 if (onPresetLoaded != null) onPresetLoaded.Invoke(presetName);
-
                 return true;
 
             }
@@ -776,7 +802,7 @@ namespace FX
             }
         }
 
-        public FXParameterController GetGroupFXParam(string groupAddress, string fxAddress)
+        public FXParameterControllerData GetGroupFXParamData(string groupAddress, string fxAddress)
         {
             GroupFXController group = FindGroupByAddress(groupAddress);
             if (group != null)
@@ -790,7 +816,7 @@ namespace FX
             }
         }
 
-        public void SetGroupFXParam(string groupAddress, string fxAddress, FXParameterController param)
+        public void SetGroupFXParam(string groupAddress, string fxAddress, FXParameterControllerData param)
         {
             GroupFXController group = FindGroupByAddress(groupAddress);
             if (group != null)

@@ -20,7 +20,14 @@ namespace FX
 
             GUILayout.Space(10);
 
-            GUILayout.Label("Current Preset", EditorStyles.boldLabel);
+            if (GUILayout.Button("New Scene..", GUILayout.Width(200)))
+            {
+                fxSceneManager.CreateNewScene();
+            }
+
+            GUILayout.Space(10);
+
+            GUILayout.Label("Current Scene", EditorStyles.boldLabel);
             GUILayout.BeginHorizontal();
             EditorGUIUtility.labelWidth = 60;
             fxSceneManager.CurrentPresetName = EditorGUILayout.TextField("Name", fxSceneManager.CurrentPresetName);
@@ -103,5 +110,6 @@ namespace FX
         {
             fxSceneManager.RemovePreset(presetName);
         }
+
     }
 }
