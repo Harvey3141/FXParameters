@@ -183,6 +183,11 @@ namespace FX
             }
         }
 
+        public void ResetCurrentScene()
+        {
+            if (!string.IsNullOrEmpty(currentPresetName)) LoadPreset(currentPresetName);
+        }
+
         public void CreateNewScene()
         {
             GroupFXController[] allGroups = GameObject.FindObjectsOfType<GroupFXController>();
@@ -201,6 +206,8 @@ namespace FX
 
             fXManager.ResetAllParamsToDefault();
         }
+
+
     }
 }
 

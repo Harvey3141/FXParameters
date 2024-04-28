@@ -238,6 +238,10 @@ namespace FX
             {
                 fxSceneManager.CreateNewScene();
             }
+            else if (address.ToUpper() == "/SCENE/RESET")
+            {
+                fxSceneManager.ResetCurrentScene();
+            }
             else if (address.ToUpper() == "/SCENELIST/GET")
             {
 
