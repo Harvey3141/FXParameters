@@ -59,13 +59,36 @@ The FX API offers functionalities that include:
   **Format**: `/SCENELIST/GET`  
   **Example**: `/SCENELIST/GET`
 
+- **/SCENE/RESET**  
+  Resets the current scene
+  
+  **Usage**: `/SCENE/RESET`
+
+- **/SCENE/NAME/GET**  
+  Retrieves the name of the current scene.
+
+  **Usage**: `/SCENE/NAME/GET`
+
+- **/SCENE/NAME/SET**  
+  Sets the name current scene
+
+  **Format**: `/SCENE/NAME/SET [new_scene_name]`  
+  **Example**: `/SCENE/NAME/SET "NewSceneName"`
+
 ### Group Management
 
-- **/GROUP/NEW**  
-  Creates a new group with default properties.
+- **/GROUPLIST/GET**  
+  Requests the group list, which is returned as /groupList/get {group/1, group/2, group/3}. This is also sent to subscribers whenever a scene is added or removed.
+
+  **Format**: `/GROUPLIST/GET'   
+  **Example**: `/GROUPLIST/GET`
   
-  **Format**: `/GROUP/NEW`  
-  **Example**: `/GROUP/NEW`
+  
+- **/GROUP/NEW**  
+  Creates a new group, optionally provide group data, otherwise default properties will be used
+  
+  **Format**: `/GROUP/NEW [group data]`   
+  **Example**: `/GROUP/NEW {group JSON data}`
   
 - **/GROUP/REMOVE**  
   Removes specified group, unless group is pinned
@@ -114,6 +137,30 @@ The FX API offers functionalities that include:
   
   **Format**: `/GROUP/PARAM/REMOVE [group_address] [param_address]`  
   **Example**: `/GROUP/PARAM/REMOVE /Group/1 /FXLight/intensity`
+  
+- **/GROUP/PARAM/GET**  
+  Retrieve parameter within a group in JSON format.
+
+  **Format**: `/GROUP/PARAM/GET [group_address] [param_address]`  
+  **Example**: `/GROUP/PARAM/GET /Group/1 /FXLight/intensity`
+
+- **/GROUP/PARAM/SET**  
+  Sets the parameter values within a specified group, creates a new param if not found 
+
+  **Format**: `/GROUP/PARAM/SET [group_address] [param_address] [json]`  
+  **Example**: `/GROUP/PARAM/SET /Group/1 /FXLight/intensity json data`
+
+- **/GROUP/PARAM/ENABLED/GET**  
+  Retrieves the enabled state of a specific parameter within a group.
+
+  **Format**: `/GROUP/PARAM/ENABLED/GET [group_address] [param_address]`  
+  **Example**: `/GROUP/PARAM/ENABLED/GET /Group/1 /FXLight/intensity`
+
+- **/GROUP/PARAM/ENABLED/SET**  
+  Enables or disables a specific parameter within a group.
+
+  **Format**: `/GROUP/PARAM/ENABLED/SET [group_address] [param_address] [state]`  
+  **Example**: `/GROUP/PARAM/ENABLED/SET /Group/1 /FXLight/intensity true`
 
 - **/GROUP/TRIGGER/ADD**  
   Adds a trigger to a specified group.
@@ -127,11 +174,30 @@ The FX API offers functionalities that include:
   **Format**: `/GROUP/TRIGGER/REMOVE [group_address] [trigger_address]`  
   **Example**: `/GROUP/TRIGGER/REMOVE /Group/1 /FXLight/FXTrigger`
   
-- **/GROUPLIST/GET**  
-  Requests the group list, which is returned as /groupList/get {group/1, group/2, group/3}. This is also sent to subscribers whenever a scene is added or removed.
+ - **/GROUP/PATTERN/NUMBEATS**  
+  Sets the number of beats in a pattern for a specified group. 
 
-  **Format**: `/GROUPLIST/GET`  
-  **Example**: `/GROUPLIST/GET`
+  **Format**: `/GROUP/PATTERN/NUMBEATS [group_address] [num_beats]`  
+  **Example**: `/GROUP/PATTERN/NUMBEATS /Group/1 16`
+
+- **/GROUP/TAP/ADDTRIGGERATCURRENTTIME**  
+  Adds a trigger to a tap pattern at the current time.
+
+  **Format**: `/GROUP/TAP/ADDTRIGGERATCURRENTTIME [group_address]`  
+  **Example**: `/GROUP/TAP/ADDTRIGGERATCURRENTTIME /Group/1`
+
+- **/GROUP/TAP/NUMBEROFTRIGGERS/SET**  
+  Sets the number of triggers in a tap pattern
+
+  **Format**: `/GROUP/TAP/NUMBEROFTRIGGERS/SET [group_address] [num_triggers]`  
+  **Example**: `/GROUP/TAP/NUMBEROFTRIGGERS/SET /Group/1 5`
+
+- **/GROUP/TAP/CLEARTRIGGERS**  
+  Clears all triggers in a tap pattern within a group.
+
+  **Format**: `/GROUP/TAP/CLEARTRIGGERS [group_address]`  
+  **Example**: `/GROUP/TAP/CLEARTRIGGERS /Group/1`
+  
 
 
 ### Parameter and Trigger Management
@@ -147,4 +213,9 @@ Messages are sent at intervals specified by the `sendInterval` property, with a 
 ## JSON Configuration
 
 The OSC node settings are loaded from a JSON file (`OSCConfig.json`) which includes settings such as local and remote ports, send intervals, and whether to send parameter changes in real-time.
+
+
+
+
+
 

@@ -257,9 +257,12 @@ namespace FX
             }
             else if (address.ToUpper() == "/GROUP/NEW")
             {
-                string json = message.Values[0].StringValue;
-                FXGroupData preset = JsonConvert.DeserializeObject<FXGroupData>(json);
-                fXManager.CreateGroup(preset);
+                if (message.Values.Count > 0) {
+                    string json = message.Values[0].StringValue;
+                    FXGroupData preset = JsonConvert.DeserializeObject<FXGroupData>(json);
+                    fXManager.CreateGroup(preset);
+                }
+                else fXManager.CreateGroup();
             }
             else if (address.ToUpper() == "/GROUP/REMOVE")
             {

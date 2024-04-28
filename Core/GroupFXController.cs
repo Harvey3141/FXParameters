@@ -144,6 +144,7 @@ namespace FX
         public FX.Patterns.OscillatorPattern.OscillatorType oscillatorType;
         public FX.Patterns.ArpeggiatorPattern.PatternStyle arpeggiatorStyle;
     }
+
     public class GroupFXController : MonoBehaviour, IFXTriggerable
     {
         [SerializeField]
