@@ -1,23 +1,26 @@
 using FX;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 
 
-public class FXSpotlight : FXBaseWithEnabled
+public class FXLight : FXBaseWithEnabled
 {
     private HDAdditionalLightData lightData;
 
-    public FXScaledParameter<float> intensity = new FXScaledParameter<float>(0.0f, 0.0f, 6.0f);
-    public FXScaledParameter<float> spotAngle = new FXScaledParameter<float>(0.5f, 5f, 100f);
+    public enum FXLightType { SPOT, POINT }
+    public FXParameter<FXLightType> lightType = new FXParameter<FXLightType>(FXLightType.POINT);
+
+    public FXScaledParameter<float> intensity = new FXScaledParameter<float>(0.0f, 0.0f, 6.0f);   
     public FXParameter<Color> color = new FXParameter<Color>(Color.white);
 
+    public FXScaledParameter<float> spotAngle = new FXScaledParameter<float>(0.5f, 5f, 100f);
+
     private Light lightComp;
-    private Material projectorMaterial;
 
     protected override void Awake()
     {
         base.Awake();
+        lightType.OnValueChanged += SetLightType;
         intensity.OnScaledValueChanged += SetIntensity;
         spotAngle.OnScaledValueChanged += SetSpotAngle;
         color.OnValueChanged += SetLightColour;
@@ -31,11 +34,19 @@ public class FXSpotlight : FXBaseWithEnabled
         lightData = gameObject.GetComponent<HDAdditionalLightData>();
     }
 
-   
-    private void Update()
+    void SetLightType(FXLightType lightType)
     {
-
+        switch (lightType)
+        {
+            case FXLightType.SPOT:
+                lightComp.type = LightType.Spot;
+                break;
+            case FXLightType.POINT:
+                lightComp.type = LightType.Point;
+                break;
+        }
     }
+
     protected override void OnFXEnabled(bool state)
     {
         lightComp.enabled = state;
@@ -46,25 +57,15 @@ public class FXSpotlight : FXBaseWithEnabled
         lightData.intensity = value;
     }
 
-    void SetSpotAngle(float value)
-    {
-        lightComp.spotAngle = value;
-
-    }
-
     void SetLightColour(Color value)
     {
         lightComp.color = value;
     }
 
-
-    void SetLightHue(float value)
+    void SetSpotAngle(float value)
     {
-        value = Mathf.Clamp(value, 0.0f, 1.0f);
-        HSBColor tmpCol = new HSBColor(color.Value);
-        tmpCol.h = value;
-        tmpCol.s = value == 0 ? 0 : 1;
-        color.Value = tmpCol.ToColor();
+        lightComp.spotAngle = value;
+
     }
 
 

@@ -4,9 +4,9 @@ namespace FX
 {
     public class FXOrbiter : FXBaseWithEnabled
     {
-        public enum RotationAxis { X, Y, Z }
+        public enum RotationAxisType { X, Y, Z }
 
-        public FXParameter<RotationAxis> rotationAxis = new FXParameter<RotationAxis>(RotationAxis.X);
+        public FXParameter<RotationAxisType> rotationAxis = new FXParameter<RotationAxisType>(RotationAxisType.X);
 
         public FXScaledParameter<float> orbitSpeed  = new FXScaledParameter<float>(0.1f, 0f, 100f);
         public FXScaledParameter<float> orbitRadius = new FXScaledParameter<float>(0.1f, 0f, 10f);
@@ -32,15 +32,15 @@ namespace FX
 
             switch (rotationAxis.Value)
             {
-                case RotationAxis.X:
+                case RotationAxisType.X:
                     y += orbitRadius.ScaledValue * Mathf.Cos(orbitAngle * Mathf.Deg2Rad);
                     z += orbitRadius.ScaledValue * Mathf.Sin(orbitAngle * Mathf.Deg2Rad);
                     break;
-                case RotationAxis.Y:
+                case RotationAxisType.Y:
                     x += orbitRadius.ScaledValue * Mathf.Cos(orbitAngle * Mathf.Deg2Rad);
                     z += orbitRadius.ScaledValue * Mathf.Sin(orbitAngle * Mathf.Deg2Rad);
                     break;
-                case RotationAxis.Z:
+                case RotationAxisType.Z:
                     x += orbitRadius.ScaledValue * Mathf.Cos(orbitAngle * Mathf.Deg2Rad);
                     y += orbitRadius.ScaledValue * Mathf.Sin(orbitAngle * Mathf.Deg2Rad);
                     break;
