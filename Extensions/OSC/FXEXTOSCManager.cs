@@ -341,6 +341,14 @@ namespace FX
                     fXManager.RemoveFXParamFromGroup(groupAddress, paramAddress);
                 }
             }
+            else if (address.ToUpper() == "/GROUP/PARAMS/REMOVE")
+            {
+                if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
+                {
+                    string groupAddress = message.Values[0].StringValue;
+                    fXManager.RemoveFXParamsFromGroup(groupAddress);
+                }
+            }
             else if (address.ToUpper() == "/GROUP/PARAM/GET")
             {
                 if (message.Values.Count > 1 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String)

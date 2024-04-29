@@ -124,7 +124,13 @@ The FX API offers functionalities that include:
   Fetches the enabled state of a group. This is sent to subscribers automatically
   
   **Format**: `/GROUP/ENABLED/GET [group address]`  
-  **Example**: `/GROUP/ENABLED/GET /Group/1 true`    
+  **Example**: `/GROUP/ENABLED/GET /Group/1 true` 
+
+- **/GROUP/PARAMS/REMOVE**  
+  Removes all FX parameters from a specified group.
+  
+  **Format**: `/GROUP/PARAM/REMOVE [group_address]`  
+  **Example**: `/GROUP/PARAM/REMOVE /Group/1`  
 
 - **/GROUP/PARAM/ADD**  
   Adds an FX parameter to a specified group.

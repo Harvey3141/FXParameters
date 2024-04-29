@@ -802,6 +802,19 @@ namespace FX
             }
         }
 
+        public void RemoveFXParamsFromGroup(string groupAddress)
+        {
+            GroupFXController group = FindGroupByAddress(groupAddress);
+            if (group != null)
+            {
+                group.ClearFXAdresses();
+            }
+            else
+            {
+                Debug.LogWarning($"Group with address {groupAddress} not found.");
+            }
+        }
+
         public FXParameterControllerData GetGroupFXParamData(string groupAddress, string fxAddress)
         {
             GroupFXController group = FindGroupByAddress(groupAddress);

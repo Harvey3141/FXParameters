@@ -346,6 +346,7 @@ namespace FX
             {
                 FXParameterController p = new FXParameterController(address, AffectorFunction.Linear, false, true, 0f, 1f);
                 fxParameterControllers.Add(p);
+                OnGroupChanged();
             }
         }
 
@@ -359,6 +360,7 @@ namespace FX
             {
                 fxManager.ResetParameterToDefault(itemToRemove.FxAddress);
                 fxParameterControllers.Remove(itemToRemove);
+                OnGroupChanged();
             }
         }
 
@@ -369,6 +371,7 @@ namespace FX
             if (!fxTriggerAddresses.Contains(modifiedAddress))
             {
                 fxTriggerAddresses.Add(modifiedAddress);
+                OnGroupChanged();
             }
         }
 
@@ -379,6 +382,7 @@ namespace FX
             if (fxTriggerAddresses.Contains(modifiedAddress))
             {
                 fxTriggerAddresses.Remove(modifiedAddress);
+                OnGroupChanged();
             }
         }
 
