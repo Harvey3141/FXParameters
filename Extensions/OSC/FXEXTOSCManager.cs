@@ -181,14 +181,14 @@ namespace FX
                             break;
                     }
                 }
-                fXManager.SetFX(fxAddress, args);
+                fXManager.SetFX(fxAddress, args, true);
             }
             else if (address == "/FX/RESET")
             {
                 if (message.Values.Count > 0)
                 {
                     string fxAddress = message.Values[0].StringValue;
-                    fXManager.ResetParameterToDefault(fxAddress);
+                    fXManager.ResetParameterToSceneDefault(fxAddress);
                 }
             }
             else if (address.ToUpper() == "/SCENE/LOAD")

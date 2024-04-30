@@ -298,7 +298,7 @@ namespace FX
                 foreach (var a in fxParameterControllers)
                 {
                     if (a.enabled) {
-                        fxManager.SetFX(a.FxAddress, a.GetAffectedValue(value.ScaledValue));
+                        fxManager.SetFX(a.FxAddress, a.GetAffectedValue(value.ScaledValue), false);
                     }                   
                 }
             }
@@ -312,7 +312,7 @@ namespace FX
                 foreach (string address in fxTriggerAddresses)
                 {
                     string formattedAddress = address.StartsWith("/") ? address : "/" + address;
-                    fxManager.SetFX(formattedAddress);
+                    fxManager.SetFX(formattedAddress, false);
                 }
             }
 
@@ -324,7 +324,7 @@ namespace FX
             if (fxParameterControllers != null) {
                 foreach (var a in fxParameterControllers)
                 {
-                    fxManager.ResetParameterToDefault(a.FxAddress);
+                    fxManager.ResetParameterToSceneDefault(a.FxAddress);
                 }
                 fxParameterControllers.Clear();
             }
@@ -358,7 +358,7 @@ namespace FX
 
             if (itemToRemove != null)
             {
-                fxManager.ResetParameterToDefault(itemToRemove.FxAddress);
+                fxManager.ResetParameterToSceneDefault(itemToRemove.FxAddress);
                 fxParameterControllers.Remove(itemToRemove);
                 OnGroupChanged();
             }

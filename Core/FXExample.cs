@@ -63,13 +63,13 @@ public class FXExample : MonoBehaviour, IFXTriggerable
        //FXManager.Instance.SetFX(myStringParameter.Address, "yes");
        //FXManager.Instance.SetFX(myColorParameter.Address, Color.white);
        //FXManager.Instance.SetFX(myFloatParameterWithEvent.Address, 99.0f);
-        FXManager.Instance.SetFX(myEnumParameter.Address, 2);
+        FXManager.Instance.SetFX(myEnumParameter.Address, 2, true);
 
 
 
         // Triggering an FXMethod and setting the value of an FXProperty using the FX system.
         string methodAddress = $"/example/{nameof(MyTestIntMethod)}";
-        FXManager.Instance.SetFX(methodAddress, 3);
+        FXManager.Instance.SetFX(methodAddress, 3, true);
 
         //FXManager.Instance.SetFX(fxEnabled.Address, false);
     }

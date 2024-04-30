@@ -25,7 +25,7 @@ namespace FX {
             foreach (var address in fxAddresses)
             {
                 string formattedAddress = address.StartsWith("/") ? address : "/" + address;
-                FXManager.Instance.SetFX(formattedAddress, color);
+                FXManager.Instance.SetFX(formattedAddress, color, false);
             }
         }
     }

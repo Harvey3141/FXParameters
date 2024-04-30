@@ -11,6 +11,7 @@ namespace FX
         string Address { get; set; }
         bool ShouldSave { get; set; }
         void ResetToDefaultValue();
+        void ResetToSceneDefaultValue();
 
     }
 
@@ -56,6 +57,8 @@ namespace FX
         [SerializeField]
         private T value_;
         private T defaultValue_;
+        private T defaultSceneValue_;
+
 
         [SerializeField]
         private bool shouldSave_ = true;
@@ -93,6 +96,16 @@ namespace FX
                     OnValueChanged?.Invoke(value_);
                     fxManager_.OnParameterValueChanged(address_, value);
                 }
+            }
+        }
+
+        public virtual T DefaultSceneValue
+        {
+            get { return defaultSceneValue_; }
+            set
+            {
+                defaultSceneValue_ = value;
+                Value = value;               
             }
         }
 
@@ -197,6 +210,11 @@ namespace FX
         public void ResetToDefaultValue()
         {
             Value = defaultValue_;
+        }
+
+        public void ResetToSceneDefaultValue()
+        {
+            Value = defaultSceneValue_;
         }
 
         public T GetDefaultValue()
@@ -373,7 +391,7 @@ namespace FX
             return new FXParameterData<float>
             {
                 key          = this.Address,
-                value        = this.Value, 
+                value        = this.DefaultSceneValue, 
                 defaultValue = this.GetDefaultValue(), 
                 minValue     = this.GetMinValue(),
                 maxValue     = this.GetMaxValue(),

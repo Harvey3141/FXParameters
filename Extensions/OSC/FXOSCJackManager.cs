@@ -49,7 +49,7 @@ namespace FX
                             args[i] = data.GetElementAsFloat(i);
                         }
 
-                        FXManager.Instance.SetFX(address, args);
+                        FXManager.Instance.SetFX(address, args, true);
                     }
 
                 }
