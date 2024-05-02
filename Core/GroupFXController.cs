@@ -514,6 +514,8 @@ namespace FX
                     Debug.LogError("Invalid pattern type!");
                     break;
             }
+            OnGroupChanged();
+
         }
 
         public void SetOscillatorPatternType (OscillatorPattern.OscillatorType oscillatorType)
@@ -521,6 +523,7 @@ namespace FX
             if (signalSource == SignalSource.Pattern && patternType == PatternType.Oscillator) {
                 OscillatorPattern oscillator = (OscillatorPattern)pattern;
                 oscillator.Oscillator = oscillatorType;
+                OnGroupChanged();
             }
         }
 
@@ -530,6 +533,7 @@ namespace FX
             {
                 ArpeggiatorPattern arp = (ArpeggiatorPattern)pattern;
                 arp.style = patternStyle;
+                OnGroupChanged();
             }
         }
 
@@ -547,6 +551,7 @@ namespace FX
                         tap.AddTriggers(1);
                         break;
                 }
+                OnGroupChanged();
             }
         }
 

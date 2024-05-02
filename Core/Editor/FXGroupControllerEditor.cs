@@ -285,6 +285,7 @@ namespace FX
                 {
                     controller.value.ValueAtZero = min;
                     controller.value.ValueAtOne = max;
+                    controller.OnGroupChanged();
                 }
             }
 
