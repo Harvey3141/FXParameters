@@ -501,21 +501,22 @@ namespace FX
                 case PatternType.Tap:
                     pattern = gameObject.AddComponent<TapPattern>();
                     pattern.OnTrigger += FXTrigger;
+                    OnGroupChanged();
                     break;
                 case PatternType.Oscillator:
                     pattern = gameObject.AddComponent<OscillatorPattern>();
                     pattern.OnTrigger += FXTrigger;
+                    OnGroupChanged();
                     break;
                 case PatternType.Arpeggiator:
                     pattern = gameObject.AddComponent<ArpeggiatorPattern>();
                     pattern.OnTrigger += FXTrigger;
+                    OnGroupChanged();
                     break;
                 default:
                     Debug.LogError("Invalid pattern type!");
                     break;
             }
-            OnGroupChanged();
-
         }
 
         public void SetOscillatorPatternType (OscillatorPattern.OscillatorType oscillatorType)
