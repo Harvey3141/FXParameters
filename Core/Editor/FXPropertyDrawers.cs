@@ -43,7 +43,7 @@ namespace FX
             {
                 float newValue = EditorGUI.FloatField(position, label, floatParam.Value);
                 if (newValue != floatParam.Value)
-                    floatParam.DefaultSceneValue = newValue;
+                    floatParam.Value = newValue;
             }
             else if (fxParam is FXParameter<bool> boolParam)
             {
@@ -59,32 +59,32 @@ namespace FX
 
                     if (GUI.Button(buttonRect, buttonText))
                     {
-                        boolParam.DefaultSceneValue = !boolParam.Value;
+                        boolParam.Value = !boolParam.Value;
                     }
                     GUI.backgroundColor = Color.white;
                 }
                 else {
                     bool newValue = EditorGUI.Toggle(position, label, boolParam.Value);
-                    if (newValue != boolParam.Value) boolParam.DefaultSceneValue = newValue;
+                    if (newValue != boolParam.Value) boolParam.Value = newValue;
                 }
             }
             else if (fxParam is FXParameter<int> intParam)
             {
                 int newValue = EditorGUI.IntField(position, label, intParam.Value);
                 if (newValue != intParam.Value)
-                    intParam.DefaultSceneValue = newValue;
+                    intParam.Value = newValue;
             }
             else if (fxParam is FXParameter<string> stringParam)
             {
                 string newValue = EditorGUI.TextField(position, label, stringParam.Value);
                 if (newValue != stringParam.Value)
-                    stringParam.DefaultSceneValue = newValue;
+                    stringParam.Value = newValue;
             }
             else if (fxParam is FXParameter<Color> colorParam)
             {
                 Color newValue = EditorGUI.ColorField(position, label, colorParam.Value);
                 if (newValue != colorParam.Value)
-                    colorParam.DefaultSceneValue = newValue;
+                    colorParam.Value = newValue;
             }
             else
             {
@@ -328,10 +328,10 @@ namespace FX
 
                 if (oldValue != newValue && foundParam)
                 {
-                    if (fxScaledParamC != null) fxScaledParamC.DefaultSceneValue = newValue;
-                    else if (fxScaledParamF != null) fxScaledParamF.DefaultSceneValue = newValue;
-                    else if (fxScaledParamI != null) fxScaledParamI.DefaultSceneValue = newValue;
-                    else if (fxScaledParamv3 != null) fxScaledParamv3.DefaultSceneValue = newValue;
+                    if (fxScaledParamC != null) fxScaledParamC.Value = newValue;
+                    else if (fxScaledParamF != null) fxScaledParamF.Value = newValue;
+                    else if (fxScaledParamI != null) fxScaledParamI.Value = newValue;
+                    else if (fxScaledParamv3 != null) fxScaledParamv3.Value = newValue;
                 }
 
                 EditorGUI.PropertyField(valueAtZeroPosition, valueAtZeroProperty, valueAtZeroLabel);

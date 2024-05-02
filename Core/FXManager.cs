@@ -324,23 +324,23 @@ namespace FX
                     {
                         if (fxItem.item is FXScaledParameter<float> scaledParamFloat)
                         {
-                            if (setDefaultSceneValue) scaledParamFloat.DefaultSceneValue = floatValue;
-                            else scaledParamFloat.Value = floatValue;
+                            if (setDefaultSceneValue) scaledParamFloat.Value = floatValue;
+                            else scaledParamFloat.SetValue(floatValue,false);
                         }
                         else if (fxItem.item is FXScaledParameter<Color> scaledParamColor)
                         {
-                            if (setDefaultSceneValue) scaledParamColor.DefaultSceneValue = floatValue;
-                            else scaledParamColor.Value = floatValue;
+                            if (setDefaultSceneValue) scaledParamColor.Value = floatValue;
+                            else scaledParamColor.SetValue(floatValue, false);
                         }
                         else if (fxItem.item is FXScaledParameter<int> scaledParamInt)
                         {
-                            if (setDefaultSceneValue) scaledParamInt.DefaultSceneValue = floatValue;
-                            else scaledParamInt.Value = floatValue;
+                            if (setDefaultSceneValue) scaledParamInt.Value = floatValue;
+                            else scaledParamInt.SetValue(floatValue, false);
                         }
                         else if (fxItem.item is FXScaledParameter<Vector3> scaledParamVector3)
                         {
-                            if (setDefaultSceneValue) scaledParamVector3.DefaultSceneValue = floatValue;
-                            else scaledParamVector3.Value = floatValue;
+                            if (setDefaultSceneValue) scaledParamVector3.Value = floatValue;
+                            else scaledParamVector3.SetValue(floatValue, false);
                         }
                         else
                         {
@@ -358,53 +358,53 @@ namespace FX
 
                     if (parameterType == typeof(float) && arg is float fValueFloat)
                     {
-                        if (setDefaultSceneValue) ((FXParameter<float>)parameter).DefaultSceneValue = fValueFloat;
-                        else ((FXParameter<float>)parameter).Value = fValueFloat;
+                        if (setDefaultSceneValue) ((FXParameter<float>)parameter).Value = fValueFloat;
+                        else ((FXParameter<float>)parameter).SetValue(fValueFloat,false);
                     }
                     else if (parameterType == typeof(int))
                     {
                         if (arg is int iValue)
                         {
-                            if (setDefaultSceneValue) ((FXParameter<int>)parameter).DefaultSceneValue = iValue;
-                            else ((FXParameter<int>)parameter).Value = iValue;
+                            if (setDefaultSceneValue) ((FXParameter<int>)parameter).Value = iValue;
+                            else ((FXParameter<int>)parameter).SetValue(iValue,false);
                         }
                         else if (arg is float fValueInt)
                         {
-                            if (setDefaultSceneValue) ((FXParameter<int>)parameter).DefaultSceneValue = Mathf.CeilToInt(fValueInt);
-                            else ((FXParameter<int>)parameter).Value = Mathf.CeilToInt(fValueInt);
+                            if (setDefaultSceneValue) ((FXParameter<int>)parameter).Value = Mathf.CeilToInt(fValueInt);
+                            else ((FXParameter<int>)parameter).SetValue(Mathf.CeilToInt(fValueInt),false);
                         }
                     }
                     else if (parameterType == typeof(bool))
                     {
                         if (arg is bool bValue)
                         {
-                            if (setDefaultSceneValue) ((FXParameter<bool>)parameter).DefaultSceneValue = bValue;
-                            else ((FXParameter<bool>)parameter).Value = bValue;
+                            if (setDefaultSceneValue) ((FXParameter<bool>)parameter).Value = bValue;
+                            else ((FXParameter<bool>)parameter).SetValue(bValue,false);
                         }
                         else if (arg is float fValueBool)
                         {
-                            if (setDefaultSceneValue) ((FXParameter<bool>)parameter).DefaultSceneValue = (fValueBool != 0f);
-                            else ((FXParameter<bool>)parameter).Value = (fValueBool != 0f);
+                            if (setDefaultSceneValue) ((FXParameter<bool>)parameter).Value = (fValueBool != 0f);
+                            else ((FXParameter<bool>)parameter).SetValue((fValueBool != 0f),false);
                         }
                     }
                     else if (parameterType == typeof(string) && arg is string sValue)
                     {
-                        if (setDefaultSceneValue) ((FXParameter<string>)parameter).DefaultSceneValue = sValue;
-                        else ((FXParameter<string>)parameter).Value = sValue;
+                        if (setDefaultSceneValue) ((FXParameter<string>)parameter).Value = sValue;
+                        else ((FXParameter<string>)parameter).SetValue(sValue,false);
 
                     }
                     else if (parameterType == typeof(Color) && arg is Color cValue)
                     {
-                        if (setDefaultSceneValue)((FXParameter<Color>)parameter).DefaultSceneValue = cValue;
-                        else ((FXParameter<Color>)parameter).Value = cValue;
+                        if (setDefaultSceneValue)((FXParameter<Color>)parameter).Value = cValue;
+                        else ((FXParameter<Color>)parameter).SetValue(cValue , false);
                     }
                     else if (parameterType == typeof(Color) && arg is float fValue)
                     {
                         var param = (FXParameter<Color>)parameter; 
                         var hsbColor = new HSBColor(param.Value);  
                         hsbColor.h = fValue;                          
-                        if (setDefaultSceneValue) param.DefaultSceneValue = hsbColor.ToColor();
-                        else param.Value = hsbColor.ToColor();
+                        if (setDefaultSceneValue) param.Value = hsbColor.ToColor();
+                        else param.SetValue (hsbColor.ToColor(),false);
                     }
                     else if (parameterType.IsEnum)
                     {
@@ -762,7 +762,7 @@ namespace FX
                     IFXParameter parameter = fxItem.Value.item as IFXParameter;
                     if (parameter != null && parameter.ShouldSave && !presetAddresses.Contains(fxItem.Key))
                     {
-                        ((FXParameter<bool>)parameter).DefaultSceneValue = false;
+                        ((FXParameter<bool>)parameter).Value = false;
                     }
                 }
                 if (onPresetLoaded != null) onPresetLoaded.Invoke(presetName);

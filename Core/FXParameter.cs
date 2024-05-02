@@ -75,38 +75,33 @@ namespace FX
 
         public virtual T Value
         {
-            get { return value_; }
-            set
-            {
-                T newValue = value;
-
-                // TODO - fix this 
-                //if (hasMinValue_ && Comparer<T>.Default.Compare(newValue, minValue_) < 0)
-                //{
-                //    newValue = minValue_;
-                //}
-                //if (hasMaxValue_ && Comparer<T>.Default.Compare(newValue, maxValue_) > 0)
-                //{
-                //    newValue = maxValue_;
-                //}
-
-                if (!EqualityComparer<T>.Default.Equals(value_, newValue))
-                {
-                    value_ = newValue;
-                    OnValueChanged?.Invoke(value_);
-                    fxManager_.OnParameterValueChanged(address_, value);
-                }
-            }
+            get => value_;
+            set => SetValue(value);
         }
 
         public virtual T DefaultSceneValue
         {
-            get { return defaultSceneValue_; }
-            set
+            get => defaultSceneValue_;
+        }
+        
+        public virtual void SetValue(T newValue, bool setDefaultSceneValue = true)
+        {
+            if (!EqualityComparer<T>.Default.Equals(value_, newValue))
             {
-                defaultSceneValue_ = value;
-                Value = value;               
+                value_ = newValue;
+                OnValueChanged?.Invoke(newValue);
+                fxManager_.OnParameterValueChanged(address_, newValue);
+
+                if (setDefaultSceneValue)
+                {
+                    defaultSceneValue_ = newValue;
+                }
             }
+        }
+
+        public virtual T GetDefaultSceneValue ()
+        {
+            return defaultSceneValue_; 
         }
 
         object IFXParameter.ObjectValue

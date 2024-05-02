@@ -113,13 +113,13 @@ public class FXParameterGUI : MonoBehaviour
                     if (item.item is FXScaledParameter<float> floatParam)
                     {
                         GUILayout.Label("  " + item.address, paramLabelStyle);
-                        floatParam.DefaultSceneValue = GUILayout.HorizontalSlider(floatParam.DefaultSceneValue, 0.0f, 1.0f);
+                        floatParam.Value = GUILayout.HorizontalSlider(floatParam.Value, 0.0f, 1.0f);
                         floatParam.InvertValue = GUILayout.Toggle(floatParam.InvertValue, "");
                     }
                     else if (item.item is FXParameter<bool> boolParam)
                     {
                         GUILayout.Label("  " + item.address, paramLabelStyle);
-                        boolParam.DefaultSceneValue = GUILayout.Toggle(boolParam.DefaultSceneValue, "");
+                        boolParam.Value = GUILayout.Toggle(boolParam.Value, "");
                     }
                     else if (item.address.EndsWith("/FXTrigger"))
                     {
