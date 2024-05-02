@@ -468,6 +468,23 @@ namespace FX
             }
         }
 
+        public void ResetParameterToDefault(string address)
+        {
+            if (fxItemsByAddress_.TryGetValue(address, out var fxItem))
+            {
+
+                if (fxItem.type == FXItemInfoType.Parameter || fxItem.type == FXItemInfoType.ScaledParameter)
+                {
+                    IFXParameter parameter = fxItem.item as IFXParameter;
+                    parameter?.ResetToDefaultValue();
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"No parameter found for address {address}.");
+            }
+        }
+
         public void ResetAllParamsToDefault()
         {
             foreach (var item in fxItemsByAddress_)
@@ -498,11 +515,12 @@ namespace FX
         [System.Serializable]
         public class FXEnumData
         {
-            public List<string> signalTypes       = new List<string>();
-            public List<string> patternTypes      = new List<string>();
-            public List<string> oscillatorTypes   = new List<string>();
-            public List<string> arpeggiatorTypes  = new List<string>();
-            public List<string> affectorTypes     = new List<string>();
+            public List<string> signalTypes        = new List<string>();
+            public List<string> patternTypes       = new List<string>();
+            public List<string> oscillatorTypes    = new List<string>();
+            public List<string> arpeggiatorTypes   = new List<string>();
+            public List<string> affectorTypes      = new List<string>();
+            public List<string> frequencyTypes     = new List<string>();
         }
 
         private FXEnumData GetFXEnumData() {
@@ -523,12 +541,16 @@ namespace FX
             AffectorFunction af = AffectorFunction.Linear;
             Type tAF = af.GetType();
 
+            AudioFrequency aFR = AudioFrequency.Low;
+            Type taFR = aFR.GetType();
+
             data.signalTypes      = Enum.GetNames(tS).ToList();
             data.patternTypes     = Enum.GetNames(tP).ToList();
             data.oscillatorTypes  = Enum.GetNames(tO).ToList();
             data.arpeggiatorTypes = Enum.GetNames(tA).ToList();
             data.affectorTypes    = Enum.GetNames(tAF).ToList();
-            
+            data.frequencyTypes   = Enum.GetNames(taFR).ToList();
+
             return data;
         }
 

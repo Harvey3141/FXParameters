@@ -188,6 +188,14 @@ namespace FX
                 if (message.Values.Count > 0)
                 {
                     string fxAddress = message.Values[0].StringValue;
+                    fXManager.ResetParameterToDefault(fxAddress);
+                }
+            }
+            else if (address == "/FX/RESETTOSCENEDEFAULT")
+            {
+                if (message.Values.Count > 0)
+                {
+                    string fxAddress = message.Values[0].StringValue;
                     fXManager.ResetParameterToSceneDefault(fxAddress);
                 }
             }
