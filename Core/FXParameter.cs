@@ -267,15 +267,15 @@ namespace FX
             get { return base.Value; }
             set
             {
-                if (base.Value.Equals(value))
-                {
-                    return;
-                }
-                base.Value = value;
+                base.SetValue(value); 
                 UpdateScaledValue();
-                OnScaledValueChanged?.Invoke(scaledValue_);
-                fxManager_.OnParameterValueChanged(address_, value);
             }
+        }
+
+        public override void SetValue(float newValue, bool setDefaultSceneValue = true)
+        {
+            base.SetValue(newValue, setDefaultSceneValue);
+            UpdateScaledValue();
         }
 
         public AffectorFunction AffectorFunction
@@ -378,6 +378,7 @@ namespace FX
                 {
                     throw new ArgumentException($"FXScaledParameter does not support scaling for type {typeof(T).Name}");
                 }
+                OnScaledValueChanged?.Invoke(scaledValue_);
             }
         }
 
