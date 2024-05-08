@@ -401,30 +401,5 @@ namespace FX
         }
     }
 
-    [System.Serializable]
-    public class FXEnabledParameter : FXParameter<bool>
-    {
-        public FXEnabledParameter(bool value) : base(value)
-        {
-        }
-
-        public override bool Value
-        {
-            get { return base.Value; }
-            set
-            {
-                if (base.Value != value)
-                {
-                    base.Value = value;
-                    OnEnabledChanged(value); 
-                }
-            }
-        }
-
-        private void OnEnabledChanged(bool isEnabled)
-        {
-            Debug.Log($"Enabled value changed: {isEnabled}");
-        }
-    }
 }
 

@@ -48,38 +48,6 @@ namespace FX
                 }
             }
 
-
-            // Add FXEnabledParameter
-            var fxEnabledField = monoBehaviour.GetType().GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                .FirstOrDefault(f => f.FieldType == typeof(FXEnabledParameter));
-
-            if (fxEnabledField != null)
-            {
-                var fxEnabledParameter = fxEnabledField.GetValue(monoBehaviour);
-                var addressProperty = fxEnabledParameter.GetType().GetProperty("Address");
-                var address = (string)addressProperty.GetValue(fxEnabledParameter);
-                if (string.IsNullOrEmpty(address))
-                {
-                    if (string.IsNullOrEmpty(adressPrefix)) address = $"/{monoBehaviour.gameObject.name}/{monoBehaviour.GetType().Name}/FXEnabled";
-                    else
-                    {
-                        if (adressPrefix.StartsWith("/")) adressPrefix = adressPrefix.Substring(1); ;
-                        address = $"/{adressPrefix}/FXEnabled";
-                    }                   
-                }
-                address = address.Replace(" ", "");
-                addressProperty.SetValue(fxEnabledParameter, address);
-
-                if (FXManager.Instance != null)
-                {
-                    FXManager.Instance.AddFXItem(address, FXItemInfoType.Parameter, fxEnabledParameter, monoBehaviour);
-                }
-                else
-                {
-                    Debug.LogWarning("FXManager.Instance is null. Please ensure it is properly initialized.");
-                }
-            }
-
             // Add FXMethods
             var methods = monoBehaviour.GetType().GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (var method in methods)

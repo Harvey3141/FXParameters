@@ -40,10 +40,6 @@ public class FXExample : MonoBehaviour, IFXTriggerable
     /// </summary>
     public FXParameter<float> myFloatParameterWithEvent = new FXParameter<float>(0.0f);
 
-    /// <summary>
-    /// FXEnabledParameter represents the enabled state of the FX system.
-    /// </summary>
-    public FXEnabledParameter fxEnabled = new FXEnabledParameter(true);
 
     private void Start()
     {
@@ -52,7 +48,6 @@ public class FXExample : MonoBehaviour, IFXTriggerable
 
         // Register event handlers for FXParameters and FXEnabledParameter
         myFloatParameterWithEvent.OnValueChanged += HandleFloatValueChanged;
-        fxEnabled.OnValueChanged += FXOnEnabled;
 
         myEnumParameter.OnValueChanged += HandleEnumValueChanged;
 
@@ -97,15 +92,7 @@ public class FXExample : MonoBehaviour, IFXTriggerable
         Debug.Log("MyTestStringMethod - value: " + s);
     }
 
-    /// <summary>
-    /// Handles the value change event of the FXEnabledParameter.
-    /// </summary>
-    public void FXOnEnabled(bool value)
-    {
-        Debug.Log($"Enabled value changed: {value}");
-    }
-
-    /// <summary>
+    /// <summary>s
     /// Handles the value change event of the myFloatParameterWithEvent.
     /// </summary>
     private void HandleFloatValueChanged(float newValue)
