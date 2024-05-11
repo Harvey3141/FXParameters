@@ -64,6 +64,7 @@ namespace FX
             {
                 drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
                 {
+                    EditorGUI.BeginChangeCheck();
                     SerializedProperty item = affectorListProperty.GetArrayElementAtIndex(index);
                     SerializedProperty fxAddressProperty = item.FindPropertyRelative("key");
 
@@ -88,8 +89,7 @@ namespace FX
 
                     rect.y += EditorGUIUtility.singleLineHeight + 2;
 
-                    EditorGUI.BeginChangeCheck();
-
+                    
                     SerializedProperty minValue = item.FindPropertyRelative("valueAtZero");
                     SerializedProperty maxValue = item.FindPropertyRelative("valueAtOne");
 
@@ -144,7 +144,6 @@ namespace FX
             serializedObject.ApplyModifiedProperties();
 
         }
-
 
         private void OnParamRemoved(ReorderableList l)
         {
@@ -236,7 +235,6 @@ namespace FX
             GUILayout.Space(10);
             EditorGUILayout.PropertyField(labelProperty, new GUIContent("Label"));
             GUILayout.Space(10);
-            EditorGUI.BeginChangeCheck();
             EditorGUILayout.PropertyField(signalSourcePropery);
             GUILayout.Space(10);
             SignalSource currentSignalSource = (SignalSource)signalSourcePropery.enumValueIndex;
@@ -258,12 +256,18 @@ namespace FX
                     EditorGUILayout.PropertyField(frequencyProperty);
                     break;
             }
+            if (EditorGUI.EndChangeCheck())
+            {
+                controller.OnGroupChanged();
+            }
+
             EditorGUILayout.LabelField("Connections");
 
             using (var verticalScope = new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
             {
                 affectorListReorderable.DoLayoutList();
-                GUILayout.Space(10);
+
+                EditorGUI.BeginChangeCheck();
                 float value = EditorGUILayout.Slider(new GUIContent("Value"), controller.value.Value, 0, 1);
                 if (EditorGUI.EndChangeCheck())
                 {
@@ -291,7 +295,13 @@ namespace FX
 
             using (var verticalScope = new EditorGUILayout.VerticalScope(EditorStyles.helpBox))
             {
+                EditorGUI.BeginChangeCheck();
                 reorderableListTrigger.DoLayoutList();
+                if (EditorGUI.EndChangeCheck())
+                {
+                    controller.OnGroupChanged();
+                }
+
                 GUILayout.Space(10); 
                 if (GUILayout.Button("Trigger"))
                 {

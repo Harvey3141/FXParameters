@@ -11,8 +11,12 @@ namespace FX.Patterns
             get { return numSteps; }
             set
             {
-                numSteps = value;
-                GeneratePattern();
+                if (numSteps != value)
+                {
+                    numSteps = value;
+                    GeneratePattern();
+                    NotifyPropertyChanged();
+                }
             }
         }
 
@@ -23,7 +27,20 @@ namespace FX.Patterns
             Random
         }
 
-        public PatternStyle style;
+        private PatternStyle style;
+
+        public PatternStyle Style {
+            get { return style; }
+            set
+            {
+                if (style != value)
+                {
+                    style = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
         [Range(0.0f, 1.0f)]
         private float probability = 1.0f;
         public float Probability

@@ -15,7 +15,7 @@ namespace FX.Patterns {
         public float _previousPlayhead = 0.0f;
 
         private float beatDuration; // Duration of each beat in seconds
-        private float lastBeatTime; // Time at which the last beat occurred
+        private float lastBeatTime; 
 
         public Dictionary<float, bool> triggers;
 

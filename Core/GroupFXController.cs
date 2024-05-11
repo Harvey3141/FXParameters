@@ -405,7 +405,7 @@ namespace FX
             value.ValueAtZero = data.valueAtZero; 
             value.ValueAtOne = data.valueAtOne;
 
-            signalSource       = data.signalSource;
+            signalSource = data.signalSource;
 
             switch (data.signalSource)
             {
@@ -426,7 +426,7 @@ namespace FX
                             break;
                         case PatternType.Arpeggiator:
                             ArpeggiatorPattern arp = (ArpeggiatorPattern)pattern;
-                            arp.style = data.arpeggiatorStyle;
+                            arp.Style = data.arpeggiatorStyle;
                             break;
                     }
                     break;
@@ -435,6 +435,8 @@ namespace FX
             presetLoaded    = true;
             Active          = data.isEnabled;
             lastLoadedState = data;
+            
+            OnGroupChanged();
         }
 
 
@@ -468,7 +470,7 @@ namespace FX
                             break;
                         case PatternType.Arpeggiator:
                             ArpeggiatorPattern arp = (ArpeggiatorPattern)pattern;
-                            data.arpeggiatorStyle = arp.style;
+                            data.arpeggiatorStyle = arp.Style;
                             break;
                     }
                     break;
@@ -500,16 +502,19 @@ namespace FX
                     break;
                 case PatternType.Tap:
                     pattern = gameObject.AddComponent<TapPattern>();
+                    pattern.OnPropertyChanged += OnGroupChanged;
                     pattern.OnTrigger += FXTrigger;
                     OnGroupChanged();
                     break;
                 case PatternType.Oscillator:
                     pattern = gameObject.AddComponent<OscillatorPattern>();
+                    pattern.OnPropertyChanged += OnGroupChanged; 
                     pattern.OnTrigger += FXTrigger;
                     OnGroupChanged();
                     break;
                 case PatternType.Arpeggiator:
                     pattern = gameObject.AddComponent<ArpeggiatorPattern>();
+                    pattern.OnPropertyChanged += OnGroupChanged;
                     pattern.OnTrigger += FXTrigger;
                     OnGroupChanged();
                     break;
@@ -524,7 +529,6 @@ namespace FX
             if (signalSource == SignalSource.Pattern && patternType == PatternType.Oscillator) {
                 OscillatorPattern oscillator = (OscillatorPattern)pattern;
                 oscillator.Oscillator = oscillatorType;
-                OnGroupChanged();
             }
         }
 
@@ -533,8 +537,7 @@ namespace FX
             if (signalSource == SignalSource.Pattern && patternType == PatternType.Arpeggiator)
             {
                 ArpeggiatorPattern arp = (ArpeggiatorPattern)pattern;
-                arp.style = patternStyle;
-                OnGroupChanged();
+                arp.Style = patternStyle;
             }
         }
 
@@ -552,7 +555,6 @@ namespace FX
                         tap.AddTriggers(1);
                         break;
                 }
-                OnGroupChanged();
             }
         }
 

@@ -15,16 +15,13 @@ public class ArpeggiatorPatternEditor : Editor
     {
         DrawDefaultInspector();
 
-        // Get the target script and its float value
         ArpeggiatorPattern script = (ArpeggiatorPattern)target;
         float floatValue = script._currentValue;
 
-        // Draw the float value
         EditorGUI.BeginChangeCheck();
         //floatValue = EditorGUILayout.FloatField("Value", floatValue);
         if (EditorGUI.EndChangeCheck())
         {
-            // Update the float value in the script
             Undo.RecordObject(script, "Change Float Value");
             script._currentValue = floatValue;
 
@@ -36,16 +33,28 @@ public class ArpeggiatorPatternEditor : Editor
 
         GUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
-        if (GUILayout.Button("1", GUILayout.Width(30), GUILayout.Height(20))) script.NumSteps = 1;
+        if (GUILayout.Button("Up", GUILayout.Width(80), GUILayout.Height(20))) script.Style = ArpeggiatorPattern.PatternStyle.Up;
         GUILayout.Space(10);
-        if (GUILayout.Button("1/4", GUILayout.Width(30), GUILayout.Height(20))) script.NumSteps = 4;
+        if (GUILayout.Button("Down", GUILayout.Width(80), GUILayout.Height(20))) script.Style = ArpeggiatorPattern.PatternStyle.Down;
         GUILayout.Space(10);
-        if (GUILayout.Button("1/8", GUILayout.Width(30), GUILayout.Height(20))) script.NumSteps = 8;
-        GUILayout.Space(10);
-        if (GUILayout.Button("1/16", GUILayout.Width(30), GUILayout.Height(20))) script.NumSteps = 16;
+        if (GUILayout.Button("Random", GUILayout.Width(80), GUILayout.Height(20))) script.Style = ArpeggiatorPattern.PatternStyle.Random;
         GUILayout.FlexibleSpace();
         GUILayout.EndHorizontal();
-       
+
+        GUILayout.Space(EditorGUIUtility.singleLineHeight * 0.5f);
+
+        GUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+        if (GUILayout.Button("1", GUILayout.Width(50), GUILayout.Height(20))) script.NumSteps = 1;
+        GUILayout.Space(10);
+        if (GUILayout.Button("1/4", GUILayout.Width(50), GUILayout.Height(20))) script.NumSteps = 4;
+        GUILayout.Space(10);
+        if (GUILayout.Button("1/8", GUILayout.Width(50), GUILayout.Height(20))) script.NumSteps = 8;
+        GUILayout.Space(10);
+        if (GUILayout.Button("1/16", GUILayout.Width(50), GUILayout.Height(20))) script.NumSteps = 16;
+        GUILayout.FlexibleSpace();
+        GUILayout.EndHorizontal();
+
         GUILayout.Space(EditorGUIUtility.singleLineHeight * 0.5f);
 
 

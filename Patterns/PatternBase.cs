@@ -21,7 +21,11 @@ namespace FX.Patterns
             get { return _numBeats; }
             set
             {
-                _numBeats = value;
+                if (_numBeats != value)
+                {
+                    _numBeats = value;
+                    NotifyPropertyChanged();
+                }
                 GeneratePattern();
             }
         }
@@ -31,7 +35,8 @@ namespace FX.Patterns
             OnTrigger.Invoke();
         }
 
-
+        public delegate void PropertyChanged();
+        public event PropertyChanged OnPropertyChanged;
 
         public virtual void HandleBpmChange(int number) { _bpm = number; }
         private void HandleResetPhase() { _phase = 0; }
@@ -47,6 +52,10 @@ namespace FX.Patterns
 
         public virtual void GeneratePattern() { }
 
+        protected void NotifyPropertyChanged()
+        {
+            OnPropertyChanged?.Invoke();
+        }
 
     }
 

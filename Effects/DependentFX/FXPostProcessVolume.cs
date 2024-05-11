@@ -18,7 +18,6 @@ public class FXPostProcessVolume : FXBase
     private LimitlessDistortion7Vol_2 limitlessDistortion7Vol_2;
 
 
-
     public FXParameter<bool> blockEnabled = new FXParameter<bool>(false, "", true);
     public FXScaledParameter<float> block = new FXScaledParameter<float>(0, 0, 1.0f,"", false);
 
