@@ -116,7 +116,11 @@ namespace FX
             }
         }
 
-
+        public void SendInternalMessage(OSCMessage message)
+        {
+            int port = 8000;
+            MessageReceived(message, port);
+        }
 
         protected void MessageReceived(OSCMessage message, int port)
         {
