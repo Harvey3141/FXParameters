@@ -53,10 +53,10 @@ public class OSCMessageSimulator : EditorWindow
     {
         EditorGUILayout.LabelField("OSC Message Simulator", EditorStyles.boldLabel);
 
-        if (GUILayout.Button("Save Messages"))
-        {
-            SaveMessages();
-        }
+        //if (GUILayout.Button("Save Messages"))
+        //{
+        //    SaveMessages();
+        //}
 
         for (int m = 0; m < messages.Count; m++)
         {
@@ -209,6 +209,11 @@ public class OSCMessageSimulator : EditorWindow
         {
             messages = new List<OSCMessageData>();
         }
+    }
+
+    void OnDestroy()
+    {
+        SaveMessages();
     }
 
     [System.Serializable]
