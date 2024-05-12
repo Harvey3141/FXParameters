@@ -46,6 +46,19 @@ public class OSCMessageSimulator : EditorWindow
     void OnEnable()
     {
         LoadMessages();
+        EditorApplication.playModeStateChanged += SaveBeforePlayMode;
+    }
+
+    void OnDisable()
+    {
+        EditorApplication.playModeStateChanged -= SaveBeforePlayMode;
+    }
+
+    private void SaveBeforePlayMode(PlayModeStateChange state)
+    {
+
+        SaveMessages();
+        
     }
 
 
