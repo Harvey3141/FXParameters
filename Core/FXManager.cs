@@ -924,6 +924,7 @@ namespace FX
             }
 
             group.address = address;
+            group.isPinned = false;
             group.Initialise();
             return group;
         }
