@@ -140,7 +140,12 @@ namespace FX
 
         public bool LoadPreset(string name)
         {
-            return fXManager.LoadPreset(name);
+            if (fXManager.LoadPreset(name))
+            {
+                CurrentPresetName = name;
+                return true;
+            }
+            return false;
 
         }
 

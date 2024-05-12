@@ -102,8 +102,7 @@ namespace FX
 
         private void LoadPreset(string presetName)
         {
-            bool loadOK = fxSceneManager.LoadPreset(presetName);
-            if (loadOK) fxSceneManager.CurrentPresetName = presetName;
+           fxSceneManager.LoadPreset(presetName);
         }
 
         private void RemovePreset(string presetName)
