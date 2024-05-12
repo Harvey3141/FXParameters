@@ -3,12 +3,14 @@ using UnityEngine;
 using extOSC;
 using System.Collections.Generic;
 using FX;
+using Newtonsoft.Json;
 
 public class OSCMessageSimulator : EditorWindow
 {
-    private string oscAddress = "/example";
-    private List<OSCArgument> oscArguments = new List<OSCArgument>();
+    private List<OSCMessageData> messages = new List<OSCMessageData>();
     private FX.FXEXTOSCManager oscManager;
+    private const string MessageDataKey = "OSCMessageSimulatorData";
+
 
     private enum ArgumentType
     {
@@ -27,69 +29,132 @@ public class OSCMessageSimulator : EditorWindow
         public ArgumentType Type = ArgumentType.String;
     }
 
+    private class OSCMessageData
+    {
+        public string Address = "/example";
+        public List<OSCArgument> Arguments = new List<OSCArgument>();
+    }
+
     [MenuItem("Tools/OSC Message Simulator")]
     public static void ShowWindow()
     {
-        GetWindow<OSCMessageSimulator>("OSC Message Simulator").minSize = new Vector2(300, 200);
+        var window = GetWindow<OSCMessageSimulator>("OSC Message Simulator");
+        window.minSize = new Vector2(300, 400);
+        window.LoadMessages();
+
     }
+    void OnEnable()
+    {
+        LoadMessages();
+    }
+
 
     private void OnGUI()
     {
         EditorGUILayout.LabelField("OSC Message Simulator", EditorStyles.boldLabel);
-        oscAddress = EditorGUILayout.TextField("Address", oscAddress).Trim();
 
-        for (int i = 0; i < oscArguments.Count; i++)
+        if (GUILayout.Button("Save Messages"))
         {
-            EditorGUILayout.BeginHorizontal();
-
-            switch (oscArguments[i].Type)
-            {
-                case ArgumentType.Int:
-                    oscArguments[i].IntValue = EditorGUILayout.IntField($"Argument {i + 1}", oscArguments[i].IntValue);
-                    break;
-
-                case ArgumentType.Float:
-                    oscArguments[i].FloatValue = EditorGUILayout.FloatField($"Argument {i + 1}", oscArguments[i].FloatValue);
-                    break;
-
-                case ArgumentType.Bool:
-                    oscArguments[i].BoolValue = EditorGUILayout.Toggle($"Argument {i + 1}", oscArguments[i].BoolValue);
-                    break;
-
-                case ArgumentType.String:
-                    oscArguments[i].StringValue = EditorGUILayout.TextField($"Argument {i + 1}", oscArguments[i].StringValue).Trim();
-                    break;
-            }
-
-            oscArguments[i].Type = (ArgumentType)EditorGUILayout.EnumPopup(oscArguments[i].Type, GUILayout.Width(60));
-
-            if (GUILayout.Button("+", GUILayout.Width(30)))
-            {
-                oscArguments.Insert(i + 1, new OSCArgument());
-            }
-            if (GUILayout.Button("-", GUILayout.Width(30)))
-            {
-                oscArguments.RemoveAt(i);
-                i--;
-            }
-
-            EditorGUILayout.EndHorizontal();
+            SaveMessages();
         }
 
-        if (GUILayout.Button("Add Argument"))
+        for (int m = 0; m < messages.Count; m++)
         {
-            oscArguments.Add(new OSCArgument());
+            EditorGUILayout.BeginVertical("box");
+
+            messages[m].Address = EditorGUILayout.TextField("Address", messages[m].Address).Trim();
+
+            for (int i = 0; i < messages[m].Arguments.Count; i++)
+            {
+                EditorGUILayout.BeginHorizontal();
+
+                switch (messages[m].Arguments[i].Type)
+                {
+                    case ArgumentType.Int:
+                        messages[m].Arguments[i].IntValue = EditorGUILayout.IntField($"Argument {i + 1}", messages[m].Arguments[i].IntValue);
+                        break;
+
+                    case ArgumentType.Float:
+                        messages[m].Arguments[i].FloatValue = EditorGUILayout.FloatField($"Argument {i + 1}", messages[m].Arguments[i].FloatValue);
+                        break;
+
+                    case ArgumentType.Bool:
+                        messages[m].Arguments[i].BoolValue = EditorGUILayout.Toggle($"Argument {i + 1}", messages[m].Arguments[i].BoolValue);
+                        break;
+
+                    case ArgumentType.String:
+                        messages[m].Arguments[i].StringValue = EditorGUILayout.TextField($"Argument {i + 1}", messages[m].Arguments[i].StringValue).Trim();
+                        break;
+                }
+
+                messages[m].Arguments[i].Type = (ArgumentType)EditorGUILayout.EnumPopup(messages[m].Arguments[i].Type, GUILayout.Width(60));
+
+                if (GUILayout.Button("+", GUILayout.Width(30)))
+                {
+                    messages[m].Arguments.Insert(i + 1, new OSCArgument());
+                }
+                if (GUILayout.Button("-", GUILayout.Width(30)))
+                {
+                    messages[m].Arguments.RemoveAt(i);
+                    i--;
+                }
+
+                EditorGUILayout.EndHorizontal();
+            }
+
+            if (GUILayout.Button("Add Argument"))
+            {
+                messages[m].Arguments.Add(new OSCArgument());
+            }
+
+            if (GUILayout.Button("Send Message"))
+            {
+                SendOSCMessage(messages[m]);
+            }
+
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("Remove Message", GUILayout.Width(150)))
+            {
+                messages.RemoveAt(m);
+                m--;
+            }
+
+            if (GUILayout.Button("Duplicate Message", GUILayout.Width(150)))
+            {
+                var duplicateMessage = new OSCMessageData
+                {
+                    Address = messages[m].Address,
+                    Arguments = new List<OSCArgument>()
+                };
+
+                foreach (var arg in messages[m].Arguments)
+                {
+                    duplicateMessage.Arguments.Add(new OSCArgument
+                    {
+                        StringValue = arg.StringValue,
+                        IntValue = arg.IntValue,
+                        FloatValue = arg.FloatValue,
+                        BoolValue = arg.BoolValue,
+                        Type = arg.Type
+                    });
+                }
+
+                messages.Insert(m + 1, duplicateMessage);
+            }
+            GUILayout.EndHorizontal();
+
+            EditorGUILayout.EndVertical();
         }
 
-        if (GUILayout.Button("Send OSC Message"))
+        if (GUILayout.Button("Add Message"))
         {
-            SendOSCMessage();
+            messages.Add(new OSCMessageData());
         }
 
         EditorGUILayout.Space();
     }
 
-    private void SendOSCMessage()
+    private void SendOSCMessage(OSCMessageData msgData)
     {
         oscManager = FindObjectOfType<FXEXTOSCManager>();
         if (oscManager == null)
@@ -98,9 +163,9 @@ public class OSCMessageSimulator : EditorWindow
             return;
         }
 
-        var message = new OSCMessage(oscAddress);
+        var message = new OSCMessage(msgData.Address);
 
-        foreach (var arg in oscArguments)
+        foreach (var arg in msgData.Arguments)
         {
             switch (arg.Type)
             {
@@ -123,5 +188,36 @@ public class OSCMessageSimulator : EditorWindow
         }
 
         oscManager.SendInternalMessage(message);
+    }
+
+
+    private void SaveMessages()
+    {
+        var json = JsonConvert.SerializeObject(messages);
+        EditorPrefs.SetString(MessageDataKey, json);
+    }
+
+    private void LoadMessages()
+    {
+        if (EditorPrefs.HasKey(MessageDataKey))
+        {
+            var json = EditorPrefs.GetString(MessageDataKey);
+            var data = JsonConvert.DeserializeObject<List<OSCMessageData>>(json);  
+            messages = new List<OSCMessageData>(data);
+        }
+        else
+        {
+            messages = new List<OSCMessageData>();
+        }
+    }
+
+    [System.Serializable]
+    private class Serialization<T>
+    {
+        public List<T> Items;
+        public Serialization(List<T> items)
+        {
+            Items = items;
+        }
     }
 }
