@@ -5,8 +5,7 @@ using static FX.FXManager;
 using FX.Patterns;
 using System.Linq;
 using static FX.GroupFXController;
-using System.Data.Common;
-using Newtonsoft.Json;
+using System.Collections;
 
 
 namespace FX
@@ -219,9 +218,12 @@ namespace FX
 
         private FXGroupData lastLoadedState = null;
 
+        private bool isGroupChangedThisFrame = false;
+
         public void Initialise()
         {
             fxManager = FXManager.Instance;
+            StartCoroutine(RunAtEndOfFrame());
             lastLoadedState = null;
             this.AddFXElements(address);         
             value.OnScaledValueChanged += SetValue;
@@ -435,7 +437,7 @@ namespace FX
             presetLoaded    = true;
             Active          = data.isEnabled;
             lastLoadedState = data;
-            
+
             OnGroupChanged();
         }
 
@@ -619,7 +621,18 @@ namespace FX
         }
 
         public void OnGroupChanged () {
-            fxManager.OnGroupChanged(GetData());
+            isGroupChangedThisFrame = true;
+        }
+
+        IEnumerator RunAtEndOfFrame()
+        {
+            while (true)
+            {
+                yield return new WaitForEndOfFrame();
+                if (isGroupChangedThisFrame) fxManager.OnGroupChanged(GetData());
+                isGroupChangedThisFrame = false;
+
+            }
         }
 
         public FXParameterControllerData GetParameterController(string fxAddress) {
