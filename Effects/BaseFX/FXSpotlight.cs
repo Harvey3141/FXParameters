@@ -43,13 +43,12 @@ public class FXSpotlight : FXBaseWithEnabled
 
     void SetIntensity(float value)
     {
-        lightData.intensity = value;
+        if (lightData) lightData.intensity = value;
     }
 
     void SetSpotAngle(float value)
     {
-        lightComp.spotAngle = value;
-
+        if(lightComp)lightComp.spotAngle = value;
     }
 
     void SetLightColour(Color value)

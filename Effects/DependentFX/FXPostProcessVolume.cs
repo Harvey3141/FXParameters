@@ -21,7 +21,7 @@ public class FXPostProcessVolume : FXBase
     public FXParameter<bool> blockEnabled = new FXParameter<bool>(false, "", true);
     public FXScaledParameter<float> block = new FXScaledParameter<float>(0, 0, 1.0f,"", false);
 
-    public FXParameter<bool> driftEnabled = new FXParameter<bool>(true);
+    public FXParameter<bool> driftEnabled = new FXParameter<bool>(false);
     public FXScaledParameter<float> drift = new FXScaledParameter<float>(0, 0, 1.0f,"", false);
 
     public FXParameter<bool> jitterEnabled = new FXParameter<bool>(false, "", true);
