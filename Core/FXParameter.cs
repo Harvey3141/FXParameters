@@ -202,9 +202,12 @@ namespace FX
             return maxValue_;
         }
 
-        public void ResetToDefaultValue()
+        public virtual void ResetToDefaultValue()
         {
             Value = defaultValue_;
+            OnValueChanged?.Invoke(Value);
+            fxManager_.OnParameterValueChanged(address_, Value);
+            defaultSceneValue_ = Value;
         }
 
         public void ResetToSceneDefaultValue()
@@ -380,6 +383,13 @@ namespace FX
                 }
                 OnScaledValueChanged?.Invoke(scaledValue_);
             }
+        }
+
+        public override void ResetToDefaultValue()
+        {
+            base.ResetToDefaultValue();
+            UpdateScaledValue();
+
         }
 
         public override FXParameterData<float> GetData()

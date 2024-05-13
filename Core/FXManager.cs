@@ -772,21 +772,46 @@ namespace FX
                     SetFX(param.key, param.value, true);
                 }
 
-                HashSet<string> presetAddresses = new HashSet<string>(preset.boolParameters.Select(p => p.key));
+                HashSet<string> presetAddresses = new HashSet<string>(
+                    preset.boolParameters.Select(p => p.key)
+                    .Concat(preset.stringParameters.Select(p => p.key))
+                    .Concat(preset.intParameters.Select(p => p.key))
+                    .Concat(preset.floatParameters.Select(p => p.key))
+                    .Concat(preset.colorParameters.Select(p => p.key))
+                    .Concat(preset.enumParameters.Select(p => p.key))
+                );
 
-                // Filter and process relevant FX items
-                var relevantFXItems = fxItemsByAddress_
-                    .Where(item => item.Key.EndsWith("fxEnabled") && item.Value.type == FXItemInfoType.Parameter && item.Value.item is FXParameter<bool>)
-                    .ToList();
-
-                foreach (var fxItem in relevantFXItems)
+                // Reset any unfound parameters to their default values
+                foreach (var fxItem in fxItemsByAddress_)
                 {
-                    IFXParameter parameter = fxItem.Value.item as IFXParameter;
-                    if (parameter != null && parameter.ShouldSave && !presetAddresses.Contains(fxItem.Key))
+                    if (fxItem.Value.type == FXItemInfoType.Parameter)
                     {
-                        ((FXParameter<bool>)parameter).Value = false;
+                        IFXParameter parameter = fxItem.Value.item as IFXParameter;
+                        if (parameter != null && parameter.ShouldSave && !presetAddresses.Contains(fxItem.Key))
+                        {
+                            parameter.ResetToDefaultValue();
+                            Debug.Log($"Parameter '{fxItem.Key}' not found in the preset. Resetting to default value");
+                        }
                     }
                 }
+
+                // 
+                //HashSet<string> presetAddresses = new HashSet<string>(preset.boolParameters.Select(p => p.key));
+                //
+                //// Filter and process relevant FX items
+                //var relevantFXItems = fxItemsByAddress_
+                //    .Where(item => item.Key.EndsWith("fxEnabled") && item.Value.type == FXItemInfoType.Parameter && item.Value.item is FXParameter<bool>)
+                //    .ToList();
+                //
+                //foreach (var fxItem in relevantFXItems)
+                //{
+                //    IFXParameter parameter = fxItem.Value.item as IFXParameter;
+                //    if (parameter != null && parameter.ShouldSave && !presetAddresses.Contains(fxItem.Key))
+                //    {
+                //        ((FXParameter<bool>)parameter).Value = false;
+                //
+                //    }
+                //}
                 if (onPresetLoaded != null) onPresetLoaded.Invoke(presetName);
                 return true;
 
