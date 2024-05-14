@@ -4,7 +4,7 @@ namespace FX.Patterns
 {
     public class ArpeggiatorPattern : PatternBase
     {
-        private int numSteps = 16;
+        private int numSteps = 4;
         public int NumSteps
         {
             get { return numSteps; }
@@ -109,11 +109,16 @@ namespace FX.Patterns
                     }
                     break;
                 case PatternStyle.Down:
+                    currentValue = 1f; 
                     for (int i = 0; i < numSteps; i++)
                     {
                         pattern[i] = Random.value < probability;
                         values[i] = currentValue;
                         currentValue -= 1f / numSteps;
+                        if (currentValue < 0f)
+                        {
+                            currentValue = 0f; 
+                        }
                     }
                     break;
                 case PatternStyle.Random:
