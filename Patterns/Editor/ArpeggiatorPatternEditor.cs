@@ -30,7 +30,7 @@ public class ArpeggiatorPatternEditor : Editor
         }
 
         GUILayout.Space(EditorGUIUtility.singleLineHeight * 0.5f);
-
+        GUILayout.Label("Pattern Style", EditorStyles.boldLabel);
         GUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
         if (GUILayout.Button("Up", GUILayout.Width(80), GUILayout.Height(20))) script.Style = ArpeggiatorPattern.PatternStyle.Up;
@@ -42,20 +42,40 @@ public class ArpeggiatorPatternEditor : Editor
         GUILayout.EndHorizontal();
 
         GUILayout.Space(EditorGUIUtility.singleLineHeight * 0.5f);
+        GUILayout.Label("Number of Steps", EditorStyles.boldLabel);
 
         GUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
-        if (GUILayout.Button("1", GUILayout.Width(50), GUILayout.Height(20))) script.NumSteps = 1;
+        if (GUILayout.Button("2", GUILayout.Width(50), GUILayout.Height(20))) script.NumSteps = 2;
         GUILayout.Space(10);
-        if (GUILayout.Button("1/4", GUILayout.Width(50), GUILayout.Height(20))) script.NumSteps = 4;
+        if (GUILayout.Button("4", GUILayout.Width(50), GUILayout.Height(20))) script.NumSteps = 4;
         GUILayout.Space(10);
-        if (GUILayout.Button("1/8", GUILayout.Width(50), GUILayout.Height(20))) script.NumSteps = 8;
+        if (GUILayout.Button("8", GUILayout.Width(50), GUILayout.Height(20))) script.NumSteps = 8;
         GUILayout.Space(10);
-        if (GUILayout.Button("1/16", GUILayout.Width(50), GUILayout.Height(20))) script.NumSteps = 16;
+        if (GUILayout.Button("16", GUILayout.Width(50), GUILayout.Height(20))) script.NumSteps = 16;
         GUILayout.FlexibleSpace();
         GUILayout.EndHorizontal();
 
         GUILayout.Space(EditorGUIUtility.singleLineHeight * 0.5f);
+        GUILayout.Label("Number of Beats", EditorStyles.boldLabel);
+        GUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+        if (GUILayout.Button("1", GUILayout.Width(30), GUILayout.Height(20))) script.NumBeats = 1;
+        GUILayout.Space(10);
+        if (GUILayout.Button("2", GUILayout.Width(30), GUILayout.Height(20))) script.NumBeats = 2;
+        GUILayout.Space(10);
+        if (GUILayout.Button("4", GUILayout.Width(30), GUILayout.Height(20))) script.NumBeats = 4;
+        GUILayout.Space(10);
+        if (GUILayout.Button("8", GUILayout.Width(30), GUILayout.Height(20))) script.NumBeats = 8;
+        GUILayout.Space(10);
+        if (GUILayout.Button("16", GUILayout.Width(30), GUILayout.Height(20))) script.NumBeats = 16;
+        GUILayout.Space(10);
+        GUILayout.FlexibleSpace();
+        GUILayout.EndHorizontal();
+
+        GUILayout.Space(EditorGUIUtility.singleLineHeight * 0.5f);
+
+
 
 
         // Draw the graph

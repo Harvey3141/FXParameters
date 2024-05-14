@@ -21,7 +21,6 @@ namespace FX.Patterns
         // TODO
         // - change to c# events
         // - bpm identifier in UI and via OSC
-        // - 2D fractal effect
         // - condition for tapping after a delay 
 
         protected override void Start()

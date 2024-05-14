@@ -2,7 +2,6 @@ using UnityEngine;
 
 namespace FX.Patterns
 {
-
     public class ArpeggiatorPattern : PatternBase
     {
         private int numSteps = 16;
@@ -13,7 +12,7 @@ namespace FX.Patterns
             {
                 if (numSteps != value)
                 {
-                    numSteps = value;
+                    numSteps = Mathf.Max(1, value);  
                     GeneratePattern();
                     NotifyPropertyChanged();
                 }
@@ -29,13 +28,15 @@ namespace FX.Patterns
 
         private PatternStyle style;
 
-        public PatternStyle Style {
+        public PatternStyle Style
+        {
             get { return style; }
             set
             {
                 if (style != value)
                 {
                     style = value;
+                    GeneratePattern();
                     NotifyPropertyChanged();
                 }
             }
@@ -57,17 +58,19 @@ namespace FX.Patterns
         private float[] values;
         private float nextTriggerTime;
         private float currentValue;
+        private int currentStep = 0;
 
         public override void HandleBpmChange(int number)
         {
             base.HandleBpmChange(number);
+            UpdateTriggerInterval();
         }
 
         public override void Start()
         {
             base.Start();
             GeneratePattern();
-            nextTriggerTime = Time.time + 60f / _bpm;
+            UpdateTriggerInterval();
         }
 
         void Update()
@@ -75,12 +78,23 @@ namespace FX.Patterns
             if (Time.time >= nextTriggerTime)
             {
                 TriggerFunction();
-                nextTriggerTime += 60f / _bpm;
+                nextTriggerTime += GetTriggerInterval();
             }
+        }
+
+        private void UpdateTriggerInterval()
+        {
+            nextTriggerTime = Time.time + GetTriggerInterval();
+        }
+
+        private float GetTriggerInterval()
+        {
+            return (60f / _bpm) * (_numBeats / (float)numSteps);
         }
 
         public override void GeneratePattern()
         {
+            currentStep = 0; 
             pattern = new bool[numSteps];
             values = new float[numSteps];
             currentValue = 0f;
@@ -114,15 +128,14 @@ namespace FX.Patterns
 
         void TriggerFunction()
         {
-            int index = Mathf.FloorToInt(Time.time * _bpm / 60f) % numSteps;
-            if (pattern[index])
+            if (pattern.Length > 0 && currentStep < pattern.Length)
             {
-                _currentValue = values[index];
-
+                if (pattern[currentStep])
+                {
+                    _currentValue = values[currentStep];
+                }
+                currentStep = (currentStep + 1) % numSteps;
             }
         }
     }
-
 }
-
-
