@@ -78,8 +78,8 @@ namespace FX
             fXManager.onFXGroupEnabled           += OnFXGroupEnabled;
 
 
-            fxSceneManager.onPresetListUpdated        += OnPresetListUpdated;
-            fxSceneManager.onCurrentPresetNameChanged += OnCurrentPresetNameChanged;
+            //fxSceneManager.onSceneListUpdated += OnPresetListUpdated;
+            fxSceneManager.onCurrentSceneNameChanged += OnCurrentPresetNameChanged;
             StartCoroutine(SendMessagesAtInterval(sendInterval));
         }
 
@@ -208,7 +208,7 @@ namespace FX
                 if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
                 {
                     string sceneName = message.Values[0].StringValue;
-                    fxSceneManager.LoadPreset(sceneName);
+                    fxSceneManager.LoadScene(sceneName);
                 }
             }
             else if (address.ToUpper() == "/SCENE/NAME/GET")
@@ -218,7 +218,7 @@ namespace FX
                 {
                     string senderIp = matchingNode.Transmitter.RemoteHost.ToString();
                     int senderPort = matchingNode.Transmitter.RemotePort;
-                    SendOSCMessage("/scene/name/get", matchingNode, fxSceneManager.CurrentPresetName);
+                    SendOSCMessage("/scene/name/get", matchingNode, fxSceneManager.CurrentSceneName);
                 }
             }
             else if (address.ToUpper() == "/SCENE/NAME/SET")
@@ -226,16 +226,16 @@ namespace FX
                 if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
                 {
                     string sceneName = message.Values[0].StringValue;
-                    fxSceneManager.CurrentPresetName = sceneName;
+                    fxSceneManager.CurrentSceneName = sceneName;
                 }
             }
             else if (address.ToUpper() == "/SCENE/SAVE")
             {
-                if (message.Values.Count == 0) fxSceneManager.SavePreset();
+                if (message.Values.Count == 0) fxSceneManager.SaveScene();
                 else if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
                 {
                     string sceneName = message.Values[0].StringValue;
-                    fxSceneManager.SavePreset(sceneName);
+                    fxSceneManager.SaveScene(sceneName);
                 }
             }
             else if (address.ToUpper() == "/SCENE/REMOVE")
@@ -243,7 +243,7 @@ namespace FX
                 if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
                 {
                     string sceneName = message.Values[0].StringValue;
-                    fxSceneManager.RemovePreset(sceneName);
+                    fxSceneManager.RemoveScene(sceneName);
                 }
             }
             else if (address.ToUpper() == "/SCENE/NEW")
@@ -257,7 +257,7 @@ namespace FX
             else if (address.ToUpper() == "/SCENELIST/GET")
             {
 
-                string json = JsonConvert.SerializeObject(fxSceneManager.presets);
+                string json = JsonConvert.SerializeObject(fxSceneManager.scenes);
 
                 OSCNode matchingNode = oscNodes.Find(node => node.Receiver.LocalPort == port);
                 if (matchingNode != null)

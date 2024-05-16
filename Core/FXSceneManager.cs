@@ -5,192 +5,176 @@ using UnityEngine;
 
 namespace FX
 {
+    public class Tag
+    {
+        public string Name { get; set; }
+        public string Type { get; set; }
+
+        public Tag(string type, string name)
+        {
+            Type = type;
+            Name = name;
+        }
+    }
+}
+
+
+
+namespace FX
+{
+    public class Scene
+    {
+        public string Name { get; set; }
+        public List<Tag> Tags { get; private set; }
+
+        public Scene(string name)
+        {
+            Name = name;
+            Tags = new List<Tag>();
+        }
+
+        public bool AddTag(Tag tag)
+        {
+            if (!Tags.Contains(tag))
+            {
+                Tags.Add(tag);
+                return true;
+            }
+            return false;
+        }
+
+        public bool RemoveTag(Tag tag)
+        {
+            return Tags.Remove(tag);
+        }
+    }
+}
+
+
+namespace FX
+{
     public class FXSceneManager : MonoBehaviour
     {
-
         FXManager fXManager;
         [HideInInspector]
-        public List<string> presets;
-        
+        public List<Scene> scenes;
+        [HideInInspector]
+        public List<Tag> tagList;
+
         public bool exportParameterListOnStart = false;
 
         [HideInInspector]
-        private string currentPresetName;
-        public string CurrentPresetName
+        private string currentSceneName;
+        public string CurrentSceneName
         {
-            get => currentPresetName;
+            get => currentSceneName;
             set
             {
-                if (currentPresetName != value)
+                if (currentSceneName != value)
                 {
-                    currentPresetName = value;
-                    if (onCurrentPresetNameChanged != null) onCurrentPresetNameChanged?.Invoke(currentPresetName);
+                    currentSceneName = value;
+                    onCurrentSceneNameChanged?.Invoke(currentSceneName);
                 }
             }
         }
 
+        public delegate void OnSceneListUpdated(List<Scene> scenes);
+        public event OnSceneListUpdated onSceneListUpdated;
 
-        public delegate void OnPresetListUpdated(List<string> presets);
-        public event OnPresetListUpdated onPresetListUpdated;
+        public delegate void OnCurrentSceneNameChanged(string newName);
+        public event OnCurrentSceneNameChanged onCurrentSceneNameChanged;
 
-        public delegate void OnCurrentPresetNameChanged(string newName);
-        public event OnCurrentPresetNameChanged onCurrentPresetNameChanged;
-
-        public delegate void OnPresetRemoved(string newName);
-        public event OnPresetRemoved onPresetRemoved;
-
+        public delegate void OnSceneRemoved(string newName);
+        public event OnSceneRemoved onSceneRemoved;
 
         private void Awake()
         {
             fXManager = FXManager.Instance;
-            presets = new List<string>();
-            PopulatePresetsList();
+            scenes = new List<Scene>();
+            tagList = new List<Tag> { new Tag("scene-bucket", "test"), new Tag("scene-label", "test") };
+            PopulateScenesList();
         }
 
-        private void Start()
+        public void PopulateScenesList()
         {
+            scenes.Clear();
+            string scenesFolderPath = Path.Combine(Application.streamingAssetsPath, "FX Scenes");
 
-            FXGroupData g = new FXGroupData();
-            g.label = "Default";
-            g.isPinned = true;
-            g.signalSource = GroupFXController.SignalSource.Default;
-            fXManager.CreateGroup(g);
-
-            g = new FXGroupData();
-            g.label = "Audio - Low";
-            g.isPinned = true;
-            g.signalSource = GroupFXController.SignalSource.Audio;
-            g.audioFrequency = GroupFXController.AudioFrequency.Low;
-            fXManager.CreateGroup(g);
-
-            g = new FXGroupData();
-            g.label = "Audio - Mid";
-            g.isPinned = true;
-            g.signalSource = GroupFXController.SignalSource.Audio;
-            g.audioFrequency = GroupFXController.AudioFrequency.Mid;
-            fXManager.CreateGroup(g);
-
-            g = new FXGroupData();
-            g.label = "Audio - High";
-            g.isPinned = true;
-            g.signalSource = GroupFXController.SignalSource.Audio;
-            g.audioFrequency = GroupFXController.AudioFrequency.High;
-            fXManager.CreateGroup(g);
-
-            g = new FXGroupData();
-            g.label = "Oscillator - Sine";
-            g.isPinned = true;
-            g.signalSource = GroupFXController.SignalSource.Pattern;
-            g.patternType = GroupFXController.PatternType.Oscillator;
-            g.oscillatorType = OscillatorPattern.OscillatorType.Sine;
-            fXManager.CreateGroup(g);
-
-            g = new FXGroupData();
-            g.label = "Oscillator - Square";
-            g.isPinned = true;
-            g.signalSource = GroupFXController.SignalSource.Pattern;
-            g.patternType = GroupFXController.PatternType.Oscillator;
-            g.oscillatorType = OscillatorPattern.OscillatorType.Square;
-            fXManager.CreateGroup(g);
-
-            g = new FXGroupData();
-            g.label = "Tap";
-            g.isPinned = true;
-            g.signalSource = GroupFXController.SignalSource.Pattern;
-            g.patternType = GroupFXController.PatternType.Tap;
-            g.numBeats = 1;
-            fXManager.CreateGroup(g);
-
-            g = new FXGroupData();
-            g.label = "Arpeggiator";
-            g.isPinned = true;
-            g.signalSource = GroupFXController.SignalSource.Pattern;
-            g.patternType = GroupFXController.PatternType.Arpeggiator;
-            g.numBeats = 1;
-            fXManager.CreateGroup(g);
-
-            if (exportParameterListOnStart) ExportParameterList();
-
-        }
-
-        public void PopulatePresetsList()
-        {
-            presets.Clear();
-            string presetsFolderPath = Path.Combine(Application.streamingAssetsPath, "FX Presets");
-
-            if (Directory.Exists(presetsFolderPath))
+            if (Directory.Exists(scenesFolderPath))
             {
-                DirectoryInfo presetsDirectory = new DirectoryInfo(presetsFolderPath);
-                FileInfo[] presetFiles = presetsDirectory.GetFiles("*.json");
+                DirectoryInfo scenesDirectory = new DirectoryInfo(scenesFolderPath);
+                FileInfo[] sceneFiles = scenesDirectory.GetFiles("*.json");
 
-                foreach (FileInfo file in presetFiles)
+                foreach (FileInfo file in sceneFiles)
                 {
-                    if (file.Name != "ParameterList") {
-                        string presetName = Path.GetFileNameWithoutExtension(file.Name);
-                        presets.Add(presetName);
+                    if (file.Name != "ParameterList")
+                    {
+                        string sceneName = Path.GetFileNameWithoutExtension(file.Name);
+                        // Placeholder: Tags should be loaded from the file
+                        Scene scene = new Scene(sceneName);
+                        scenes.Add(scene);
                     }
                 }
-                if (onPresetListUpdated != null) onPresetListUpdated.Invoke(presets);
+                onSceneListUpdated?.Invoke(scenes);
             }
             else
             {
-                Debug.LogError("Presets folder not found: " + presetsFolderPath);
+                Debug.LogError("Scenes folder not found: " + scenesFolderPath);
             }
         }
 
-        public bool LoadPreset(string name)
+        public bool LoadScene(string name)
         {
             if (fXManager.LoadPreset(name))
             {
-                CurrentPresetName = name;
+                CurrentSceneName = name;
                 return true;
             }
             return false;
-
         }
 
-        public void SavePreset()
+        public void SaveScene()
         {
-            if (!string.IsNullOrEmpty(CurrentPresetName)) SavePreset(CurrentPresetName);
+            if (!string.IsNullOrEmpty(CurrentSceneName)) SaveScene(CurrentSceneName);
         }
 
-        public void SavePreset(string name)
+        public void SaveScene(string name)
         {
             fXManager.SavePreset(name);
-            PopulatePresetsList();
+            PopulateScenesList();
         }
 
         public void ExportParameterList()
         {
-            fXManager.SavePreset("ParameterList",true);
+            fXManager.SavePreset("ParameterList", true);
         }
 
-        public void RemovePreset(string name)
+        public void RemoveScene(string name)
         {
-            string presetsFolderPath = Path.Combine(Application.streamingAssetsPath, "FX Presets");
-            string presetPath = Path.Combine(presetsFolderPath, name + ".json");
-            string metaPath = Path.Combine(presetPath + ".meta");
+            string scenesFolderPath = Path.Combine(Application.streamingAssetsPath, "FX Scenes");
+            string scenePath = Path.Combine(scenesFolderPath, name + ".json");
+            string metaPath = Path.Combine(scenePath + ".meta");
 
-
-            if (File.Exists(presetPath))
+            if (File.Exists(scenePath))
             {
-                File.Delete(presetPath);
-                PopulatePresetsList();
+                File.Delete(scenePath);
+                PopulateScenesList();
 
                 if (File.Exists(metaPath))
                 {
                     File.Delete(metaPath);
                 }
+                onSceneRemoved?.Invoke(name);
             }
             else
             {
-                Debug.LogError("Preset not found: " + name);
+                Debug.LogError("Scene not found: " + name);
             }
         }
 
         public void ResetCurrentScene()
         {
-            if (!string.IsNullOrEmpty(currentPresetName)) LoadPreset(currentPresetName);
+            if (!string.IsNullOrEmpty(currentSceneName)) LoadScene(currentSceneName);
         }
 
         public void CreateNewScene()
@@ -201,7 +185,7 @@ namespace FX
             {
                 if (!group.isPinned)
                 {
-                    GameObject.Destroy(group.gameObject);
+                    Destroy(group.gameObject);
                 }
                 else
                 {
@@ -212,7 +196,52 @@ namespace FX
             fXManager.ResetAllParamsToDefault();
         }
 
+        public bool AddTagToSystem(string type, string name)
+        {
+            if (!tagList.Exists(t => t.Name == name && t.Type == type))
+            {
+                tagList.Add(new Tag(type, name));
+                return true;
+            }
+            return false;
+        }
+
+        public bool RemoveTagFromSystem(string type, string name)
+        {
+            Tag tag = tagList.Find(t => t.Name == name && t.Type == type);
+            if (tag != null)
+            {
+                foreach (var scene in scenes)
+                {
+                    scene.RemoveTag(tag);
+                }
+                return tagList.Remove(tag);
+            }
+            return false;
+        }
+
+
+        public bool AddTagToScene(string sceneName, string tagType, string tagName)
+        {
+            Scene scene = scenes.Find(s => s.Name == sceneName);
+            Tag tag = tagList.Find(t => t.Type == tagType && t.Name == tagName);
+            if (scene != null && tag != null)
+            {
+                return scene.AddTag(tag);
+            }
+            return false;
+        }
+
+        public bool RemoveTagFromScene(string sceneName, string tagType, string tagName)
+        {
+            Scene scene = scenes.Find(s => s.Name == sceneName);
+            Tag tag = tagList.Find(t => t.Type == tagType && t.Name == tagName);
+            if (scene != null && tag != null)
+            {
+                return scene.RemoveTag(tag);
+            }
+            return false;
+        }
 
     }
 }
-

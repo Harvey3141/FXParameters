@@ -682,7 +682,7 @@ namespace FX
 
             string json = JsonConvert.SerializeObject(preset, settings);
 
-            string directoryPath = Path.Combine(Application.streamingAssetsPath, "FX Presets");
+            string directoryPath = Path.Combine(Application.streamingAssetsPath, "FX Scenes");
             if (!Directory.Exists(directoryPath))
             {
                 Directory.CreateDirectory(directoryPath);
@@ -695,7 +695,7 @@ namespace FX
 
         public bool LoadPreset(string presetName)
         {
-            string directoryPath = Path.Combine(Application.streamingAssetsPath, "FX Presets"); ;
+            string directoryPath = Path.Combine(Application.streamingAssetsPath, "FX Scenes"); ;
             string filePath = Path.Combine(directoryPath, presetName + ".json");
 
             if (File.Exists(filePath))
