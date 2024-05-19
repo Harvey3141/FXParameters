@@ -1,41 +1,45 @@
 using FX.Patterns;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
 namespace FX
 {
-    public class Tag
+    public interface ITag
+    {
+        string Name { get; set; }
+        object Value { get; }
+    }
+
+    public class Tag<T> : ITag
     {
         public string Name { get; set; }
-        public string Type { get; set; }
+        public T Value { get; set; }
 
-        public Tag(string type, string name)
+        object ITag.Value => Value;
+
+        public Tag(string name, T value)
         {
-            Type = type;
             Name = name;
+            Value = value;
         }
     }
-}
 
-
-
-namespace FX
-{
     public class Scene
     {
         public string Name { get; set; }
-        public List<Tag> Tags { get; private set; }
+        public List<ITag> Tags { get; set; }
 
         public Scene(string name)
         {
             Name = name;
-            Tags = new List<Tag>();
+            Tags = new List<ITag>();
         }
 
-        public bool AddTag(Tag tag)
+        public bool AddTag(ITag tag)
         {
-            if (!Tags.Contains(tag))
+            if (!Tags.Exists(t => t.Name == tag.Name && t.Value.Equals(tag.Value)))
             {
                 Tags.Add(tag);
                 return true;
@@ -43,37 +47,32 @@ namespace FX
             return false;
         }
 
-        public bool RemoveTag(Tag tag)
+        public bool RemoveTag(ITag tag)
         {
             return Tags.Remove(tag);
         }
     }
-}
 
-
-namespace FX
-{
     public class FXSceneManager : MonoBehaviour
     {
         FXManager fXManager;
         [HideInInspector]
         public List<Scene> scenes;
         [HideInInspector]
-        public List<Tag> tagList;
+        public List<ITag> tagList;
 
         public bool exportParameterListOnStart = false;
 
-        [HideInInspector]
-        private string currentSceneName;
-        public string CurrentSceneName
+        private Scene currentScene;
+        public Scene CurrentScene
         {
-            get => currentSceneName;
+            get => currentScene;
             set
             {
-                if (currentSceneName != value)
+                if (currentScene != value)
                 {
-                    currentSceneName = value;
-                    onCurrentSceneNameChanged?.Invoke(currentSceneName);
+                    currentScene = value;
+                    onCurrentSceneChanged?.Invoke(currentScene);
                 }
             }
         }
@@ -81,17 +80,22 @@ namespace FX
         public delegate void OnSceneListUpdated(List<Scene> scenes);
         public event OnSceneListUpdated onSceneListUpdated;
 
-        public delegate void OnCurrentSceneNameChanged(string newName);
-        public event OnCurrentSceneNameChanged onCurrentSceneNameChanged;
+        public delegate void OnCurrentSceneChanged(Scene newScene);
+        public event OnCurrentSceneChanged onCurrentSceneChanged;
 
-        public delegate void OnSceneRemoved(string newName);
+        public delegate void OnSceneRemoved(string sceneName);
         public event OnSceneRemoved onSceneRemoved;
 
         private void Awake()
         {
             fXManager = FXManager.Instance;
             scenes = new List<Scene>();
-            tagList = new List<Tag> { new Tag("scene-bucket", "test"), new Tag("scene-label", "test") };
+            tagList = new List<ITag>
+            {
+                new Tag<string>("scene-bucket", "test bucket"),
+                new Tag<string>("scene-label", "value2"),
+                new Tag<bool>("scene-float", true)
+            };
             PopulateScenesList();
         }
 
@@ -125,28 +129,43 @@ namespace FX
 
         public bool LoadScene(string name)
         {
-            if (fXManager.LoadPreset(name))
+            if (fXManager.LoadPreset(name, out List<ITag> loadedTags))
             {
-                CurrentSceneName = name;
-                return true;
+                CurrentScene = scenes.Find(s => s.Name == name);
+
+                foreach (var tag in loadedTags)
+                {
+                    AddTagToSystem(tag.Name, tag.Value);
+                }
+
+                if (CurrentScene != null)
+                {
+                    CurrentScene.Tags = loadedTags;
+                    return true;
+                }
             }
             return false;
         }
 
+
         public void SaveScene()
         {
-            if (!string.IsNullOrEmpty(CurrentSceneName)) SaveScene(CurrentSceneName);
+            if (CurrentScene != null)
+            {
+                SaveScene(CurrentScene);
+            }
         }
 
-        public void SaveScene(string name)
+        public void SaveScene(FX.Scene scene)
         {
-            fXManager.SavePreset(name);
+            fXManager.SavePreset(scene);
             PopulateScenesList();
         }
 
         public void ExportParameterList()
         {
-            fXManager.SavePreset("ParameterList", true);
+            Scene parameterListScene = new Scene("ParameterList");
+            fXManager.SavePreset(parameterListScene,true);
         }
 
         public void RemoveScene(string name)
@@ -174,7 +193,10 @@ namespace FX
 
         public void ResetCurrentScene()
         {
-            if (!string.IsNullOrEmpty(currentSceneName)) LoadScene(currentSceneName);
+            if (CurrentScene != null)
+            {
+                LoadScene(CurrentScene.Name);
+            }
         }
 
         public void CreateNewScene()
@@ -196,19 +218,19 @@ namespace FX
             fXManager.ResetAllParamsToDefault();
         }
 
-        public bool AddTagToSystem(string type, string name)
+        public bool AddTagToSystem<T>(string name, T value)
         {
-            if (!tagList.Exists(t => t.Name == name && t.Type == type))
+            if (!tagList.Exists(t => t.Name == name && t.Value.Equals(value)))
             {
-                tagList.Add(new Tag(type, name));
+                tagList.Add(new Tag<T>(name, value));
                 return true;
             }
             return false;
         }
 
-        public bool RemoveTagFromSystem(string type, string name)
+        public bool RemoveTagFromSystem(string name, object value)
         {
-            Tag tag = tagList.Find(t => t.Name == name && t.Type == type);
+            ITag tag = tagList.Find(t => t.Name == name && t.Value.Equals(value));
             if (tag != null)
             {
                 foreach (var scene in scenes)
@@ -220,27 +242,71 @@ namespace FX
             return false;
         }
 
-
-        public bool AddTagToScene(string sceneName, string tagType, string tagName)
+        public bool AddTagToScene(string sceneName, string name, object value)
         {
+            Debug.Log($"Attempting to add tag to scene: {sceneName}, tag name: {name}, tag value: {value}");
+
             Scene scene = scenes.Find(s => s.Name == sceneName);
-            Tag tag = tagList.Find(t => t.Type == tagType && t.Name == tagName);
-            if (scene != null && tag != null)
+            if (scene == null)
             {
-                return scene.AddTag(tag);
+                Debug.LogError($"Scene not found: {sceneName}");
+                return false;
             }
-            return false;
+
+            ITag tag = tagList.Find(t => t.Name == name && CompareTagValue(t.Value, value));
+            if (tag == null)
+            {
+                Debug.LogError($"Tag not found: {name} with value {value}");
+                return false;
+            }
+
+            Debug.Log($"Adding tag {name} with value {value} to scene {sceneName}");
+            return scene.AddTag(tag);
         }
 
-        public bool RemoveTagFromScene(string sceneName, string tagType, string tagName)
+        public bool RemoveTagFromScene(string sceneName, string tagName, object value)
         {
+            Debug.Log($"Attempting to remove tag from scene: {sceneName}, tag name: {tagName}, tag value: {value}");
+
             Scene scene = scenes.Find(s => s.Name == sceneName);
-            Tag tag = tagList.Find(t => t.Type == tagType && t.Name == tagName);
-            if (scene != null && tag != null)
+            if (scene == null)
             {
-                return scene.RemoveTag(tag);
+                Debug.LogError($"Scene not found: {sceneName}");
+                return false;
             }
-            return false;
+
+            ITag tag = tagList.Find(t => t.Name == tagName && CompareTagValue(t.Value, value));
+            if (tag == null)
+            {
+                Debug.LogError($"Tag not found: {tagName} with value {value}");
+                return false;
+            }
+
+            Debug.Log($"Removing tag {tagName} with value {value} from scene {sceneName}");
+            return scene.RemoveTag(tag);
+        }
+
+        private bool CompareTagValue(object tagValue, object value)
+        {
+            Debug.Log($"Comparing values. tagValue type: {tagValue.GetType()}, value type: {value.GetType()}");
+
+            if (tagValue is float tagFloat && value is float inputFloat)
+            {
+                bool isEqual = Mathf.Abs(tagFloat - inputFloat) < Mathf.Epsilon;
+                Debug.Log($"Comparing float values: {tagFloat} and {inputFloat}, equal: {isEqual}");
+                return isEqual;
+            }
+            if (tagValue is string tagString && value is string inputString)
+            {
+                bool isEqual = tagString.Equals(inputString);
+                Debug.Log($"Comparing string values: {tagString} and {inputString}, equal: {isEqual}");
+                return isEqual;
+            }
+            // Add more detailed logging for other types if necessary
+            Debug.Log($"tagValue: {tagValue}, value: {value}");
+            bool equals = tagValue.Equals(value);
+            Debug.Log($"Comparing values: {tagValue} and {value}, equal: {equals}");
+            return equals;
         }
 
     }

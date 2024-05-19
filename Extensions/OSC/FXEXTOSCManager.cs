@@ -79,7 +79,7 @@ namespace FX
 
 
             //fxSceneManager.onSceneListUpdated += OnPresetListUpdated;
-            fxSceneManager.onCurrentSceneNameChanged += OnCurrentPresetNameChanged;
+            fxSceneManager.onCurrentSceneChanged += OnCurrentSceneChanged;
             StartCoroutine(SendMessagesAtInterval(sendInterval));
         }
 
@@ -218,7 +218,7 @@ namespace FX
                 {
                     string senderIp = matchingNode.Transmitter.RemoteHost.ToString();
                     int senderPort = matchingNode.Transmitter.RemotePort;
-                    SendOSCMessage("/scene/name/get", matchingNode, fxSceneManager.CurrentSceneName);
+                    SendOSCMessage("/scene/name/get", matchingNode, fxSceneManager.CurrentScene.Name);
                 }
             }
             else if (address.ToUpper() == "/SCENE/NAME/SET")
@@ -226,7 +226,7 @@ namespace FX
                 if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
                 {
                     string sceneName = message.Values[0].StringValue;
-                    fxSceneManager.CurrentSceneName = sceneName;
+                    fxSceneManager.CurrentScene.Name = sceneName;
                 }
             }
             else if (address.ToUpper() == "/SCENE/SAVE")
@@ -235,7 +235,7 @@ namespace FX
                 else if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
                 {
                     string sceneName = message.Values[0].StringValue;
-                    fxSceneManager.SaveScene(sceneName);
+                    fxSceneManager.SaveScene();
                 }
             }
             else if (address.ToUpper() == "/SCENE/REMOVE")
@@ -612,11 +612,11 @@ namespace FX
             }
         }
 
-        void OnCurrentPresetNameChanged(string name)
+        void OnCurrentSceneChanged(Scene scene)
         {
             foreach (var node in oscNodes)
             {
-                if (node.SendParamChanges) SendOSCMessage("/scene/name/get", node, name);
+                if (node.SendParamChanges) SendOSCMessage("/scene/name/get", node, scene.Name);
             }
         }
 

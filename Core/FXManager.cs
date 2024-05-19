@@ -569,6 +569,16 @@ namespace FX
             public FXEnumData fXEnumData = new FXEnumData();    
             public List<FXGroupData> fxGroupPresets               = new List<FXGroupData>();
             public List<FXMethodData> fXPresetMethods             = new List<FXMethodData>();
+
+            public List<SerializedTag> sceneTags = new List<SerializedTag>();
+        }
+
+        [JsonConverter(typeof(SerializedTagConverter))]
+        public class SerializedTag
+        {
+            public string Name { get; set; }
+            public string Type { get; set; }
+            public object Value { get; set; }
         }
 
         [System.Serializable]
@@ -577,7 +587,7 @@ namespace FX
             public string key;
         }
 
-        public void SavePreset(string presetName, bool includeAll = false)
+        public void SavePreset(FX.Scene scene, bool includeAll = false)
         {
             FXData preset = new FXData();
 
@@ -667,6 +677,14 @@ namespace FX
 
             preset.fXEnumData = GetFXEnumData();
 
+            preset.sceneTags = scene.Tags.Select(tag => new SerializedTag
+            {
+                Name = tag.Name,
+                Type = tag.Value.GetType().Name.ToLower(),
+                Value = tag.Value
+            }).ToList();
+
+
             GroupFXController[] allFXGroups = GameObject.FindObjectsOfType<GroupFXController>();
             foreach (var group in allFXGroups)
             {
@@ -688,12 +706,12 @@ namespace FX
                 Directory.CreateDirectory(directoryPath);
             }
 
-            string filePath = Path.Combine(directoryPath, presetName + ".json");
+            string filePath = Path.Combine(directoryPath, scene.Name + ".json");
             File.WriteAllText(filePath, json);
         }
 
 
-        public bool LoadPreset(string presetName)
+        public bool LoadPreset(string presetName, out List<ITag> loadedTags)
         {
             string directoryPath = Path.Combine(Application.streamingAssetsPath, "FX Scenes"); ;
             string filePath = Path.Combine(directoryPath, presetName + ".json");
@@ -795,23 +813,20 @@ namespace FX
                     }
                 }
 
-                // 
-                //HashSet<string> presetAddresses = new HashSet<string>(preset.boolParameters.Select(p => p.key));
-                //
-                //// Filter and process relevant FX items
-                //var relevantFXItems = fxItemsByAddress_
-                //    .Where(item => item.Key.EndsWith("fxEnabled") && item.Value.type == FXItemInfoType.Parameter && item.Value.item is FXParameter<bool>)
-                //    .ToList();
-                //
-                //foreach (var fxItem in relevantFXItems)
-                //{
-                //    IFXParameter parameter = fxItem.Value.item as IFXParameter;
-                //    if (parameter != null && parameter.ShouldSave && !presetAddresses.Contains(fxItem.Key))
-                //    {
-                //        ((FXParameter<bool>)parameter).Value = false;
-                //
-                //    }
-                //}
+                loadedTags = preset.sceneTags.Select(tag => {
+                    Type type = Type.GetType(tag.Type switch
+                    {
+                        "string" => typeof(string).AssemblyQualifiedName,
+                        "bool" => typeof(bool).AssemblyQualifiedName,
+                        "float" => typeof(float).AssemblyQualifiedName,
+                        "int" => typeof(int).AssemblyQualifiedName,
+                        "color" => typeof(Color).AssemblyQualifiedName,
+                        _ => throw new NotImplementedException($"Unknown type: {tag.Type}")
+                    });
+                    var tagType = typeof(Tag<>).MakeGenericType(type);
+                    return (ITag)Activator.CreateInstance(tagType, tag.Name, tag.Value);
+                }).ToList();
+
                 if (onPresetLoaded != null) onPresetLoaded.Invoke(presetName);
                 return true;
 
@@ -819,6 +834,7 @@ namespace FX
             else
             {
                 Debug.LogWarning($"Preset {presetName} not found.");
+                loadedTags = null;
                 return false;
             }
         }
