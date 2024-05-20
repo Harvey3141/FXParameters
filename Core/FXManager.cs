@@ -570,15 +570,7 @@ namespace FX
             public List<FXGroupData> fxGroupPresets               = new List<FXGroupData>();
             public List<FXMethodData> fXPresetMethods             = new List<FXMethodData>();
 
-            public List<SerializedTag> sceneTags = new List<SerializedTag>();
-        }
-
-        [JsonConverter(typeof(SerializedTagConverter))]
-        public class SerializedTag
-        {
-            public string Name { get; set; }
-            public string Type { get; set; }
-            public object Value { get; set; }
+            public List<string> sceneTagIds = new List<string>();
         }
 
         [System.Serializable]
@@ -599,9 +591,6 @@ namespace FX
 
                     if (parameter.ShouldSave || includeAll)
                     {
-                        string key_ = item.Key;
-                        object value_ = parameter.ObjectValue;
-
                         if (item.Value.item is FXScaledParameter<float> scaledParamFloat)
                         {
                             preset.floatParameters.Add(scaledParamFloat.GetData());
@@ -627,9 +616,6 @@ namespace FX
 
                     if (parameter.ShouldSave || includeAll)
                     {
-                        string key_ = item.Key;
-                        object value_ = parameter.ObjectValue;
-
                         if (parameter is FXParameter<float> floatParam)
                         {
                             preset.floatParameters.Add(floatParam.GetData());
@@ -652,13 +638,13 @@ namespace FX
                         }
                         else
                         {
-                            Type valueType = value_.GetType();
+                            Type valueType = parameter.ObjectValue.GetType();
                             if (valueType.IsEnum)
                             {
                                 FXEnumParameterData enumParameter = new FXEnumParameterData
                                 {
-                                    key = key_,
-                                    value = (int)value_,
+                                    key = item.Key,
+                                    value = (int)parameter.ObjectValue,
                                     availableNames = Enum.GetNames(valueType).ToList()
                                 };
                                 preset.enumParameters.Add(enumParameter);
@@ -666,23 +652,18 @@ namespace FX
                         }
                     }
                 }
-                if (includeAll) {
-
-                    if (item.Value.type == FXItemInfoType.Method) {
+                if (includeAll)
+                {
+                    if (item.Value.type == FXItemInfoType.Method)
+                    {
                         preset.fXPresetMethods.Add(new FXMethodData { key = item.Key });
                     }
-
                 }
             }
 
             preset.fXEnumData = GetFXEnumData();
 
-            preset.sceneTags = scene.Tags.Select(tag => new SerializedTag
-            {
-                Name = tag.Name,
-                Type = tag.Value.GetType().Name.ToLower(),
-                Value = tag.Value
-            }).ToList();
+            preset.sceneTagIds = scene.TagIds;  // Update to store tag IDs
 
             GroupFXController[] allFXGroups = GameObject.FindObjectsOfType<GroupFXController>();
             foreach (var group in allFXGroups)
@@ -692,9 +673,9 @@ namespace FX
 
             var settings = new JsonSerializerSettings
             {
-                Converters = new List <JsonConverter> {
-                    new ColourHandler() 
-                },               
+                Converters = new List<JsonConverter> {
+                new ColourHandler()
+                },
             };
 
             string json = JsonConvert.SerializeObject(preset, settings);
@@ -710,9 +691,10 @@ namespace FX
         }
 
 
-        public bool LoadPreset(string presetName, out List<ITag> loadedTags)
+
+        public bool LoadPreset(string presetName, out List<string> loadedTagIds) 
         {
-            string directoryPath = Path.Combine(Application.streamingAssetsPath, "FX Scenes"); ;
+            string directoryPath = Path.Combine(Application.streamingAssetsPath, "FX Scenes");
             string filePath = Path.Combine(directoryPath, presetName + ".json");
 
             if (File.Exists(filePath))
@@ -721,10 +703,10 @@ namespace FX
                 var settings = new JsonSerializerSettings
                 {
                     Converters = new List<JsonConverter> {
-                    new ColourHandler(), new SerializedTagConverter()
-                },
+                        new ColourHandler()
+                    },
                 };
-                FXData preset = JsonConvert.DeserializeObject<FXData>(json,settings);
+                FXData preset = JsonConvert.DeserializeObject<FXData>(json, settings);
 
                 Dictionary<string, FXGroupData> fxGroupPresets = preset.fxGroupPresets.ToDictionary(p => p.address, p => p);
 
@@ -745,49 +727,22 @@ namespace FX
 
                     var existingGroup = allFXGroups.FirstOrDefault(g => g.address == groupPreset.Key);
 
-                    //CleanInvalidFXAddresses(groupPreset.Value.fxAddresses);
-
                     if (existingGroup != null)
                     {
-                        // If it exists, load the preset into the existing group, these will be the pinned groups                     
                         existingGroup.SetData(groupPreset.Value);
                     }
                     else
                     {
-                        // If it doesn't exist, create a new GroupFXController with the preset
                         CreateGroup(groupPreset.Value);
                     }
                 }
 
-                foreach (var param in preset.stringParameters)
-                {
-                    SetFX(param.key, param.value, true);
-                }
-
-                foreach (var param in preset.intParameters)
-                {
-                    SetFX(param.key, param.value, true);
-                }
-
-                foreach (var param in preset.floatParameters)
-                {
-                    SetFX(param.key, param.value, true);
-                }
-
-                foreach (var param in preset.boolParameters)
-                {
-                    SetFX(param.key, param.value, true);
-                }
-
-                foreach (var param in preset.colorParameters)
-                {
-                    SetFX(param.key, param.value, true);
-                }
-
-                foreach (var param in preset.enumParameters)
-                {
-                    SetFX(param.key, param.value, true);
-                }
+                foreach (var param in preset.stringParameters) { SetFX(param.key, param.value, true); }
+                foreach (var param in preset.intParameters) { SetFX(param.key, param.value, true); }
+                foreach (var param in preset.floatParameters) { SetFX(param.key, param.value, true); }
+                foreach (var param in preset.boolParameters) { SetFX(param.key, param.value, true); }
+                foreach (var param in preset.colorParameters) { SetFX(param.key, param.value, true); }
+                foreach (var param in preset.enumParameters) { SetFX(param.key, param.value, true); }
 
                 HashSet<string> presetAddresses = new HashSet<string>(
                     preset.boolParameters.Select(p => p.key)
@@ -798,7 +753,6 @@ namespace FX
                     .Concat(preset.enumParameters.Select(p => p.key))
                 );
 
-                // Reset any unfound parameters to their default values
                 foreach (var fxItem in fxItemsByAddress_)
                 {
                     if (fxItem.Value.type == FXItemInfoType.Parameter)
@@ -812,34 +766,19 @@ namespace FX
                     }
                 }
 
-                loadedTags = preset.sceneTags.Select<SerializedTag, ITag>(tag =>
-                {
-                    switch (tag.Type)
-                    {
-                        case "string":
-                            return new Tag<string>(tag.Name, (string)tag.Value);
-                        case "int32":
-                            return new Tag<int>(tag.Name, Convert.ToInt32(tag.Value));
-                        case "single":
-                            return new Tag<float>(tag.Name, Convert.ToSingle(tag.Value));
-                        case "boolean":
-                            return new Tag<bool>(tag.Name, Convert.ToBoolean(tag.Value));
-                        default:
-                            throw new InvalidOperationException($"Unsupported tag type: {tag.Type}");
-                    }
-                }).ToList();
+                loadedTagIds = preset.sceneTagIds; 
 
                 if (onPresetLoaded != null) onPresetLoaded.Invoke(presetName);
                 return true;
-
             }
             else
             {
                 Debug.LogWarning($"Preset {presetName} not found.");
-                loadedTags = null;
+                loadedTagIds = null;
                 return false;
             }
         }
+
 
         public void CleanInvalidFXAddresses(List<string> fxAddresses)
         {

@@ -15,6 +15,12 @@ namespace FX
         private Dictionary<string, string> newTagValues = new Dictionary<string, string>();
         private Dictionary<string, int> selectedTagIndices = new Dictionary<string, int>();
 
+        private int selectedTagConfigIndex = 0;
+        private int selectedTagIndex = 0;
+
+        private string newTagType = "";
+        private string newTagValue = "";
+
         private void OnEnable()
         {
             fxSceneManager = (FXSceneManager)target;
@@ -98,216 +104,125 @@ namespace FX
 
             GUILayout.Label("Manage System Tags", EditorStyles.boldLabel);
 
-            var groupedTags = fxSceneManager.tagList.GroupBy(tag => tag.Name).ToList();
-
-            foreach (var group in groupedTags)
+            if (fxSceneManager.tagConfigurations.Count > 0)
             {
-                GUILayout.Label($"Type: {group.Key}", EditorStyles.boldLabel);
-                tagScrollPosition = EditorGUILayout.BeginScrollView(tagScrollPosition, GUILayout.Height(50));
+                string[] tagConfigTypes = fxSceneManager.tagConfigurations.Select(tc => tc.type).ToArray();
 
-                foreach (var tag in group)
-                {
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Label($"Value: {tag.Value}", GUILayout.Width(200));
-                    if (GUILayout.Button("Remove", GUILayout.Width(70)))
-                    {
-                        if (fxSceneManager.RemoveTagFromSystem(tag.Name, tag.Value))
-                        {
-                            Debug.Log($"Tag '{tag.Value}' removed from the system.");
-                        }
-                        else
-                        {
-                            Debug.LogWarning($"Failed to remove tag '{tag.Value}' from the system.");
-                        }
-                    }
-                    GUILayout.EndHorizontal();
-                }
-
-                EditorGUILayout.EndScrollView();
-                GUILayout.Space(10);
-
-                // Add new tag for this type
-                if (!newTagValues.ContainsKey(group.Key))
-                {
-                    newTagValues[group.Key] = "";
-                }
                 GUILayout.BeginHorizontal();
-                GUILayout.Label("Value", GUILayout.Width(40));
 
-                // Determine the type of the first tag in the group
-                string tagType = group.First().Value.GetType().Name.ToLower();
+                // Dropdown to select the tag configuration type
+                selectedTagConfigIndex = EditorGUILayout.Popup(selectedTagConfigIndex, tagConfigTypes, GUILayout.Width(150));
+                var selectedTagConfig = fxSceneManager.tagConfigurations[selectedTagConfigIndex];
 
-                // Create the appropriate input field based on the tag type
-                switch (tagType)
+                // Dropdown to select the tag within the selected tag configuration type
+                string[] tagValues = selectedTagConfig.tags.Select(tag => tag.value).ToArray();
+                selectedTagIndex = EditorGUILayout.Popup(selectedTagIndex, tagValues, GUILayout.Width(200));
+
+                // Add the selected tag to the current scene
+                if (GUILayout.Button($"Add Tag to Scene", GUILayout.Width(150)))
                 {
-                    case "string":
-                        newTagValues[group.Key] = EditorGUILayout.TextField(newTagValues[group.Key], GUILayout.Width(100));
-                        break;
-                    case "int32":
-                        if (int.TryParse(newTagValues[group.Key], out int intValue))
-                        {
-                            newTagValues[group.Key] = EditorGUILayout.IntField(intValue, GUILayout.Width(100)).ToString();
-                        }
-                        else
-                        {
-                            newTagValues[group.Key] = EditorGUILayout.IntField(0, GUILayout.Width(100)).ToString();
-                        }
-                        break;
-                    case "single": // float type
-                        if (float.TryParse(newTagValues[group.Key], out float floatValue))
-                        {
-                            newTagValues[group.Key] = EditorGUILayout.FloatField(floatValue, GUILayout.Width(100)).ToString();
-                        }
-                        else
-                        {
-                            newTagValues[group.Key] = EditorGUILayout.FloatField(0f, GUILayout.Width(100)).ToString();
-                        }
-                        break;
-                    case "boolean":
-                        if (bool.TryParse(newTagValues[group.Key], out bool boolValue))
-                        {
-                            newTagValues[group.Key] = EditorGUILayout.Toggle(boolValue, GUILayout.Width(100)).ToString();
-                        }
-                        else
-                        {
-                            newTagValues[group.Key] = EditorGUILayout.Toggle(false, GUILayout.Width(100)).ToString();
-                        }
-                        break;
-                    default:
-                        newTagValues[group.Key] = EditorGUILayout.TextField(newTagValues[group.Key], GUILayout.Width(100));
-                        break;
-                }
-
-                if (GUILayout.Button("Add", GUILayout.Width(70)))
-                {
-                    bool success = false;
-                    switch (tagType)
+                    var selectedTagId = selectedTagConfig.tags[selectedTagIndex].id;
+                    if (fxSceneManager.AddTagToScene(fxSceneManager.CurrentScene.Name, selectedTagId))
                     {
-                        case "string":
-                            success = fxSceneManager.AddTagToSystem(group.Key, newTagValues[group.Key]);
-                            break;
-                        case "int32":
-                            if (int.TryParse(newTagValues[group.Key], out int intValue))
-                            {
-                                success = fxSceneManager.AddTagToSystem(group.Key, intValue);
-                            }
-                            break;
-                        case "single":
-                            if (float.TryParse(newTagValues[group.Key], out float floatValue))
-                            {
-                                success = fxSceneManager.AddTagToSystem(group.Key, floatValue);
-                            }
-                            break;
-                        case "boolean":
-                            if (bool.TryParse(newTagValues[group.Key], out bool boolValue))
-                            {
-                                success = fxSceneManager.AddTagToSystem(group.Key, boolValue);
-                            }
-                            break;
-                        default:
-                            success = fxSceneManager.AddTagToSystem(group.Key, newTagValues[group.Key]);
-                            break;
-                    }
-
-                    if (success)
-                    {
-                        Debug.Log($"Tag '{newTagValues[group.Key]}' added to the system under type '{group.Key}'.");
-                        newTagValues[group.Key] = "";
+                        Debug.Log($"Tag '{selectedTagConfig.tags[selectedTagIndex].value}' added to scene '{fxSceneManager.CurrentScene.Name}' under type '{selectedTagConfig.type}'.");
                     }
                     else
                     {
-                        Debug.LogWarning($"Tag '{newTagValues[group.Key]}' already exists in the system under type '{group.Key}'.");
+                        Debug.LogWarning($"Failed to add tag '{selectedTagConfig.tags[selectedTagIndex].value}' to scene '{fxSceneManager.CurrentScene.Name}'.");
                     }
                 }
+
                 GUILayout.EndHorizontal();
                 GUILayout.Space(10);
+            }
+            else
+            {
+                EditorGUILayout.HelpBox("No tag configurations found.", MessageType.Info);
             }
 
             GUILayout.Space(20);
 
-            // Add tag to the current scene
-            GUILayout.Label("Current Scene Tags", EditorStyles.boldLabel);
+            // Add new tag to configuration
+            GUILayout.Label("Add New Tag to Configuration", EditorStyles.boldLabel);
+            GUILayout.BeginHorizontal();
+            newTagType = EditorGUILayout.TextField("Type", newTagType, GUILayout.Width(150));
+            newTagValue = EditorGUILayout.TextField("Value", newTagValue, GUILayout.Width(150));
 
-            foreach (var group in groupedTags)
+            if (GUILayout.Button("Add Tag", GUILayout.Width(100)))
             {
-                GUILayout.Label($"Add {group.Key} Tags to Scene", EditorStyles.boldLabel);
-
-                if (!selectedTagIndices.ContainsKey(group.Key))
+                if (!string.IsNullOrEmpty(newTagType) && !string.IsNullOrEmpty(newTagValue))
                 {
-                    selectedTagIndices[group.Key] = 0;
-                }
-
-                string[] tagValues = group.Select(tag => tag.Value.ToString()).ToArray();
-                GUILayout.BeginHorizontal();
-                selectedTagIndices[group.Key] = EditorGUILayout.Popup(selectedTagIndices[group.Key], tagValues, GUILayout.Width(200));
-                if (GUILayout.Button($"Add {group.Key} Tag to Scene", GUILayout.Width(150)))
-                {
-                    var selectedTagValue = tagValues[selectedTagIndices[group.Key]];
-                    var tag = group.First();
-                    bool success = false;
-
-                    // Add the tag to the scene based on its type
-                    if (tag.Value is string)
+                    if (fxSceneManager.AddTagToConfiguration(newTagType, newTagValue))
                     {
-                        success = fxSceneManager.AddTagToScene(fxSceneManager.CurrentScene.Name, group.Key, selectedTagValue);
-                    }
-                    else if (tag.Value is int)
-                    {
-                        if (int.TryParse(selectedTagValue, out int intValue))
-                        {
-                            success = fxSceneManager.AddTagToScene(fxSceneManager.CurrentScene.Name, group.Key, intValue);
-                        }
-                    }
-                    else if (tag.Value is float)
-                    {
-                        if (float.TryParse(selectedTagValue, out float floatValue))
-                        {
-                            success = fxSceneManager.AddTagToScene(fxSceneManager.CurrentScene.Name, group.Key, floatValue);
-                        }
-                    }
-                    else if (tag.Value is bool)
-                    {
-                        if (bool.TryParse(selectedTagValue, out bool boolValue))
-                        {
-                            success = fxSceneManager.AddTagToScene(fxSceneManager.CurrentScene.Name, group.Key, boolValue);
-                        }
-                    }
-
-                    if (success)
-                    {
-                        Debug.Log($"Tag '{selectedTagValue}' added to scene '{fxSceneManager.CurrentScene.Name}' under type '{group.Key}'.");
+                        Debug.Log($"Tag '{newTagValue}' added to configuration under type '{newTagType}'.");
+                        newTagType = "";
+                        newTagValue = "";
                     }
                     else
                     {
-                        Debug.LogWarning($"Failed to add tag '{selectedTagValue}' to scene '{fxSceneManager.CurrentScene.Name}'.");
+                        Debug.LogWarning($"Failed to add tag '{newTagValue}' to configuration under type '{newTagType}'.");
                     }
                 }
-                GUILayout.EndHorizontal();
-                GUILayout.Space(10);
             }
 
+            GUILayout.EndHorizontal();
             GUILayout.Space(10);
+
+            // Remove tag from configuration
+            GUILayout.Label("Remove Tag from Configuration", EditorStyles.boldLabel);
+            GUILayout.BeginHorizontal();
+            selectedTagConfigIndex = EditorGUILayout.Popup(selectedTagConfigIndex, fxSceneManager.tagConfigurations.Select(tc => tc.type).ToArray(), GUILayout.Width(150));
+            var selectedRemoveTagConfig = fxSceneManager.tagConfigurations[selectedTagConfigIndex];
+
+            if (selectedRemoveTagConfig.tags.Count > 0)
+            {
+                selectedTagIndex = EditorGUILayout.Popup(selectedTagIndex, selectedRemoveTagConfig.tags.Select(tag => tag.value).ToArray(), GUILayout.Width(150));
+                var selectedTagId = selectedRemoveTagConfig.tags[selectedTagIndex].id;
+
+                if (GUILayout.Button("Remove Tag", GUILayout.Width(100)))
+                {
+                    if (fxSceneManager.RemoveTagFromConfiguration(selectedRemoveTagConfig.type, selectedTagId))
+                    {
+                        Debug.Log($"Tag '{selectedRemoveTagConfig.tags[selectedTagIndex].value}' removed from configuration under type '{selectedRemoveTagConfig.type}'.");
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"Failed to remove tag '{selectedRemoveTagConfig.tags[selectedTagIndex].value}' from configuration under type '{selectedRemoveTagConfig.type}'.");
+                    }
+                }
+            }
+            else
+            {
+                EditorGUILayout.HelpBox("No tags available for selected configuration.", MessageType.Info);
+            }
+
+            GUILayout.EndHorizontal();
+            GUILayout.Space(20);
 
             // Display current scene tags
             GUILayout.Label("Current Scene Tags", EditorStyles.boldLabel);
-            if (fxSceneManager.CurrentScene != null && fxSceneManager.CurrentScene.Tags.Count > 0)
+            if (fxSceneManager.CurrentScene != null && fxSceneManager.CurrentScene.TagIds.Count > 0)
             {
-                foreach (var tag in fxSceneManager.CurrentScene.Tags)
+                foreach (var tagId in fxSceneManager.CurrentScene.TagIds)
                 {
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Label($"{tag.Name}: {tag.Value}", GUILayout.Width(200));
-                    if (GUILayout.Button("Remove Tag", GUILayout.Width(100)))
+                    var tag = fxSceneManager.tagConfigurations.SelectMany(tc => tc.tags).FirstOrDefault(t => t.id == tagId);
+                    if (tag != null)
                     {
-                        if (fxSceneManager.RemoveTagFromScene(fxSceneManager.CurrentScene.Name, tag.Name, tag.Value))
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Label($"{tag.value}", GUILayout.Width(200));
+                        if (GUILayout.Button("Remove Tag", GUILayout.Width(100)))
                         {
-                            Debug.Log($"Tag '{tag.Value}' removed from scene '{fxSceneManager.CurrentScene.Name}'.");
+                            if (fxSceneManager.RemoveTagFromScene(fxSceneManager.CurrentScene.Name, tag.id))
+                            {
+                                Debug.Log($"Tag '{tag.value}' removed from scene '{fxSceneManager.CurrentScene.Name}'.");
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"Failed to remove tag '{tag.value}' from scene '{fxSceneManager.CurrentScene.Name}'.");
+                            }
                         }
-                        else
-                        {
-                            Debug.LogWarning($"Failed to remove tag '{tag.Value}' from scene '{fxSceneManager.CurrentScene.Name}'.");
-                        }
+                        GUILayout.EndHorizontal();
                     }
-                    GUILayout.EndHorizontal();
                 }
             }
             else
@@ -330,11 +245,6 @@ namespace FX
         private void RemoveScene(string sceneName)
         {
             fxSceneManager.RemoveScene(sceneName);
-        }
-
-        private string[] GetUniqueTagTypes()
-        {
-            return fxSceneManager.tagList.Select(tag => tag.Name).Distinct().ToArray();
         }
     }
 }

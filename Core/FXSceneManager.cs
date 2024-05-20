@@ -2,54 +2,60 @@ using FX.Patterns;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace FX
 {
-    public interface ITag
+    public class TagConfiguration
     {
-        string Name { get; set; }
-        object Value { get; }
+        public string type { get; set; }
+        public List<Tag> tags { get; set; }
+
+        public TagConfiguration(string type)
+        {
+            this.type = type;
+            this.tags = new List<Tag>();
+        }
     }
 
-    public class Tag<T> : ITag
+    public class Tag
     {
-        public string Name { get; set; }
-        public T Value { get; set; }
+        public string id { get; set; }
+        public string value { get; set; }
 
-        object ITag.Value => Value;
-
-        public Tag(string name, T value)
+        public Tag(string id, string value)
         {
-            Name = name;
-            Value = value;
+            this.id = id;
+            this.value = value;
         }
     }
 
     public class Scene
     {
         public string Name { get; set; }
-        public List<ITag> Tags { get; set; }
+        public List<string> TagIds { get; set; }
 
         public Scene(string name)
         {
             Name = name;
-            Tags = new List<ITag>();
+            TagIds = new List<string>();
         }
 
-        public bool AddTag(ITag tag)
+        public bool AddTag(string tagId)
         {
-            if (!Tags.Exists(t => t.Name == tag.Name && t.Value.Equals(tag.Value)))
+            if (!TagIds.Contains(tagId))
             {
-                Tags.Add(tag);
+                TagIds.Add(tagId);
                 return true;
             }
             return false;
         }
 
-        public bool RemoveTag(ITag tag)
+        public bool RemoveTag(string tagId)
         {
-            return Tags.Remove(tag);
+            return TagIds.Remove(tagId);
         }
     }
 
@@ -59,7 +65,7 @@ namespace FX
         [HideInInspector]
         public List<Scene> scenes;
         [HideInInspector]
-        public List<ITag> tagList;
+        public List<TagConfiguration> tagConfigurations;
 
         public bool exportParameterListOnStart = false;
 
@@ -90,12 +96,7 @@ namespace FX
         {
             fXManager = FXManager.Instance;
             scenes = new List<Scene>();
-            tagList = new List<ITag>
-            {
-                new Tag<string>("scene-bucket", "test bucket"),
-                new Tag<string>("scene-label", "value2"),
-                new Tag<bool>("scene-float", true)
-            };
+            tagConfigurations = LoadTagConfigurations();
             PopulateScenesList();
         }
 
@@ -114,7 +115,6 @@ namespace FX
                     if (file.Name != "ParameterList")
                     {
                         string sceneName = Path.GetFileNameWithoutExtension(file.Name);
-                        // Placeholder: Tags should be loaded from the file
                         Scene scene = new Scene(sceneName);
                         scenes.Add(scene);
                     }
@@ -129,24 +129,18 @@ namespace FX
 
         public bool LoadScene(string name)
         {
-            if (fXManager.LoadPreset(name, out List<ITag> loadedTags))
+            if (fXManager.LoadPreset(name, out List<string> loadedTagIds))
             {
                 CurrentScene = scenes.Find(s => s.Name == name);
 
-                foreach (var tag in loadedTags)
-                {
-                    AddTagToSystem(tag.Name, tag.Value);
-                }
-
                 if (CurrentScene != null)
                 {
-                    CurrentScene.Tags = loadedTags;
+                    CurrentScene.TagIds = loadedTagIds;
                     return true;
                 }
             }
             return false;
         }
-
 
         public void SaveScene()
         {
@@ -165,7 +159,7 @@ namespace FX
         public void ExportParameterList()
         {
             Scene parameterListScene = new Scene("ParameterList");
-            fXManager.SavePreset(parameterListScene,true);
+            fXManager.SavePreset(parameterListScene, true);
         }
 
         public void RemoveScene(string name)
@@ -218,33 +212,38 @@ namespace FX
             fXManager.ResetAllParamsToDefault();
         }
 
-        public bool AddTagToSystem<T>(string name, T value)
+        public bool AddTagToConfiguration(string type, string value)
         {
-            if (!tagList.Exists(t => t.Name == name && t.Value.Equals(value)))
+            var tagConfig = tagConfigurations.Find(tc => tc.type == type);
+            if (tagConfig != null && !tagConfig.tags.Exists(t => t.value == value))
             {
-                tagList.Add(new Tag<T>(name, value));
+                string id = Guid.NewGuid().ToString();
+                tagConfig.tags.Add(new Tag(id, value));
+                SaveTagConfigurations();
                 return true;
             }
             return false;
         }
 
-        public bool RemoveTagFromSystem(string name, object value)
+        public bool RemoveTagFromConfiguration(string type, string id)
         {
-            ITag tag = tagList.Find(t => t.Name == name && t.Value.Equals(value));
-            if (tag != null)
+            var tagConfig = tagConfigurations.Find(tc => tc.type == type);
+            if (tagConfig != null)
             {
-                foreach (var scene in scenes)
+                var tag = tagConfig.tags.Find(t => t.id == id);
+                if (tag != null)
                 {
-                    scene.RemoveTag(tag);
+                    tagConfig.tags.Remove(tag);
+                    SaveTagConfigurations();
+                    return true;
                 }
-                return tagList.Remove(tag);
             }
             return false;
         }
 
-        public bool AddTagToScene(string sceneName, string name, object value)
+        public bool AddTagToScene(string sceneName, string tagId)
         {
-            Debug.Log($"Attempting to add tag to scene: {sceneName}, tag name: {name}, tag value: {value}");
+            Debug.Log($"Attempting to add tag to scene: {sceneName}, tag ID: {tagId}");
 
             Scene scene = scenes.Find(s => s.Name == sceneName);
             if (scene == null)
@@ -253,20 +252,20 @@ namespace FX
                 return false;
             }
 
-            ITag tag = tagList.Find(t => t.Name == name && CompareTagValue(t.Value, value));
+            var tag = tagConfigurations.SelectMany(tc => tc.tags).FirstOrDefault(t => t.id == tagId);
             if (tag == null)
             {
-                Debug.LogError($"Tag not found: {name} with value {value}");
+                Debug.LogError($"Tag not found: {tagId}");
                 return false;
             }
 
-            Debug.Log($"Adding tag {name} with value {value} to scene {sceneName}");
-            return scene.AddTag(tag);
+            Debug.Log($"Adding tag {tagId} to scene {sceneName}");
+            return scene.AddTag(tagId);
         }
 
-        public bool RemoveTagFromScene(string sceneName, string tagName, object value)
+        public bool RemoveTagFromScene(string sceneName, string tagId)
         {
-            Debug.Log($"Attempting to remove tag from scene: {sceneName}, tag name: {tagName}, tag value: {value}");
+            Debug.Log($"Attempting to remove tag from scene: {sceneName}, tag ID: {tagId}");
 
             Scene scene = scenes.Find(s => s.Name == sceneName);
             if (scene == null)
@@ -275,39 +274,37 @@ namespace FX
                 return false;
             }
 
-            ITag tag = tagList.Find(t => t.Name == tagName && CompareTagValue(t.Value, value));
+            var tag = tagConfigurations.SelectMany(tc => tc.tags).FirstOrDefault(t => t.id == tagId);
             if (tag == null)
             {
-                Debug.LogError($"Tag not found: {tagName} with value {value}");
+                Debug.LogError($"Tag not found: {tagId}");
                 return false;
             }
 
-            Debug.Log($"Removing tag {tagName} with value {value} from scene {sceneName}");
-            return scene.RemoveTag(tag);
+            Debug.Log($"Removing tag {tagId} from scene {sceneName}");
+            return scene.RemoveTag(tagId);
         }
 
-        private bool CompareTagValue(object tagValue, object value)
+        private void SaveTagConfigurations()
         {
-            Debug.Log($"Comparing values. tagValue type: {tagValue.GetType()}, value type: {value.GetType()}");
-
-            if (tagValue is float tagFloat && value is float inputFloat)
-            {
-                bool isEqual = Mathf.Abs(tagFloat - inputFloat) < Mathf.Epsilon;
-                Debug.Log($"Comparing float values: {tagFloat} and {inputFloat}, equal: {isEqual}");
-                return isEqual;
-            }
-            if (tagValue is string tagString && value is string inputString)
-            {
-                bool isEqual = tagString.Equals(inputString);
-                Debug.Log($"Comparing string values: {tagString} and {inputString}, equal: {isEqual}");
-                return isEqual;
-            }
-            // Add more detailed logging for other types if necessary
-            Debug.Log($"tagValue: {tagValue}, value: {value}");
-            bool equals = tagValue.Equals(value);
-            Debug.Log($"Comparing values: {tagValue} and {value}, equal: {equals}");
-            return equals;
+            string path = Path.Combine(Application.streamingAssetsPath, "FX/TagConfigurations.json");
+            var json = JsonConvert.SerializeObject(tagConfigurations, Formatting.Indented);
+            File.WriteAllText(path, json);
         }
 
+        private List<TagConfiguration> LoadTagConfigurations()
+        {
+            string path = Path.Combine(Application.streamingAssetsPath, "FX/TagConfigurations.json");
+            if (File.Exists(path))
+            {
+                var json = File.ReadAllText(path);
+                return JsonConvert.DeserializeObject<List<TagConfiguration>>(json);
+            }
+            return new List<TagConfiguration>
+            {
+                new TagConfiguration("scene-bucket"),
+                new TagConfiguration("scene-label")
+            };
+        }
     }
 }
