@@ -39,7 +39,6 @@ namespace FX
             GUILayout.BeginHorizontal();
             EditorGUIUtility.labelWidth = 60;
 
-            // Ensure CurrentScene is initialized
             if (fxSceneManager.CurrentScene == null)
             {
                 fxSceneManager.CurrentScene = new Scene(string.Empty);
@@ -57,17 +56,14 @@ namespace FX
 
             GUILayout.Space(20);
 
-            // Load Scene Section
             GUILayout.Label("Scenes", EditorStyles.boldLabel);
 
-            // Display the scenes in a scrollable list box
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, GUILayout.MaxHeight(EditorGUIUtility.singleLineHeight * 10));
 
             if (fxSceneManager.scenes.Count > 0)
             {
-                for (int i = 0; i < fxSceneManager.scenes.Count; i++)
+                foreach (Scene scene in fxSceneManager.scenes)
                 {
-                    Scene scene = fxSceneManager.scenes[i];
                     if (scene.Name != "ParameterList")
                     {
                         GUILayout.BeginHorizontal();
@@ -77,7 +73,6 @@ namespace FX
                             LoadScene(scene.Name);
                         }
 
-                        // Add a remove button for each scene
                         if (GUILayout.Button("Remove", GUILayout.Width(70)))
                         {
                             RemoveScene(scene.Name);
@@ -101,7 +96,6 @@ namespace FX
 
             GUILayout.Space(20);
 
-            // Manage System Tags Section
             GUILayout.Label("Manage System Tags", EditorStyles.boldLabel);
 
             var groupedTags = fxSceneManager.tagList.GroupBy(tag => tag.Name).ToList();
@@ -139,10 +133,83 @@ namespace FX
                 }
                 GUILayout.BeginHorizontal();
                 GUILayout.Label("Value", GUILayout.Width(40));
-                newTagValues[group.Key] = EditorGUILayout.TextField(newTagValues[group.Key], GUILayout.Width(100));
+
+                // Determine the type of the first tag in the group
+                string tagType = group.First().Value.GetType().Name.ToLower();
+
+                // Create the appropriate input field based on the tag type
+                switch (tagType)
+                {
+                    case "string":
+                        newTagValues[group.Key] = EditorGUILayout.TextField(newTagValues[group.Key], GUILayout.Width(100));
+                        break;
+                    case "int32":
+                        if (int.TryParse(newTagValues[group.Key], out int intValue))
+                        {
+                            newTagValues[group.Key] = EditorGUILayout.IntField(intValue, GUILayout.Width(100)).ToString();
+                        }
+                        else
+                        {
+                            newTagValues[group.Key] = EditorGUILayout.IntField(0, GUILayout.Width(100)).ToString();
+                        }
+                        break;
+                    case "single": // float type
+                        if (float.TryParse(newTagValues[group.Key], out float floatValue))
+                        {
+                            newTagValues[group.Key] = EditorGUILayout.FloatField(floatValue, GUILayout.Width(100)).ToString();
+                        }
+                        else
+                        {
+                            newTagValues[group.Key] = EditorGUILayout.FloatField(0f, GUILayout.Width(100)).ToString();
+                        }
+                        break;
+                    case "boolean":
+                        if (bool.TryParse(newTagValues[group.Key], out bool boolValue))
+                        {
+                            newTagValues[group.Key] = EditorGUILayout.Toggle(boolValue, GUILayout.Width(100)).ToString();
+                        }
+                        else
+                        {
+                            newTagValues[group.Key] = EditorGUILayout.Toggle(false, GUILayout.Width(100)).ToString();
+                        }
+                        break;
+                    default:
+                        newTagValues[group.Key] = EditorGUILayout.TextField(newTagValues[group.Key], GUILayout.Width(100));
+                        break;
+                }
+
                 if (GUILayout.Button("Add", GUILayout.Width(70)))
                 {
-                    if (fxSceneManager.AddTagToSystem(group.Key, newTagValues[group.Key]))
+                    bool success = false;
+                    switch (tagType)
+                    {
+                        case "string":
+                            success = fxSceneManager.AddTagToSystem(group.Key, newTagValues[group.Key]);
+                            break;
+                        case "int32":
+                            if (int.TryParse(newTagValues[group.Key], out int intValue))
+                            {
+                                success = fxSceneManager.AddTagToSystem(group.Key, intValue);
+                            }
+                            break;
+                        case "single":
+                            if (float.TryParse(newTagValues[group.Key], out float floatValue))
+                            {
+                                success = fxSceneManager.AddTagToSystem(group.Key, floatValue);
+                            }
+                            break;
+                        case "boolean":
+                            if (bool.TryParse(newTagValues[group.Key], out bool boolValue))
+                            {
+                                success = fxSceneManager.AddTagToSystem(group.Key, boolValue);
+                            }
+                            break;
+                        default:
+                            success = fxSceneManager.AddTagToSystem(group.Key, newTagValues[group.Key]);
+                            break;
+                    }
+
+                    if (success)
                     {
                         Debug.Log($"Tag '{newTagValues[group.Key]}' added to the system under type '{group.Key}'.");
                         newTagValues[group.Key] = "";
@@ -176,7 +243,37 @@ namespace FX
                 if (GUILayout.Button($"Add {group.Key} Tag to Scene", GUILayout.Width(150)))
                 {
                     var selectedTagValue = tagValues[selectedTagIndices[group.Key]];
-                    if (fxSceneManager.AddTagToScene(fxSceneManager.CurrentScene.Name, group.Key, selectedTagValue))
+                    var tag = group.First();
+                    bool success = false;
+
+                    // Add the tag to the scene based on its type
+                    if (tag.Value is string)
+                    {
+                        success = fxSceneManager.AddTagToScene(fxSceneManager.CurrentScene.Name, group.Key, selectedTagValue);
+                    }
+                    else if (tag.Value is int)
+                    {
+                        if (int.TryParse(selectedTagValue, out int intValue))
+                        {
+                            success = fxSceneManager.AddTagToScene(fxSceneManager.CurrentScene.Name, group.Key, intValue);
+                        }
+                    }
+                    else if (tag.Value is float)
+                    {
+                        if (float.TryParse(selectedTagValue, out float floatValue))
+                        {
+                            success = fxSceneManager.AddTagToScene(fxSceneManager.CurrentScene.Name, group.Key, floatValue);
+                        }
+                    }
+                    else if (tag.Value is bool)
+                    {
+                        if (bool.TryParse(selectedTagValue, out bool boolValue))
+                        {
+                            success = fxSceneManager.AddTagToScene(fxSceneManager.CurrentScene.Name, group.Key, boolValue);
+                        }
+                    }
+
+                    if (success)
                     {
                         Debug.Log($"Tag '{selectedTagValue}' added to scene '{fxSceneManager.CurrentScene.Name}' under type '{group.Key}'.");
                     }

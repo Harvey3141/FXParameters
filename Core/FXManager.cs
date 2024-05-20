@@ -684,7 +684,6 @@ namespace FX
                 Value = tag.Value
             }).ToList();
 
-
             GroupFXController[] allFXGroups = GameObject.FindObjectsOfType<GroupFXController>();
             foreach (var group in allFXGroups)
             {
@@ -722,7 +721,7 @@ namespace FX
                 var settings = new JsonSerializerSettings
                 {
                     Converters = new List<JsonConverter> {
-                    new ColourHandler()
+                    new ColourHandler(), new SerializedTagConverter()
                 },
                 };
                 FXData preset = JsonConvert.DeserializeObject<FXData>(json,settings);
@@ -813,18 +812,21 @@ namespace FX
                     }
                 }
 
-                loadedTags = preset.sceneTags.Select(tag => {
-                    Type type = Type.GetType(tag.Type switch
+                loadedTags = preset.sceneTags.Select<SerializedTag, ITag>(tag =>
+                {
+                    switch (tag.Type)
                     {
-                        "string" => typeof(string).AssemblyQualifiedName,
-                        "bool" => typeof(bool).AssemblyQualifiedName,
-                        "float" => typeof(float).AssemblyQualifiedName,
-                        "int" => typeof(int).AssemblyQualifiedName,
-                        "color" => typeof(Color).AssemblyQualifiedName,
-                        _ => throw new NotImplementedException($"Unknown type: {tag.Type}")
-                    });
-                    var tagType = typeof(Tag<>).MakeGenericType(type);
-                    return (ITag)Activator.CreateInstance(tagType, tag.Name, tag.Value);
+                        case "string":
+                            return new Tag<string>(tag.Name, (string)tag.Value);
+                        case "int32":
+                            return new Tag<int>(tag.Name, Convert.ToInt32(tag.Value));
+                        case "single":
+                            return new Tag<float>(tag.Name, Convert.ToSingle(tag.Value));
+                        case "boolean":
+                            return new Tag<bool>(tag.Name, Convert.ToBoolean(tag.Value));
+                        default:
+                            throw new InvalidOperationException($"Unsupported tag type: {tag.Type}");
+                    }
                 }).ToList();
 
                 if (onPresetLoaded != null) onPresetLoaded.Invoke(presetName);
