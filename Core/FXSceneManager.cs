@@ -129,13 +129,36 @@ namespace FX
 
         public bool LoadScene(string name)
         {
+            var sceneExists = scenes.Any(s => s.Name == name);
+
+            if (!sceneExists)
+            {
+                // TODO - we should probably PopulateScenesList here
+                Debug.LogError($"Scene '{name}' does not exist in the list of scenes.");
+                return false;
+            }
+
             if (fXManager.LoadPreset(name, out List<string> loadedTagIds))
             {
                 CurrentScene = scenes.Find(s => s.Name == name);
 
                 if (CurrentScene != null)
                 {
-                    CurrentScene.TagIds = loadedTagIds;
+                    // Only add tags which exist in the tagConfigurations
+                    var validTagIds = loadedTagIds
+                        .Where(tagId => tagConfigurations.Any(tc => tc.tags.Any(t => t.id == tagId)))
+                        .ToList();
+
+                    var unknownTagIds = loadedTagIds
+                        .Where(tagId => !tagConfigurations.Any(tc => tc.tags.Any(t => t.id == tagId)))
+                        .ToList();
+
+                    if (unknownTagIds.Any())
+                    {
+                        Debug.LogWarning($"The following tags in scene '{name}' are not recognized: {string.Join(", ", unknownTagIds)}");
+                    }
+
+                    CurrentScene.TagIds = validTagIds;
                     return true;
                 }
             }
