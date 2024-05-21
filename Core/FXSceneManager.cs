@@ -279,6 +279,22 @@ namespace FX
             return false;
         }
 
+        public bool SetTag(Tag tagData)
+        {
+            foreach (var config in tagConfigurations)
+            {
+                var tag = config.tags.Find(t => t.id == tagData.id);
+                if (tag != null)
+                {
+                    tag.value = tagData.value;
+                    SaveTagConfigurations();
+                    return true;
+
+                }
+            }
+            return false;
+        }
+
         public bool UpdateTag(string tagID, string value)
         {
             foreach (var config in tagConfigurations)

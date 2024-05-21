@@ -58,17 +58,16 @@ The FX API offers functionalities that include:
   
   **Format**: `/SCENELIST/GET`  
   **Example**: `/SCENELIST/GET`
-  
-  Example Response:
 
-[
-    {
-        "Name": "Core Lighting - LR Scan - Breakdown",
-        "TagIds": ["tag1-uuid", "tag2-uuid"]
-    }
-]
+  **Example Response**:
+  ```json
+  [
+      {
+          "Name": "Core Lighting - LR Scan - Breakdown",
+          "TagIds": ["tagID1", "tagID2"]
+      },
+  ] ```
   
-
 - **/SCENE/RESET**  
   Resets the current scene
   
@@ -84,6 +83,49 @@ The FX API offers functionalities that include:
 
   **Format**: `/SCENE/NAME/SET [new_scene_name]`  
   **Example**: `/SCENE/NAME/SET "NewSceneName"`
+  
+- **/SCENE/TAG/ADD**  
+  Adds a tag to the current scene.
+
+  **Format**: `/SCENE/TAG/ADD [tag_id]`  
+  **Example**: `/SCENE/TAG/ADD 76946cdc-9c65-42a2-9cd4-5f6040f4db39`
+
+- **/SCENE/TAG/REMOVE**  
+  Removes a tag from the current scene.
+
+  **Format**: `/SCENE/TAG/REMOVE [tag_id]`  
+  **Example**: `/SCENE/TAG/REMOVE 76946cdc-9c65-42a2-9cd4-5f6040f4db39`
+
+- **/SCENE/TAGS/CLEAR**  
+  Removes all tags from the current scene.
+
+  **Format**: `/SCENE/TAGS/CLEAR`
+  
+### Tag Management
+
+- **/TAG/NEW**  
+  Adds a new tag to the tag configuration.
+
+  **Format**: `/TAG/NEW [tag_type] [tag_value]`  
+  **Example**: `/TAG/NEW scene-bucket NewTagValue`
+
+- **/TAG/REMOVE**  
+  Removes a tag from the tag configuration.
+
+  **Format**: `/TAG/REMOVE [tag_id]`  
+  **Example**: `/TAG/REMOVE 76946cdc-9c65-42a2-9cd4-5f6040f4db39`
+
+- **/TAG/SET**  
+  Updates a tag in the tag configuration.
+
+  **Format**: `/TAG/SET [json_tag]`  
+  **Example**: 
+  ```json
+      {
+        "id": "1d13246e-f434-46aa-aa07-f4322240e4dd",
+        "value": "1"
+      }```
+
 
 ### Group Management
 
