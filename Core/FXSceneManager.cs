@@ -100,6 +100,71 @@ namespace FX
             PopulateScenesList();
         }
 
+        private void Start()
+        {
+            FXGroupData g = new FXGroupData();
+            g.label = "Default";
+            g.isPinned = true;
+            g.signalSource = GroupFXController.SignalSource.Default;
+            fXManager.CreateGroup(g);
+
+            g = new FXGroupData();
+            g.label = "Audio - Low";
+            g.isPinned = true;
+            g.signalSource = GroupFXController.SignalSource.Audio;
+            g.audioFrequency = GroupFXController.AudioFrequency.Low;
+            fXManager.CreateGroup(g);
+
+            g = new FXGroupData();
+            g.label = "Audio - Mid";
+            g.isPinned = true;
+            g.signalSource = GroupFXController.SignalSource.Audio;
+            g.audioFrequency = GroupFXController.AudioFrequency.Mid;
+            fXManager.CreateGroup(g);
+
+            g = new FXGroupData();
+            g.label = "Audio - High";
+            g.isPinned = true;
+            g.signalSource = GroupFXController.SignalSource.Audio;
+            g.audioFrequency = GroupFXController.AudioFrequency.High;
+            fXManager.CreateGroup(g);
+
+            g = new FXGroupData();
+            g.label = "Oscillator - Sine";
+            g.isPinned = true;
+            g.signalSource = GroupFXController.SignalSource.Pattern;
+            g.patternType = GroupFXController.PatternType.Oscillator;
+            g.oscillatorType = OscillatorPattern.OscillatorType.Sine;
+            fXManager.CreateGroup(g);
+
+            g = new FXGroupData();
+            g.label = "Oscillator - Square";
+            g.isPinned = true;
+            g.signalSource = GroupFXController.SignalSource.Pattern;
+            g.patternType = GroupFXController.PatternType.Oscillator;
+            g.oscillatorType = OscillatorPattern.OscillatorType.Square;
+            fXManager.CreateGroup(g);
+
+            g = new FXGroupData();
+            g.label = "Tap";
+            g.isPinned = true;
+            g.signalSource = GroupFXController.SignalSource.Pattern;
+            g.patternType = GroupFXController.PatternType.Tap;
+            g.numBeats = 1;
+            fXManager.CreateGroup(g);
+
+            g = new FXGroupData();
+            g.label = "Arpeggiator";
+            g.isPinned = true;
+            g.signalSource = GroupFXController.SignalSource.Pattern;
+            g.patternType = GroupFXController.PatternType.Arpeggiator;
+            g.numBeats = 1;
+            fXManager.CreateGroup(g);
+
+            if (exportParameterListOnStart) ExportParameterList();
+
+        }
+
         public void PopulateScenesList()
         {
             scenes.Clear();
