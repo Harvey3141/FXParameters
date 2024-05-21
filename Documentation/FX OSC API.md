@@ -54,10 +54,20 @@ The FX API offers functionalities that include:
   Creates a new scene, resetting all parameters to default, and clearing all groups. 
   
 - **/SCENELIST/GET**  
-  Requests the scene list, which is returned as /sceneList/get {scene1, scene2, etc}. This is also sent to subscribers whenever a scene is added or removed
+  Requests the scene list, which is returned as /sceneList/get with the scenes including tags. This is also sent to subscribers whenever a scene is added or removed
   
   **Format**: `/SCENELIST/GET`  
   **Example**: `/SCENELIST/GET`
+  
+  Example Response:
+
+[
+    {
+        "Name": "Core Lighting - LR Scan - Breakdown",
+        "TagIds": ["tag1-uuid", "tag2-uuid"]
+    }
+]
+  
 
 - **/SCENE/RESET**  
   Resets the current scene

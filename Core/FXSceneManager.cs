@@ -248,12 +248,27 @@ namespace FX
             return false;
         }
 
-        public bool RemoveTagFromConfiguration(string type, string id)
+        public bool RemoveTagFromConfiguration(string tagID)
+        {
+            foreach (var config in tagConfigurations) {
+                var tag = config.tags.Find(t => t.id == tagID);
+                if (tag != null)
+                {
+                    config.tags.Remove(tag);
+                    SaveTagConfigurations();
+                    return true;
+                    
+                }
+            }
+            return false;
+        }
+
+        public bool RemoveTagFromConfiguration(string type, string tagID)
         {
             var tagConfig = tagConfigurations.Find(tc => tc.type == type);
             if (tagConfig != null)
             {
-                var tag = tagConfig.tags.Find(t => t.id == id);
+                var tag = tagConfig.tags.Find(t => t.id == tagID);
                 if (tag != null)
                 {
                     tagConfig.tags.Remove(tag);
@@ -262,6 +277,27 @@ namespace FX
                 }
             }
             return false;
+        }
+
+        public bool UpdateTag(string tagID, string value)
+        {
+            foreach (var config in tagConfigurations)
+            {
+                var tag = config.tags.Find(t => t.id == tagID);
+                if (tag != null)
+                {
+                    tag.value = value;
+                    SaveTagConfigurations();
+                    return true;
+
+                }
+            }
+            return false;
+        }
+
+        public bool AddTagToCurrentScene(string tagId)
+        {
+            return AddTagToScene(CurrentScene.Name, tagId);
         }
 
         public bool AddTagToScene(string sceneName, string tagId)
@@ -284,6 +320,16 @@ namespace FX
 
             Debug.Log($"Adding tag {tagId} to scene {sceneName}");
             return scene.AddTag(tagId);
+        }
+
+        public void RemoveAllTagsFromCurrentScene()
+        {
+            CurrentScene.TagIds.Clear();
+        }
+
+        public bool RemoveTagFromCurrentScene(string tagId)
+        {
+            return RemoveTagFromScene(CurrentScene.Name, tagId);
         }
 
         public bool RemoveTagFromScene(string sceneName, string tagId)

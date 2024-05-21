@@ -267,6 +267,52 @@ namespace FX
                     SendOSCMessage("/sceneList/get", matchingNode, json);
                 }
             }
+            else if (address.ToUpper() == "/SCENE/TAG/ADD")
+            {
+                if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String )
+                {
+                    fxSceneManager.AddTagToCurrentScene(message.Values[0].StringValue);
+                }
+            }
+            else if (address.ToUpper() == "/SCENE/TAG/REMOVE")
+            {
+                if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
+                {
+                    fxSceneManager.RemoveTagFromCurrentScene(message.Values[0].StringValue);
+                }
+            }
+            else if (address.ToUpper() == "/SCENE/TAGS/CLEAR")
+            {
+                fxSceneManager.RemoveAllTagsFromCurrentScene();              
+            }
+
+
+            else if (address.ToUpper() == "/TAG/CREATE")
+            {
+                //if (message.Values.Count > 1 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String)
+                //{
+                //    fxSceneManager.AddTagToConfiguration(message.Values[0].StringValue, message.Values[1].StringValue);
+                //}
+                //if (message.Values.Count > 1 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String)
+                //{
+                //    fxSceneManager.AddTagToConfiguration(message.Values[0].StringValue, message.Values[1].StringValue);
+                //}
+            }
+            else if (address.ToUpper() == "/TAG/DELETE")
+            {
+                if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
+                {
+                    fxSceneManager.RemoveTagFromConfiguration(message.Values[0].StringValue);
+                }
+            }
+            else if (address.ToUpper() == "/TAG/UPDATE")
+            {
+                if (message.Values.Count > 1 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String)
+                {
+                    fxSceneManager.UpdateTag(message.Values[0].StringValue, message.Values[1].StringValue);
+                }
+            }
+
             else if (address.ToUpper() == "/GROUP/NEW")
             {
                 if (message.Values.Count > 0) {
