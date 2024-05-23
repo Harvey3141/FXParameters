@@ -11,13 +11,14 @@ public enum MaterialType
     CUTOUT,
     DISSOLVE,
     WIREFRAME,
+    HOLOFX,
     RESOLUME
 }
 public enum DissolveType
 {
     ONE,
     TWO,
-    THREE,
+    THREE
 }
 
 public enum WireframType
@@ -31,6 +32,13 @@ public enum CutoutPattern
     CHECKERBOARD,
     HORIZONTAL,
     CAMO
+}
+
+public enum HoloFXType
+{
+    ONE,
+    TWO,
+    THREE
 }
 
 
@@ -48,7 +56,9 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
     public Material Cutout;
     public Material Disolve;
     public Material Wireframe;
+    public Material[] HoloFXMaterials;
     public Material Resolume;
+
 
 
     public FXParameter<Color> color = new FXParameter<Color>(Color.white);
@@ -63,6 +73,14 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
     public FXScaledParameter<float> dissolveEdgeWidth = new FXScaledParameter<float>(0.0f, -12.0f, 0.0f);
     public FXScaledParameter<float> dissolveOffset    = new FXScaledParameter<float>(0.0f, 0.0f, 1.0f);
     public FXParameter<DissolveType> dissolveType     = new FXParameter<DissolveType>(DissolveType.ONE);
+
+    public FXScaledParameter<float> holoSpeed = new FXScaledParameter<float>(0.0f, 0.0f, 1.0f);
+    public FXScaledParameter<float> holoIntensity = new FXScaledParameter<float>(0.0f, 0.0f, 1.0f);
+    public FXScaledParameter<float> holoDeform = new FXScaledParameter<float>(0.0f, 0.0f, 1.0f);
+    public FXParameter<bool> holoMonochrome = new FXParameter<bool>(false);
+
+
+    public FXParameter<HoloFXType> holoType  = new FXParameter<HoloFXType>(HoloFXType.ONE);
 
     public FXParameter<WireframType> wireframeType = new FXParameter<WireframType>(WireframType.LIT);
 
@@ -91,16 +109,37 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
 
         emissiveLightsEnabled.OnValueChanged += SetEmissiveLightsEnabled;
 
-        cutoutSize.OnScaledValueChanged   += SetCutoutSize;
-        cutoutLines.OnScaledValueChanged  += SetCutoutLines;
-        cutoutOffset.OnScaledValueChanged += SetCutoutOffset;
+        cutoutSize.OnScaledValueChanged     += SetCutoutSize;
+        cutoutLines.OnScaledValueChanged    += SetCutoutLines;
+        cutoutOffset.OnScaledValueChanged   += SetCutoutOffset;
         cutoutRotation.OnScaledValueChanged += SetCutoutRotation;
-
 
         dissolveEdgeWidth.OnScaledValueChanged += SetDissolveEdgeWidth;
         dissolveOffset.OnScaledValueChanged    += SetDissolveOffset;
 
-        wireframeType.OnValueChanged += SetWireframeType; 
+        holoSpeed.OnScaledValueChanged += SetHoloSpeed;
+        holoIntensity.OnScaledValueChanged += SetHoloIntensity;
+        holoDeform.OnScaledValueChanged += SetHoloDeform;
+        holoMonochrome.OnValueChanged += SetHoloMonochrome;
+
+        holoType.OnValueChanged += SetHoloType;
+
+        wireframeType.OnValueChanged += SetWireframeType;
+
+
+        if (HoloFXMaterials == null || HoloFXMaterials.Length < 3)
+        {
+            HoloFXMaterials = new Material[3];
+        }
+
+        for (int i = 0; i < HoloFXMaterials.Length; i++)
+        {
+            string name = "Materials/FXMaterialController/HoloFXBackup" + (i+1).ToString();
+            if (HoloFXMaterials[i] == null)
+            {
+                HoloFXMaterials[i] = Resources.Load<Material>(name); 
+            }
+        }
     }
 
     protected override void Start()
@@ -148,6 +187,22 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
         }
     }
 
+    public void RequestEnableRenderers()
+    {
+        foreach (var obj in controlledObjects)
+        {
+            if (obj != null)
+            {
+                Renderer renderer = obj.GetComponent<Renderer>();
+                if (renderer != null)
+                {
+
+                    renderer.enabled = true;
+                }
+            }
+        }
+    }
+
     private bool ApplyMaterial(Material material)
     {
         if (material == null) return false;
@@ -186,6 +241,10 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
             case MaterialType.CUTOUT:
                 ApplyMaterial(Cutout);
                 SetEmissiveIntensityAll(triggerValue.ScaledValue);
+                SetCutoutSize(cutoutSize.ScaledValue);
+                SetCutoutLines(cutoutLines.ScaledValue);
+                SetCutoutOffset(cutoutOffset.ScaledValue);
+                SetCutoutRotation(cutoutRotation.ScaledValue);
                 SetColor(color.Value);
                 break;
             case MaterialType.DISSOLVE:
@@ -194,6 +253,14 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
                 SetDissolveEdgeWidth(dissolveEdgeWidth.ScaledValue);
                 SetDissolveOffset(dissolveOffset.ScaledValue);
                 SetColor(color.Value);
+                break;
+            case MaterialType.HOLOFX:
+                SetHoloType(holoType.Value);
+                SetHoloDeform(holoDeform.ScaledValue);
+                SetHoloIntensity(holoIntensity.ScaledValue);
+                SetHoloSpeed(holoSpeed.ScaledValue);
+                SetHoloMonochrome(holoMonochrome.Value);
+                SetEmissiveIntensityAll(triggerValue.ScaledValue);
                 break;
             case MaterialType.WIREFRAME:
                 ApplyMaterial(Wireframe);
@@ -421,6 +488,58 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
     public void SetCutoutOffset(float value)
     {
         if (materialType.Value == MaterialType.CUTOUT) SetPropertyFloat("_Offset", value);
+    }
+
+    public void SetHoloSpeed(float value)
+    {
+        if (materialType.Value != MaterialType.HOLOFX) return;
+
+        switch (holoType.Value)
+        {
+            case HoloFXType.ONE:
+                SetPropertyFloat("_Speed", value);
+                break;
+            case HoloFXType.TWO:
+                SetPropertyFloat("_Speed", value * 0.1f);
+                break;
+            case HoloFXType.THREE:
+                SetPropertyFloat("_Speed", value);
+                break;
+            default: break;
+        }
+    }
+
+    public void SetHoloIntensity(float value)
+    {
+        if (materialType.Value == MaterialType.HOLOFX) SetPropertyFloat("_intensity", value);
+    }
+
+    public void SetHoloDeform(float value)
+    {
+        if (materialType.Value == MaterialType.HOLOFX) SetPropertyFloat("_deform", value);
+    }
+
+    public void SetHoloMonochrome(bool value)
+    {
+        if (materialType.Value == MaterialType.HOLOFX) SetPropertyFloat("_monochrom", value ? 1.0f : 0.0f);
+    }
+
+    public void SetHoloType(HoloFXType holoFXType)
+    {
+        if (materialType.Value != MaterialType.HOLOFX) return;
+
+        ApplyMaterial(HoloFXMaterials[(int)holoFXType]);
+
+        switch (holoFXType)
+        {
+            case HoloFXType.ONE:
+                break; 
+            case HoloFXType.TWO:
+                break; 
+            case HoloFXType.THREE:
+                break;
+            default: break;
+        }
     }
 
     public void SetWireframeType(WireframType type)

@@ -78,8 +78,9 @@ namespace FX
             fXManager.onFXGroupEnabled           += OnFXGroupEnabled;
 
 
-            //fxSceneManager.onSceneListUpdated += OnPresetListUpdated;
+            fxSceneManager.onSceneListUpdated += OnSceneListUpdated;
             fxSceneManager.onCurrentSceneChanged += OnCurrentSceneChanged;
+            fxSceneManager.onTagConfigurationUpdated += OnTagConfigurationUpdated;
             StartCoroutine(SendMessagesAtInterval(sendInterval));
         }
 
@@ -640,10 +641,10 @@ namespace FX
             }
         }
 
-        void OnPresetListUpdated(List<string> presets) 
+        void OnSceneListUpdated(List<Scene> scenes) 
         {
 
-            string json = JsonConvert.SerializeObject(presets);
+            string json = JsonConvert.SerializeObject(scenes);
 
             foreach (var node in oscNodes)
             {
@@ -656,6 +657,16 @@ namespace FX
             foreach (var node in oscNodes)
             {
                 if (node.SendParamChanges) SendOSCMessage("/scene/name/get", node, scene.Name);
+            }
+        }
+
+        void OnTagConfigurationUpdated(List<TagConfiguration> tagConfigurations)
+        {
+            string json = JsonConvert.SerializeObject(tagConfigurations);
+
+            foreach (var node in oscNodes)
+            {
+                if (node.SendParamChanges) SendOSCMessage("/tagConfigurationList/get", node, json);
             }
         }
 

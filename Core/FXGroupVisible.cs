@@ -5,6 +5,13 @@ namespace FX
     public class FXGroupVisible : FXGroupObjectTrigger
     {
         public FXMaterialController materialController;
+
+        protected override void Awake()
+        {
+            base.Awake();
+            if (GetComponent<FXMaterialController>()) materialController = GetComponent<FXMaterialController>();
+        }
+
         protected override void Start()
         {
             base.Start();
@@ -15,6 +22,7 @@ namespace FX
 
         private void OnTriggerPatternChanged (TriggerPattern pattern)
         {
+            
             if (!ShouldModifyRendererEnabledState()) return;
             foreach (var obj in controlledObjects)
             {
@@ -42,9 +50,7 @@ namespace FX
         protected override void OnFXEnabled(bool state)
         {
             base.OnFXEnabled(state);
-
-            if (!ShouldModifyRendererEnabledState()) return;
-            
+            if (!ShouldModifyRendererEnabledState()) return;           
             foreach (var obj in controlledObjects)
             {
                 Renderer renderer = obj.GetComponent<Renderer>();
@@ -57,7 +63,7 @@ namespace FX
         }
 
         private bool ShouldModifyRendererEnabledState() { 
-            return fxEnabled.Value && (materialController == null || materialController.fxEnabled.Value); 
+            return (materialController == null || materialController.fxEnabled.Value); 
         }
 
     }

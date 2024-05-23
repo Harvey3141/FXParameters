@@ -7,6 +7,7 @@ using UnityEditor;
 public class FXLerpTransform : FXBase, IFXTriggerable
 {
     public FXScaledParameter<float> lerpProgress = new FXScaledParameter<float>(0.0f,0.0f,1.0f);
+    public FXParameter<bool> reverse = new FXParameter<bool>(false);
 
     [HideInInspector]
     public Vector3 positionA;
@@ -37,7 +38,9 @@ public class FXLerpTransform : FXBase, IFXTriggerable
 
     void SetLerpProgress(float val) 
     { 
-        transform.position   = Vector3.Lerp(positionA, positionB, val);
+        Vector3 targetPosA = reverse.Value ? positionA : positionB;
+        Vector3 targetPosB = reverse.Value ? positionB : positionA;
+        transform.position   = Vector3.Lerp(targetPosA, targetPosB, val);
         transform.rotation   = Quaternion.Euler(Vector3.Lerp(rotationA, rotationB, val));
         transform.localScale = Vector3.Lerp(scaleA, scaleB, val);
     }

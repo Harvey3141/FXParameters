@@ -92,6 +92,9 @@ namespace FX
         public delegate void OnSceneRemoved(string sceneName);
         public event OnSceneRemoved onSceneRemoved;
 
+        public delegate void OnTagConfigurationUpdated(List<TagConfiguration> tagConfigurations);
+        public event OnTagConfigurationUpdated onTagConfigurationUpdated;
+
         private void Awake()
         {
             fXManager = FXManager.Instance;
@@ -162,6 +165,8 @@ namespace FX
             fXManager.CreateGroup(g);
 
             if (exportParameterListOnStart) ExportParameterList();
+            CreateNewScene();
+            onTagConfigurationUpdated?.Invoke(tagConfigurations);
 
         }
 
@@ -440,6 +445,7 @@ namespace FX
             string path = Path.Combine(Application.streamingAssetsPath, "FX/TagConfigurations.json");
             var json = JsonConvert.SerializeObject(tagConfigurations, Formatting.Indented);
             File.WriteAllText(path, json);
+            onTagConfigurationUpdated.Invoke(tagConfigurations);
         }
 
         private List<TagConfiguration> LoadTagConfigurations()
