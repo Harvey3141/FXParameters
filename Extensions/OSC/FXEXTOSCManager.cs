@@ -307,6 +307,10 @@ namespace FX
                 fxSceneManager.SetTag(tag);
             }
 
+            else if (address.ToUpper() == "/TAGCONFIGURATIONLIST/GET")
+            {
+                OnTagConfigurationUpdated(fxSceneManager.tagConfigurations);
+            }
             else if (address.ToUpper() == "/GROUP/NEW")
             {
                 if (message.Values.Count > 0) {
