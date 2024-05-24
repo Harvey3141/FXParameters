@@ -141,7 +141,7 @@ namespace FX
                             string senderIp = matchingNode.Transmitter.RemoteHost.ToString();
                             int senderPort = matchingNode.Transmitter.RemotePort;
                             SendOSCMessage(fxAddress, matchingNode, value);
-                            
+
                         }
                         // TODO - create a transmitter here to send back a response.
                     }
@@ -174,7 +174,7 @@ namespace FX
                             string stringValue = message.Values[i].StringValue;
                             if (TryGetColorFromJsonString(stringValue, out Color colorValue))
                             {
-                                args[argsIndex] = colorValue; 
+                                args[argsIndex] = colorValue;
                             }
                             else
                             {
@@ -270,7 +270,7 @@ namespace FX
             }
             else if (address.ToUpper() == "/SCENE/TAG/ADD")
             {
-                if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String )
+                if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
                 {
                     fxSceneManager.AddTagToCurrentScene(message.Values[0].StringValue);
                 }
@@ -284,7 +284,7 @@ namespace FX
             }
             else if (address.ToUpper() == "/SCENE/TAGS/CLEAR")
             {
-                fxSceneManager.RemoveAllTagsFromCurrentScene();              
+                fxSceneManager.RemoveAllTagsFromCurrentScene();
             }
 
             else if (address.ToUpper() == "/TAG/NEW")
@@ -313,7 +313,8 @@ namespace FX
             }
             else if (address.ToUpper() == "/GROUP/NEW")
             {
-                if (message.Values.Count > 0) {
+                if (message.Values.Count > 0)
+                {
                     string json = message.Values[0].StringValue;
                     FXGroupData preset = JsonConvert.DeserializeObject<FXGroupData>(json);
                     fXManager.CreateGroup(preset);
@@ -438,7 +439,7 @@ namespace FX
                 if (message.Values.Count > 1 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String)
                 {
                     FXParameterControllerData param = fXManager.GetGroupFXParamData(message.Values[0].StringValue, message.Values[1].StringValue);
-                    if (param != null) 
+                    if (param != null)
                     {
                         OSCNode matchingNode = oscNodes.Find(node => node.Receiver.LocalPort == port);
                         if (matchingNode != null)
@@ -452,7 +453,7 @@ namespace FX
             }
             else if (address.ToUpper() == "/GROUP/PARAM/ENABLED/SET")
             {
-                if (message.Values.Count > 2 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String && (message.Values[2].Type == OSCValueType.True || message.Values[2].Type == OSCValueType.False ))
+                if (message.Values.Count > 2 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String && (message.Values[2].Type == OSCValueType.True || message.Values[2].Type == OSCValueType.False))
                 {
                     GroupFXController group = fXManager.FindGroupByAddress(message.Values[0].StringValue);
                     group.SetParameterEnabled(message.Values[1].StringValue, message.Values[2].BoolValue);
@@ -460,7 +461,7 @@ namespace FX
                 else if (message.Values.Count > 2 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String && (message.Values[2].Type == OSCValueType.Int))
                 {
                     GroupFXController group = fXManager.FindGroupByAddress(message.Values[0].StringValue);
-                    group.SetParameterEnabled(message.Values[1].StringValue, message.Values[2].IntValue == 0 ? false : true );
+                    group.SetParameterEnabled(message.Values[1].StringValue, message.Values[2].IntValue == 0 ? false : true);
                 }
 
             }
@@ -586,6 +587,10 @@ namespace FX
                     }
                 }
             }
+            else if (address.ToUpper().Contains("/FXTRIGGER")) {
+                fXManager.SetFX(address, false);
+            }
+            
         }
 
 
