@@ -6,13 +6,13 @@ using UnityEngine;
 namespace FX.Patterns {
     public class TapPattern : PatternBase
     {
-        public float _triggerSpeed = 100.0f;
-        private bool _isLerping = false;
-        private bool _isIncreasing = true;
+        public float triggerSpeed = 100.0f;
+        private bool isLerping = false;
+        private bool isIncreasing = true;
 
         [Range(0.0f, 1.0f)]
         [HideInInspector]
-        public float _previousPlayhead = 0.0f;
+        public float previousPlayhead = 0.0f;
 
         private float beatDuration; // Duration of each beat in seconds
         private float lastBeatTime; 
@@ -26,27 +26,27 @@ namespace FX.Patterns {
             AddTriggers(1);
 
             base.Start();
-            beatDuration = 60f / _bpm; // Calculate the duration of each beat
+            beatDuration = 60f / bpm; // Calculate the duration of each beat
             lastBeatTime = Time.time;
         }
 
-        public override void HandleBpmChange(int number)
+        public override void HandleBpmChange(float number)
         {
             base.HandleBpmChange(number);
-            beatDuration = 60f / _bpm;
+            beatDuration = 60f / bpm;
         }
 
         void Update()
         {
             float timeSinceLastBeat = Time.time - lastBeatTime;
             float beatsElapsed = timeSinceLastBeat / beatDuration;
-            float barsElapsed = beatsElapsed / _numBeats;
-            _phase += barsElapsed;
+            float barsElapsed = beatsElapsed / numBeats;
+            phase += barsElapsed;
             lastBeatTime = Time.time;
             // Wrap the timeline position to keep it within the 0-1 range
-            _phase %= 1f;
+            phase %= 1f;
 
-            if (_previousPlayhead > _phase)
+            if (previousPlayhead > phase)
             {
                 if (triggers != null) {
                     foreach (float key in triggers.Keys.ToList())
@@ -56,26 +56,26 @@ namespace FX.Patterns {
                 }
 
             }
-            _previousPlayhead = _phase;
+            previousPlayhead = phase;
 
 
-            if (_isLerping)
+            if (isLerping)
             {
-                if (_isIncreasing)
+                if (isIncreasing)
                 {
-                    _currentValue = Mathf.Lerp(_currentValue, 1.0f, Time.deltaTime * _triggerSpeed);
+                    _currentValue = Mathf.Lerp(_currentValue, 1.0f, Time.deltaTime * triggerSpeed);
                     if (_currentValue >= 0.99f)
                     {
-                        _isIncreasing = false;
+                        isIncreasing = false;
                     }
                 }
                 else
                 {
-                    _currentValue = Mathf.Lerp(_currentValue, 0.0f, Time.deltaTime * _triggerSpeed);
+                    _currentValue = Mathf.Lerp(_currentValue, 0.0f, Time.deltaTime * triggerSpeed);
                     if (_currentValue <= 0.01f)
                     {
-                        _isIncreasing = true;
-                        _isLerping = false;
+                        isIncreasing = true;
+                        isLerping = false;
                         _currentValue = 0.0f;
                     }
                 }
@@ -83,7 +83,7 @@ namespace FX.Patterns {
 
             foreach (float key in triggers.Keys.ToList())
             {
-                if (triggers[key] == true && _phase > key)
+                if (triggers[key] == true && phase > key)
                 {
                     triggers[key] = false;
                     TriggerLerp();
@@ -95,7 +95,7 @@ namespace FX.Patterns {
         public void AddTriggerAtCurrentTime()
         {
             if (triggers == null) return;
-            triggers.Add(_phase, false);
+            triggers.Add(phase, false);
             TriggerLerp();
         }
 
@@ -116,16 +116,16 @@ namespace FX.Patterns {
         public void TriggerLerp()
         {
             base.Trigger();
-            if (!_isLerping)
+            if (!isLerping)
             {
-                _isIncreasing = true;
-                _isLerping = true;
+                isIncreasing = true;
+                isLerping = true;
             }
-            else if (_isLerping)
+            else if (isLerping)
             {
-                if (!_isIncreasing)
+                if (!isIncreasing)
                 {
-                    _isIncreasing = true;
+                    isIncreasing = true;
                 }
             }
         }

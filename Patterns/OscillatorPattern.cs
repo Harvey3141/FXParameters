@@ -7,9 +7,9 @@ namespace FX.Patterns
     {
 
         [HideInInspector]
-        public List<float> _pattern = new List<float>();
-        float _beatDuration;
-        float _frequency;
+        public List<float> pattern = new List<float>();
+        float beatDuration;
+        float frequency;
         public enum OscillatorType
         {
             Sine,
@@ -19,15 +19,15 @@ namespace FX.Patterns
         }
 
 
-        private OscillatorType _oscillatorType = OscillatorType.Sine;
+        private OscillatorType oscillatorType = OscillatorType.Sine;
         public OscillatorType Oscillator
         {
-            get { return _oscillatorType; }
+            get { return oscillatorType; }
             set 
             {
-                if (_oscillatorType != value) 
+                if (oscillatorType != value) 
                 {
-                    _oscillatorType = value;
+                    oscillatorType = value;
                     NotifyPropertyChanged();
                 }
                 GeneratePattern();
@@ -43,22 +43,22 @@ namespace FX.Patterns
 
         public override void GeneratePattern()
         {
-            _beatDuration = 60f / _bpm;
-            _frequency = 1f / (_beatDuration * _numBeats);
+            beatDuration = 60f / bpm;
+            frequency = 1f / (beatDuration * numBeats);
             int steps = 20;
-            _pattern = new List<float>();
+            pattern = new List<float>();
             for (int i = 0; i < steps; i++)
             {
                 float phase = (float)i / steps;
-                _pattern.Add(GetCurrentValue(_oscillatorType, phase));
+                pattern.Add(GetCurrentValue(oscillatorType, phase));
             }
         }
 
         private void Update()
         {
-            _phase += Time.deltaTime * _frequency;
-            _phase %= 1f;
-            _currentValue = GetCurrentValue(_oscillatorType, _phase);
+            phase += Time.deltaTime * frequency;
+            phase %= 1f;
+            _currentValue = GetCurrentValue(oscillatorType, phase);
         }
 
         public float GetCurrentValue(OscillatorType oscillatorType, float phase)
@@ -94,10 +94,11 @@ namespace FX.Patterns
             return (value - inputMin) * (outputMax - outputMin) / (inputMax - inputMin) + outputMin;
         }
 
-        public override void HandleBpmChange(int number)
+        public override void HandleBpmChange(float number)
         {
             base.HandleBpmChange(number);
-            _beatDuration = 60f / _bpm;
+            beatDuration = 60f / bpm;
+            GeneratePattern();
         }
 
     }

@@ -101,6 +101,41 @@ The FX API offers functionalities that include:
 
   **Format**: `/SCENE/TAGS/CLEAR`
   
+### Aduio Management
+
+- **/AUDIO/BPM/TAP**  
+  Triggers a tap event to calculate BPM based on the timing of taps. No arguments are needed.
+
+  **Usage**: `/AUDIO/BPM/TAP`
+
+- **/AUDIO/BPM/RESETPHASE**  
+  Resets the BPM phase. No arguments are needed.
+
+  **Usage**: `/AUDIO/BPM/RESETPHASE`
+
+- **/AUDIO/BPM/DOUBLEBPM**  
+  Doubles the current BPM value. No arguments are needed.
+
+  **Usage**: `/AUDIO/BPM/DOUBLEBPM`
+
+- **/AUDIO/BPM/HALFBPM**  
+  Halves the current BPM value. No arguments are needed.
+
+  **Usage**: `/AUDIO/BPM/HALFBPM`
+
+- **/AUDIO/BPM/VALUE/SET**  
+  Sets the BPM value to a specified float value.
+
+  **Usage**: `/AUDIO/BPM/VALUE/SET [float_value]`  
+  **Example**: `/AUDIO/BPM/VALUE/SET 120.0`
+
+- **/AUDIO/BPM/VALUE/GET**  
+  Retrieves the current BPM value. The current BPM value will be sent in response.
+
+  **Usage**: `/AUDIO/BPM/VALUE/GET`
+
+
+
 ### Tag Management
 
 - **/TAG/NEW**  

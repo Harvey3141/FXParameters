@@ -123,7 +123,7 @@ public class TapPatternEditor : Editor
         } 
 
         // Draw playhead
-        float lineX = x + position.width * script._previousPlayhead;
+        float lineX = x + position.width * script.previousPlayhead;
         Handles.color = Color.white;
         Handles.DrawLine(new Vector3(lineX, y, 0), new Vector3(lineX, position.y, 0));
 

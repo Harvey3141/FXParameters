@@ -1,4 +1,6 @@
 using System;
+using System.Xml.Schema;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace FX.Patterns
@@ -8,22 +10,22 @@ namespace FX.Patterns
         [Range(0.0f, 1.0f)]
         [HideInInspector]
         public float _currentValue;
-        protected int _bpm = 120;
+        protected float bpm = 120f;
         [HideInInspector]
-        public float _phase = 0f;
+        public float phase = 0f;
 
         [HideInInspector]
-        public float _numBeats = 1;
+        public float numBeats = 1;
 
         public event Action OnTrigger;
         public float NumBeats
         {
-            get { return _numBeats; }
+            get { return numBeats; }
             set
             {
-                if (_numBeats != value)
+                if (numBeats != value)
                 {
-                    _numBeats = value;
+                    numBeats = value;
                     NotifyPropertyChanged();
                 }
                 GeneratePattern();
@@ -38,14 +40,14 @@ namespace FX.Patterns
         public delegate void PropertyChanged();
         public event PropertyChanged OnPropertyChanged;
 
-        public virtual void HandleBpmChange(int number) { _bpm = number; }
-        private void HandleResetPhase() { _phase = 0; }
+        public virtual void HandleBpmChange(float value) { bpm = value; }
+        private void HandleResetPhase() { phase = 0; }
 
 
         public virtual void Start()
         {
-            TapBpm tapBpm = FindObjectOfType<TapBpm>();
-            tapBpm.OnBpmChangeEvent += HandleBpmChange;
+            BPMManager tapBpm = FindObjectOfType<BPMManager>();
+            tapBpm.OnBpmChanged += HandleBpmChange;
             tapBpm.OnResetPhase += HandleResetPhase;
 
         }

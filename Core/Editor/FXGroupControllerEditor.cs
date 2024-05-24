@@ -368,7 +368,7 @@ namespace FX
                     {
                         string address = kvp.Key;
 
-                        // Remove the leading "/" character from each string.
+                        
                         if (address.StartsWith("/"))
                         {
                             address = address.Substring(1);
@@ -386,7 +386,7 @@ namespace FX
                     MethodInfo method = kvp.Value.item as MethodInfo;
                     ParameterInfo[] parameters = method.GetParameters();
 
-                    // Check if the method has one parameter and it is of type float, int, or bool.
+                    // Only support methods with a single param currently
                     if (parameters.Length == 1 &&
                         (parameters[0].ParameterType == typeof(float) ||
                             parameters[0].ParameterType == typeof(int) ||
@@ -394,7 +394,6 @@ namespace FX
                     {
                         string address = kvp.Key;
 
-                        // Remove the leading "/" character from each string.
                         if (address.StartsWith("/"))
                         {
                             address = address.Substring(1);

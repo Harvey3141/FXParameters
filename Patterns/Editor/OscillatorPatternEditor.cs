@@ -91,19 +91,19 @@ public class OscillatorPatternEditor : Editor
         }
 
         // Draw playhead
-        float lineX = x + position.width * script._phase;
+        float lineX = x + position.width * script.phase;
         Handles.color = Color.white;
         Handles.DrawLine(new Vector3(lineX, y, 0), new Vector3(lineX, position.y, 0));
 
         Handles.color = Color.green;
-        if (script._pattern != null) {
-            for (int i = 0; i < script._pattern.Count - 1; i++)
+        if (script.pattern != null) {
+            for (int i = 0; i < script.pattern.Count - 1; i++)
             {
-                float value1 = script._pattern[i];
-                float value2 = script._pattern[i + 1];
+                float value1 = script.pattern[i];
+                float value2 = script.pattern[i + 1];
 
-                float x1 = x + position.width * i / (script._pattern.Count - 1);
-                float x2 = x + position.width * (i + 1) / (script._pattern.Count - 1);
+                float x1 = x + position.width * i / (script.pattern.Count - 1);
+                float x2 = x + position.width * (i + 1) / (script.pattern.Count - 1);
 
                 float y1 = y - position.height * value1;
                 float y2 = y - position.height * value2;

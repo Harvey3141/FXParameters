@@ -64,6 +64,7 @@ namespace FX
 
         private FXManager fXManager;
         public FXSceneManager fxSceneManager;
+        public BPMManager bpmManager;
 
         private void Start()
         {
@@ -77,10 +78,13 @@ namespace FX
             fXManager.onFXGroupListChanged       += OnFXGroupListChanged;
             fXManager.onFXGroupEnabled           += OnFXGroupEnabled;
 
-
-            fxSceneManager.onSceneListUpdated += OnSceneListUpdated;
-            fxSceneManager.onCurrentSceneChanged += OnCurrentSceneChanged;
+            fxSceneManager.onSceneListUpdated        += OnSceneListUpdated;
+            fxSceneManager.onCurrentSceneChanged     += OnCurrentSceneChanged;
             fxSceneManager.onTagConfigurationUpdated += OnTagConfigurationUpdated;
+
+            bpmManager.OnBeat       += OnBeat;
+            bpmManager.OnBpmChanged += OnBPMChanged;
+
             StartCoroutine(SendMessagesAtInterval(sendInterval));
         }
 
@@ -587,6 +591,35 @@ namespace FX
                     }
                 }
             }
+
+            else if (address.ToUpper() == "/AUDIO/BPM/TAP")
+            {
+                bpmManager.Tap();
+            }
+            else if (address.ToUpper() == "/AUDIO/BPM/RESETPHASE")
+            {
+                bpmManager.ResetPhase();
+            }
+            else if (address.ToUpper() == "/AUDIO/BPM/DOUBLEBPM")
+            {
+                bpmManager.DoubleBPM();
+            }
+            else if (address.ToUpper() == "/AUDIO/BPM/HALFBPM")
+            {
+                bpmManager.HalfBPM();
+            }
+            else if (address.ToUpper() == "/AUDIO/BPM/VALUE/SET")
+            {
+                if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.Float) {
+                    bpmManager.bpm = message.Values[0].FloatValue;
+                }
+            }
+            else if (address.ToUpper() == "/AUDIO/BPM/VALUE/GET")
+            {
+                OnBPMChanged(bpmManager.bpm);
+            }
+
+
             else if (address.ToUpper().Contains("/FXTRIGGER")) {
                 fXManager.SetFX(address, false);
             }
@@ -687,6 +720,22 @@ namespace FX
             }
         }
 
+        void OnBeat() {
+
+            foreach (var node in oscNodes)
+            {
+                if (node.SendParamChanges) SendOSCMessage("/audio/BPM/onBeat", node);
+            }
+        }
+
+        void OnBPMChanged(float value)
+        {
+            foreach (var node in oscNodes)
+            {
+                if (node.SendParamChanges) SendOSCMessage("/audio/BPM/value/get", node, bpmManager.bpm);
+            }
+        }
+
         IEnumerator SendMessagesAtInterval(float interval)
         {
             while (true)
@@ -714,10 +763,6 @@ namespace FX
             if (oscValue != null)
             {
                 message.AddValue(oscValue);
-            }
-            else
-            {
-                Debug.LogWarning($"Unsupported value type for OSC message: {value.GetType()}, address: {address}");
             }
 
             /// TODO - optimisation, replace messages with matching address 

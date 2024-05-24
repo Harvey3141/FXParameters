@@ -60,7 +60,7 @@ namespace FX.Patterns
         private float currentValue;
         private int currentStep = 0;
 
-        public override void HandleBpmChange(int number)
+        public override void HandleBpmChange(float number)
         {
             base.HandleBpmChange(number);
             UpdateTriggerInterval();
@@ -89,7 +89,7 @@ namespace FX.Patterns
 
         private float GetTriggerInterval()
         {
-            return (60f / _bpm) * (_numBeats / (float)numSteps);
+            return (60f / bpm) * (numBeats / (float)numSteps);
         }
 
         public override void GeneratePattern()
