@@ -388,6 +388,12 @@ namespace FX
             }
         }
 
+        public void RemoveFXTriggers()
+        {
+            fxTriggerAddresses.Clear();
+            OnGroupChanged();           
+        }
+
         public bool ExistsInFxAddress(string address)
         {
             var item = fxParameterControllers.FirstOrDefault(a => a.FxAddress == address);

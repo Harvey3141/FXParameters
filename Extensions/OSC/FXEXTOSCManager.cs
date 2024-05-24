@@ -482,6 +482,14 @@ namespace FX
                     fXManager.RemoveFXTriggerFromGroup(groupAddress, paramAddress);
                 }
             }
+            else if (address.ToUpper() == "/GROUP/TRIGGERS/REMOVE")
+            {
+                if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
+                {
+                    string groupAddress = message.Values[0].StringValue;
+                    fXManager.RemoveFXTriggersFromGroup(groupAddress);
+                }
+            }
             else if (address.ToUpper() == "/GROUP/ENABLED/SET")
             {
                 if (message.Values.Count > 1 && message.Values[0].Type == OSCValueType.String && (message.Values[1].Type == OSCValueType.True || message.Values[1].Type == OSCValueType.False))

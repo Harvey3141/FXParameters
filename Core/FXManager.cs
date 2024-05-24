@@ -882,6 +882,19 @@ namespace FX
                 Debug.LogWarning($"Group with address {groupAddress} not found.");
             }
         }
+
+        public void RemoveFXTriggersFromGroup(string groupAddress)
+        {
+            GroupFXController group = FindGroupByAddress(groupAddress);
+            if (group != null)
+            {
+                group.RemoveFXTriggers();
+            }
+            else
+            {
+                Debug.LogWarning($"Group with address {groupAddress} not found.");
+            }
+        }
         public GroupFXController CreateGroup()
         {
             int maxIndex = 0;
