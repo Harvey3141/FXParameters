@@ -36,6 +36,8 @@ namespace FX
         public float valueAtZero = 0f;
         public float valueAtOne  = 1f;
 
+        private float previousValueIn = -1.0f;
+        private float previousRandomValue = -1.0f;
 
         public FXParameterController(string address, AffectorFunction affector, bool invert, bool enabled = true, float valueAtZero = 0f, float valueAtOne = 1f) {
             key = address.Substring(1);
@@ -115,9 +117,14 @@ namespace FX
                     affectedValue = Mathf.Sqrt(affectedValue);
                     break;
                 case AffectorFunction.Randomise:
-                    affectedValue = UnityEngine.Random.Range(0f, 1f);
+                    if (previousValueIn == valueIn) affectedValue = previousRandomValue;
+                    else {
+                        affectedValue = UnityEngine.Random.Range(invert ? valueAtOne : valueAtZero, invert ? valueAtZero : valueAtOne);
+                        previousRandomValue = affectedValue;
+                    }
                     break;
             }
+            previousValueIn = valueIn;
             return affectedValue;
         }
     }
