@@ -2,11 +2,12 @@ Shader "Hidden/FX/CameraCompositor"
 {
     Properties
     {
-        // This property is necessary to make the CommandBuffer.Blit bind the source texture to _MainTex
         _MainTex("Main Texture", 2DArray) = "grey" {}
         _TextureA("Texture A", 2D) = "white" {} 
         _TextureB("Texture B", 2D) = "white" {}
         _TextureKey("Texture Key", 2D) = "white" {} 
+        _TextureMask("Texture Mask", 2D) = "white" {} 
+        _Brightness("Brightness", Float) = 1.0
     }
 
     HLSLINCLUDE
@@ -54,23 +55,24 @@ Shader "Hidden/FX/CameraCompositor"
     TEXTURE2D(_TextureKey); 
     SAMPLER(sampler_TextureKey); 
 
+    TEXTURE2D(_TextureMask); 
+    SAMPLER(sampler_TextureMask); 
+
     float _Brightness;
 
     float4 CustomPostProcess(Varyings input) : SV_Target
     {
         UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input);
 
-        // Note that if HDUtils.DrawFullScreen is used to render the post process, use ClampAndScaleUVForBilinearPostProcessTexture(input.texcoord.xy) to get the correct UVs
-
         float3 colorA = SAMPLE_TEXTURE2D(_TextureA, sampler_TextureA, input.texcoord).xyz;
         float3 colorB = SAMPLE_TEXTURE2D(_TextureB, sampler_TextureB, input.texcoord).xyz;
         float3 colorKey = SAMPLE_TEXTURE2D(_TextureKey, sampler_TextureKey, input.texcoord).xyz;
+        float3 maskColor = SAMPLE_TEXTURE2D(_TextureMask, sampler_TextureMask, input.texcoord).xyz;
 
-        float threshold = 0.01; 
-        bool isKeyColourPink = (colorKey.r == 1.0) && (colorKey.g == 0.0) && (colorKey.b == 1.0);
-        float3 outputColor = isKeyColourPink ? colorA : colorB;
+        bool isKeyColorPink = (colorKey.r == 1.0) && (colorKey.g == 0.0) && (colorKey.b == 1.0);
+        float3 outputColor = isKeyColorPink ? colorA : colorB;
 
-        outputColor *= _Brightness;
+        outputColor *= maskColor * _Brightness;
 
         return float4(outputColor, 1.0);
     }

@@ -8,6 +8,7 @@ public class FXPostProcessCompositor : CustomPostProcessVolumeComponent, IPostPr
     public TextureParameter textureA   = new TextureParameter(null);
     public TextureParameter textureB   = new TextureParameter(null);
     public TextureParameter textureKey = new TextureParameter(null);
+    public TextureParameter mask       = new TextureParameter(null);
 
     public ClampedFloatParameter brightness = new ClampedFloatParameter(1f, 0f, 1f);
 
@@ -27,7 +28,6 @@ public class FXPostProcessCompositor : CustomPostProcessVolumeComponent, IPostPr
             Debug.LogError($"Unable to find shader '{kShaderName}'. The post-process effect will not be applied.");
     }
 
-    // Render the effect
     public override void Render(CommandBuffer cmd, HDCamera camera, RTHandle source, RTHandle destination)
     {
         if (!IsActive()) {
@@ -46,6 +46,10 @@ public class FXPostProcessCompositor : CustomPostProcessVolumeComponent, IPostPr
         if (textureKey.value != null)
         {
             material.SetTexture("_TextureKey", textureKey.value);
+        }
+        if (mask.value != null)
+        {
+            material.SetTexture("_TextureMask", mask.value);
         }
         material.SetFloat("_Brightness", brightness.value);
         HDUtils.DrawFullScreen(cmd, material, destination, null, 0);
