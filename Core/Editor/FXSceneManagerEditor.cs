@@ -16,9 +16,14 @@ namespace FX
 
         private string newTagValue = "";
 
+        private string filterTagId = "";
+        private int selectedFilterTagIndex = 0;
+        private List<FX.Scene> filteredScenes;
+
         private void OnEnable()
         {
             fxSceneManager = (FXSceneManager)target;
+            filteredScenes = new List<FX.Scene>();
         }
 
         public override void OnInspectorGUI()
@@ -59,36 +64,71 @@ namespace FX
 
             GUILayout.Label("Scenes", EditorStyles.boldLabel);
 
-            scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, GUILayout.MaxHeight(EditorGUIUtility.singleLineHeight * 10));
-
-            if (fxSceneManager.scenes.Count > 0)
+            if (fxSceneManager.tagConfigurations.Count > 0)
             {
-                foreach (Scene scene in fxSceneManager.scenes)
+                string[] tagConfigTypes = fxSceneManager.tagConfigurations.Select(tc => tc.type).ToArray();
+                List<string> allTagValues = fxSceneManager.tagConfigurations.SelectMany(tc => tc.tags).Select(tag => tag.value).ToList();
+                allTagValues.Insert(0, "All Scenes");
+
+                int selectedFilterTagIndexBefore = selectedFilterTagIndex;
+                GUILayout.BeginHorizontal();
+                selectedFilterTagIndex = EditorGUILayout.Popup(selectedFilterTagIndex, allTagValues.ToArray(), GUILayout.Width(150));
+
+                if (selectedFilterTagIndex == 0)
                 {
-                    if (scene.Name != "ParameterList")
+                    filteredScenes = fxSceneManager.scenes;
+                }
+                else
+                {
+                    filterTagId = fxSceneManager.tagConfigurations.SelectMany(tc => tc.tags).ToArray()[selectedFilterTagIndex - 1].id;
+
+                    if (selectedFilterTagIndexBefore != selectedFilterTagIndex)
                     {
-                        GUILayout.BeginHorizontal();
-
-                        if (GUILayout.Button(scene.Name))
-                        {
-                            LoadScene(scene.Name);
-                        }
-
-                        if (GUILayout.Button("Remove", GUILayout.Width(70)))
-                        {
-                            RemoveScene(scene.Name);
-                        }
-
-                        GUILayout.EndHorizontal();
+                        filteredScenes = fxSceneManager.FilterScenesByTag(filterTagId);
+                        Debug.Log($"Filtered {filteredScenes.Count} scenes with tag '{allTagValues[selectedFilterTagIndex]}'.");
                     }
                 }
-            }
-            else
-            {
-                EditorGUILayout.HelpBox("No scenes found.", MessageType.Info);
+                GUILayout.EndHorizontal();
+
+                DisplayScenes(filteredScenes);
+
+                GUILayout.Space(10);
             }
 
-            EditorGUILayout.EndScrollView();
+            GUILayout.Space(20);
+
+            //GUILayout.Label("Scenes", EditorStyles.boldLabel);
+            //
+            //scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, GUILayout.MaxHeight(EditorGUIUtility.singleLineHeight * 10));
+            //
+            //if (fxSceneManager.scenes.Count > 0)
+            //{
+            //    foreach (Scene scene in fxSceneManager.scenes)
+            //    {
+            //        if (scene.Name != "ParameterList")
+            //        {
+            //            GUILayout.BeginHorizontal();
+            //
+            //            if (GUILayout.Button(scene.Name))
+            //            {
+            //                LoadScene(scene.Name);
+            //            }
+            //
+            //            if (GUILayout.Button("Remove", GUILayout.Width(70)))
+            //            {
+            //                RemoveScene(scene.Name);
+            //            }
+            //
+            //            GUILayout.EndHorizontal();
+            //        }
+            //    }
+            //}
+            //else
+            //{
+            //    EditorGUILayout.HelpBox("No scenes found.", MessageType.Info);
+            //}
+            //
+            //EditorGUILayout.EndScrollView();
 
             if (GUILayout.Button("Export", GUILayout.Width(70)))
             {
@@ -234,6 +274,40 @@ namespace FX
         private void RemoveScene(string sceneName)
         {
             fxSceneManager.RemoveScene(sceneName);
+        }
+
+        private void DisplayScenes(List<Scene> scenes)
+        {
+            scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, GUILayout.MaxHeight(EditorGUIUtility.singleLineHeight * 10));
+
+            if (scenes.Count > 0)
+            {
+                foreach (Scene scene in scenes)
+                {
+                    if (scene.Name != "ParameterList")
+                    {
+                        GUILayout.BeginHorizontal();
+
+                        if (GUILayout.Button(scene.Name))
+                        {
+                            LoadScene(scene.Name);
+                        }
+
+                        if (GUILayout.Button("Remove", GUILayout.Width(70)))
+                        {
+                            RemoveScene(scene.Name);
+                        }
+
+                        GUILayout.EndHorizontal();
+                    }
+                }
+            }
+            else
+            {
+                EditorGUILayout.HelpBox("No scenes found.", MessageType.Info);
+            }
+
+            EditorGUILayout.EndScrollView();
         }
     }
 }

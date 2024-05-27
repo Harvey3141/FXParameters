@@ -11,6 +11,8 @@ public class FXEnvironmentControl : FXBase
     public FXParameter<bool> fogEnabled = new FXParameter<bool>(false, "", true);
     public FXScaledParameter<float> fogDensity = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
 
+    public GameObject fogPlane;
+
 
     protected override void Awake()
     {
@@ -38,7 +40,9 @@ public class FXEnvironmentControl : FXBase
         if (fogEffect != null)
         {
             fogEffect.active = value;
+            fogPlane.SetActive(value);
         }
+        else fogPlane.SetActive(false);
     }
 
     private void SetFogDensity(float value)

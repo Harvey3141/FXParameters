@@ -579,7 +579,7 @@ namespace FX
             public string key;
         }
 
-        public void SavePreset(FX.Scene scene, bool includeAll = false)
+        public void SaveScene(FX.Scene scene, bool includeAll = false)
         {
             FXData preset = new FXData();
 
@@ -692,7 +692,7 @@ namespace FX
 
 
 
-        public bool LoadPreset(string presetName, out List<string> loadedTagIds) 
+        public bool LoadScene(string presetName, out List<string> loadedTagIds) 
         {
             string directoryPath = Path.Combine(Application.streamingAssetsPath, "FX Scenes");
             string filePath = Path.Combine(directoryPath, presetName + ".json");

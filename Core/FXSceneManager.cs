@@ -172,7 +172,9 @@ namespace FX
 
         public void PopulateScenesList()
         {
-            scenes.Clear();
+            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
+
             string scenesFolderPath = Path.Combine(Application.streamingAssetsPath, "FX Scenes");
 
             if (Directory.Exists(scenesFolderPath))
@@ -180,22 +182,48 @@ namespace FX
                 DirectoryInfo scenesDirectory = new DirectoryInfo(scenesFolderPath);
                 FileInfo[] sceneFiles = scenesDirectory.GetFiles("*.json");
 
+                HashSet<string> sceneNamesInDirectory = new HashSet<string>(
+                    sceneFiles
+                        .Where(file => file.Name != "ParameterList")
+                        .Select(file => Path.GetFileNameWithoutExtension(file.Name))
+                );
+
+                scenes.RemoveAll(scene => !sceneNamesInDirectory.Contains(scene.Name));
+
                 foreach (FileInfo file in sceneFiles)
                 {
                     if (file.Name != "ParameterList")
                     {
                         string sceneName = Path.GetFileNameWithoutExtension(file.Name);
-                        Scene scene = new Scene(sceneName);
-                        scenes.Add(scene);
+                        Scene existingScene = scenes.Find(scene => scene.Name == sceneName);
+
+                        if (existingScene == null)
+                        {
+                            Scene newScene = new Scene(sceneName);
+
+                            string json = File.ReadAllText(file.FullName);
+                            var settings = new JsonSerializerSettings { Converters = new List<JsonConverter> { new ColourHandler() } };
+                            FX.FXManager.FXData preset = JsonConvert.DeserializeObject<FX.FXManager.FXData>(json, settings);
+                            newScene.TagIds = preset.sceneTagIds;
+                            
+                            scenes.Add(newScene);
+                        }
                     }
                 }
+
+                stopwatch.Stop();
+                Debug.Log($"PopulateScenesList (without tags) took: {stopwatch.ElapsedMilliseconds} ms");
+                
+
                 onSceneListUpdated?.Invoke(scenes);
             }
             else
             {
                 Debug.LogError("Scenes folder not found: " + scenesFolderPath);
+                stopwatch.Stop();
             }
         }
+
 
         public bool LoadScene(string name)
         {
@@ -208,7 +236,7 @@ namespace FX
                 return false;
             }
 
-            if (fXManager.LoadPreset(name, out List<string> loadedTagIds))
+            if (fXManager.LoadScene(name, out List<string> loadedTagIds))
             {
                 CurrentScene = scenes.Find(s => s.Name == name);
 
@@ -245,14 +273,14 @@ namespace FX
 
         public void SaveScene(FX.Scene scene)
         {
-            fXManager.SavePreset(scene);
+            fXManager.SaveScene(scene);
             PopulateScenesList();
         }
 
         public void ExportParameterList()
         {
             Scene parameterListScene = new Scene("ParameterList");
-            fXManager.SavePreset(parameterListScene, true);
+            fXManager.SaveScene(parameterListScene, true);
         }
 
         public void RemoveScene(string name)
@@ -461,6 +489,11 @@ namespace FX
                 new TagConfiguration("scene-bucket"),
                 new TagConfiguration("scene-label")
             };
+        }
+
+        public List<Scene> FilterScenesByTag(string tagId)
+        {
+            return scenes.Where(scene => scene.TagIds.Contains(tagId)).ToList();
         }
     }
 }
