@@ -291,6 +291,11 @@ namespace FX
                 fxSceneManager.RemoveAllTagsFromCurrentScene();
             }
 
+            else if (address.ToUpper() == "/SCENE/GETCURRENTSTATE")
+            {
+                fXManager.InvokeAllSceneStateUpdates();
+            }
+
             else if (address.ToUpper() == "/TAG/NEW")
             {
                 if (message.Values.Count > 1 && message.Values[0].Type == OSCValueType.String && message.Values[1].Type == OSCValueType.String)

@@ -12,7 +12,7 @@ namespace FX
         bool ShouldSave { get; set; }
         void ResetToDefaultValue();
         void ResetToSceneDefaultValue();
-
+        void InvokeParameterValueChanged();
     }
 
     public enum AffectorFunction
@@ -213,6 +213,11 @@ namespace FX
         public void ResetToSceneDefaultValue()
         {
             Value = defaultSceneValue_;
+        }
+
+        public void InvokeParameterValueChanged()
+        {
+            fxManager_.OnParameterValueChanged(address_, value_);
         }
 
         public T GetDefaultValue()

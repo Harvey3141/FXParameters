@@ -497,6 +497,18 @@ namespace FX
             }
         }
 
+        public void InvokeAllParamsValueChanged()
+        {
+            foreach (var item in fxItemsByAddress_)
+            {
+                if (item.Value.type == FXItemInfoType.Parameter || item.Value.type == FXItemInfoType.ScaledParameter)
+                {
+                    IFXParameter parameter = item.Value.item as IFXParameter;
+                    parameter?.InvokeParameterValueChanged();
+                }
+            }
+        }
+
 
         public void OnParameterValueChanged<T>(string address, T value) {
             if (onFXParamValueChanged != null) onFXParamValueChanged.Invoke(address, value);
@@ -511,6 +523,21 @@ namespace FX
         {
             if (onFXGroupChanged != null) onFXGroupChanged.Invoke(data);
         }
+
+        public void InvokeAllGroupChanged() {
+            GroupFXController[] allGroups = GameObject.FindObjectsOfType<GroupFXController>();
+            foreach (var group in allGroups)
+            {
+                OnGroupChanged(group.GetData());
+            }
+        }
+
+        public void InvokeAllSceneStateUpdates()
+        {
+            InvokeAllParamsValueChanged();
+            InvokeAllGroupChanged();
+        }
+
 
         [System.Serializable]
         public class FXEnumData
