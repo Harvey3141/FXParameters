@@ -294,6 +294,8 @@ namespace FX
             else if (address.ToUpper() == "/SCENE/GETCURRENTSTATE")
             {
                 fXManager.InvokeAllSceneStateUpdates();
+                OnSceneListUpdated(fxSceneManager.scenes);
+                OnCurrentSceneChanged(fxSceneManager.CurrentScene);
             }
 
             else if (address.ToUpper() == "/TAG/NEW")

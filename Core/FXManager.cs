@@ -125,7 +125,7 @@ namespace FX
                 OnFXListChaned?.Invoke();
             }
             else {
-                Debug.LogError($"An FX item with address {address} is already registered.");
+                Debug.LogWarning($"FX List does not contain an item with the key: {address}");
             }
         }
 
@@ -976,7 +976,8 @@ namespace FX
             if (group != null)
             {
                 if (!group.isPinned) {
-                    GameObject.Destroy(group.gameObject);
+                    RemoveFXItem(group.value.Address);
+                    GameObject.DestroyImmediate(group.gameObject);
                 } 
                 else Debug.LogWarning($"Group with address {address} is pinned so cannot be removed");
             }
