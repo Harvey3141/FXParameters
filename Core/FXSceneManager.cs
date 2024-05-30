@@ -314,7 +314,7 @@ namespace FX
             }
         }
 
-        public void CreateNewScene()
+        public void CreateNewScene(string name = null)
         {
             GroupFXController[] allGroups = GameObject.FindObjectsOfType<GroupFXController>();
 
@@ -322,7 +322,7 @@ namespace FX
             {
                 if (!group.isPinned)
                 {
-                    Destroy(group.gameObject);
+                    fXManager.RemoveGroup(group.address);                   
                 }
                 else
                 {
@@ -331,6 +331,7 @@ namespace FX
             }
 
             fXManager.ResetAllParamsToDefault();
+            currentScene = new Scene(string.IsNullOrEmpty(name) ? "Untitled" : name)  ;
         }
 
         public bool AddTagToConfiguration(string type, string value)

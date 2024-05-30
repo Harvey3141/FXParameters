@@ -253,7 +253,11 @@ namespace FX
             }
             else if (address.ToUpper() == "/SCENE/NEW")
             {
-                fxSceneManager.CreateNewScene();
+                if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
+                {
+                    fxSceneManager.CreateNewScene(message.Values[0].StringValue);
+                }
+                else fxSceneManager.CreateNewScene();
             }
             else if (address.ToUpper() == "/SCENE/RESET")
             {
