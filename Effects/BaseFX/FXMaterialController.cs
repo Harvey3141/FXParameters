@@ -148,28 +148,6 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
         OnFXEnabled(fxEnabled.Value);
     }
 
-    private void Update()
-    {
-        switch (materialType.Value)
-        {
-            case MaterialType.DEFAULT:
-                break;
-            case MaterialType.EMISSIVE:
-                break;
-            case MaterialType.CONCRETE:
-                break;
-            case MaterialType.CUTOUT:
-                break;
-            case MaterialType.DISSOLVE:
-                break;
-            case MaterialType.WIREFRAME:
-                break;
-            case MaterialType.RESOLUME:
-                break;
-            default:
-                break;
-        }
-    }
 
     protected override void OnFXEnabled(bool state)
     {
@@ -221,6 +199,36 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
     private void SetMaterial(int index)
     {
         if (index < MaterialTypeInfo.Count) SetMaterial((MaterialType)index);
+    }
+
+    private void Update()
+    {
+        switch (materialType.Value)
+        {
+            case MaterialType.DEFAULT:
+                break;
+            case MaterialType.EMISSIVE:
+                break;
+            case MaterialType.CONCRETE:
+                break;
+            case MaterialType.CUTOUT:
+                break;
+            case MaterialType.DISSOLVE:
+                break;
+            case MaterialType.HOLOFX:
+                SetHoloDeform(holoDeform.ScaledValue);
+                SetHoloIntensity(holoIntensity.ScaledValue);
+                SetHoloSpeed(holoSpeed.ScaledValue);
+                SetHoloMonochrome(holoMonochrome.Value);
+                SetEmissiveIntensityAll(triggerValue.ScaledValue);
+                break;
+            case MaterialType.WIREFRAME:
+                break;
+            case MaterialType.RESOLUME:
+                break;
+            default:
+                break;
+        }
     }
 
     public void SetMaterial(MaterialType type)

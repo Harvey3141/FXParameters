@@ -15,6 +15,8 @@ public class FXScaler : FXBaseWithEnabled
 
     public Vector3[] initialScales;
 
+    public bool resetsToSceneDefault = false;
+
     protected override void Start()
     {
         initialScales = new Vector3[targetTransforms.Count];
@@ -77,7 +79,10 @@ public class FXScaler : FXBaseWithEnabled
         {
             if (transform != null)
             {
-                transform.localScale = initialScales[i];
+                if (initialScales != null) {
+                    if (initialScales[i] != null) transform.localScale = initialScales[i];
+                }
+                //scale.ScaledValue* initialScales[i].y
             }
             i++;
         }

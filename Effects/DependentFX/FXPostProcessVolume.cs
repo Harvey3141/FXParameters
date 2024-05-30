@@ -17,6 +17,8 @@ public class FXPostProcessVolume : FXBase
     private LimitlessDistortion10Vol_2 limitlessDistortion10Vol_2;
     private LimitlessDistortion7Vol_2 limitlessDistortion7Vol_2;
 
+    private Limitless_Distortion_2 limitless_Distortion2;
+
 
     public FXParameter<bool> blockEnabled = new FXParameter<bool>(false, "", true);
     public FXScaledParameter<float> block = new FXScaledParameter<float>(0, 0, 1.0f,"", false);
@@ -39,7 +41,6 @@ public class FXPostProcessVolume : FXBase
     public FXParameter<bool> chromaticAberrationEnabled = new FXParameter<bool>(false, "", true);
     public FXScaledParameter<float> chromaticAberration = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
 
-
     public FXParameter<bool> trippyEnabled = new FXParameter<bool>(false, "", true);
     public FXScaledParameter<float> trippy = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
 
@@ -48,6 +49,9 @@ public class FXPostProcessVolume : FXBase
 
     public FXParameter<bool> splitRotateEnabled = new FXParameter<bool>(false, "", true);
     public FXScaledParameter<float> splitRotate = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
+
+    public FXParameter<bool> wetEnabled = new FXParameter<bool>(false, "", true);
+    public FXScaledParameter<float> wetness = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
 
 
     protected override void Awake()
@@ -90,6 +94,11 @@ public class FXPostProcessVolume : FXBase
             Debug.LogError("limitlessDistortion7Vol_2 effect not found in the Volume profile");
         }
 
+        if (!volume.profile.TryGet<Limitless_Distortion_2>(out limitless_Distortion2))
+        {
+            Debug.LogError("limitlessDistortion2 effect not found in the Volume profile");
+        }
+
 
         blockEnabled.OnValueChanged               += SetBlockEnabled;
         driftEnabled.OnValueChanged               += SetDriftEnbled;
@@ -101,6 +110,8 @@ public class FXPostProcessVolume : FXBase
         trippyEnabled.OnValueChanged              += SetTrippyEnabled;
         wobbleEnabled.OnValueChanged              += SetWobbleEnabled;
         splitRotateEnabled.OnValueChanged         += SetSplitRotateEnabled;
+        wetEnabled.OnValueChanged                 += SetWetEnabled;
+
 
         block.OnScaledValueChanged  += SetBlock;
         drift.OnScaledValueChanged  += SetDrift;
@@ -112,7 +123,7 @@ public class FXPostProcessVolume : FXBase
         trippy.OnScaledValueChanged          += SetTrippy;
         wobble.OnScaledValueChanged              += SetWobble;
         splitRotate.OnScaledValueChanged         += SetSplitRotate;
-
+        wetness.OnScaledValueChanged             += SetWetness;
 
     }
 
@@ -272,6 +283,22 @@ public class FXPostProcessVolume : FXBase
         if (limitlessDistortion7Vol_2 != null)
         {
             limitlessDistortion7Vol_2.speed.value = value;
+        }
+    }
+
+    private void SetWetEnabled(bool value)
+    {
+        if (limitless_Distortion2 != null)
+        {
+            limitless_Distortion2.active = value;
+        }
+    }
+
+    private void SetWetness(float value)
+    {
+        if (limitless_Distortion2 != null)
+        {
+            limitless_Distortion2.size.value = value;
         }
     }
 
