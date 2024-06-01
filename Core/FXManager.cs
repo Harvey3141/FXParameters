@@ -68,6 +68,9 @@ namespace FX
         public delegate void OnFXParamAffectorChanged(string address, AffectorFunction affector);
         public event OnFXParamAffectorChanged onFXParamAffectorChanged;
 
+        public delegate void OnFXColourParamGlobalColourPaletteIndexChanged(string address, int index);
+        public event OnFXColourParamGlobalColourPaletteIndexChanged onFXColourParamGlobalColourPaletteIndexChanged;
+
         public delegate void OnPresetLoaded(string name);
         public event OnPresetLoaded onPresetLoaded;
 
@@ -519,6 +522,40 @@ namespace FX
             if (onFXParamAffectorChanged != null) onFXParamAffectorChanged.Invoke(address, affector);
         }
 
+        public void OnGlobalColourPaletteIndexChanged(string address, int index)
+        {
+            SetColorParameterToGlobalPaletteColour(address, index);
+            if (onFXColourParamGlobalColourPaletteIndexChanged != null) onFXColourParamGlobalColourPaletteIndexChanged.Invoke(address, index);
+        }
+        
+
+        public void UpdateColorParameters(int paletteIndex, Color color)
+        {
+            foreach (var item in fxItemsByAddress_)
+            {
+                if (item.Value.type == FXItemInfoType.Parameter && item.Value.item is FXParameter<Color> colorParam)
+                {
+                    if (colorParam.GlobalColourPaletteIndex == paletteIndex)
+                    {
+                        colorParam.SetValue(color, false); 
+                    }
+                }
+            }
+        }
+
+        public void SetColorParameterToGlobalPaletteColour (string address, int colourIndex)
+        {
+            if (fxItemsByAddress_.TryGetValue(address, out var fxItem))
+            {
+                if (fxItem.type == FXItemInfoType.Parameter && fxItem.item is FXParameter<Color> colorParam)
+                {
+                    Color c = FXColourPaletteManager.Instance.activePalette.colours[colourIndex];
+                    colorParam.SetValue(c, false);
+                    
+                }
+            }            
+        }
+
         public void OnGroupChanged(FXGroupData data)
         {
             if (onFXGroupChanged != null) onFXGroupChanged.Invoke(data);
@@ -589,7 +626,7 @@ namespace FX
             public List<FXParameterData<int>> intParameters       = new List<FXParameterData<int>>();
             public List<FXParameterData<float>> floatParameters   = new List<FXParameterData<float>>();
             public List<FXParameterData<bool>> boolParameters     = new List<FXParameterData<bool>>();
-            public List<FXParameterData<Color>> colorParameters   = new List<FXParameterData<Color>>();
+            public List<FXColourParameterData> colorParameters   = new List<FXColourParameterData>();
             public List<FXEnumParameterData> enumParameters       = new List<FXEnumParameterData>();
 
             // FXGroups 
@@ -661,7 +698,7 @@ namespace FX
                         }
                         else if (parameter is FXParameter<Color> colorParam)
                         {
-                            preset.colorParameters.Add(colorParam.GetData());
+                            preset.colorParameters.Add((FXColourParameterData)colorParam.GetData());
                         }
                         else
                         {

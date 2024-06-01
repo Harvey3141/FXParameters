@@ -14,6 +14,7 @@ using System.IO;
 using System;
 using FX.Patterns;
 using Newtonsoft.Json;
+using Unity.VisualScripting;
 
 namespace FX
 {
@@ -65,6 +66,7 @@ namespace FX
         private FXManager fXManager;
         public FXSceneManager fxSceneManager;
         public BPMManager bpmManager;
+        public FXColourPaletteManager fxPaletteManager;
 
         private void Start()
         {
@@ -74,9 +76,12 @@ namespace FX
             fXManager.onFXParamAffectorChanged   += OnFXParamAffectorChanged;
             fXManager.onPresetLoaded             += OnPresetLoaded;
 
+            fXManager.onFXColourParamGlobalColourPaletteIndexChanged += OnFXColourParamGlobalColourPaletteIndexChanged;
+
             fXManager.onFXGroupChanged           += OnFXGroupChanged;
             fXManager.onFXGroupListChanged       += OnFXGroupListChanged;
             fXManager.onFXGroupEnabled           += OnFXGroupEnabled;
+
 
             fxSceneManager.onSceneListUpdated        += OnSceneListUpdated;
             fxSceneManager.onCurrentSceneChanged     += OnCurrentSceneChanged;
@@ -320,6 +325,36 @@ namespace FX
             {
                 FX.Tag tag = JsonConvert.DeserializeObject<FX.Tag>(message.Values[0].StringValue);
                 fxSceneManager.SetTag(tag);
+            }
+
+            else if (address.ToUpper() == "/COLOURPALETTE/NEW")
+            {
+                if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
+                {
+                    var settings = new JsonSerializerSettings
+                    {
+                        Converters = new List<JsonConverter> { new ColourHandler() },
+                    };
+                    FX.ColourPalette palette = JsonConvert.DeserializeObject<FX.ColourPalette>(message.Values[0].StringValue);
+
+                    fxPaletteManager.NewPalette(palette);
+                }
+            }
+            else if (address.ToUpper() == "/COLOURPALETTE/REMOVE")
+            {
+                if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
+                {
+                    fxPaletteManager.RemovePalette(message.Values[0].StringValue);
+                }
+            }
+            else if (address.ToUpper() == "/COLOURPALETTE/SET")
+            {
+                var settings = new JsonSerializerSettings
+                {
+                    Converters = new List<JsonConverter> {new ColourHandler()},
+                };
+                FX.ColourPalette palette = JsonConvert.DeserializeObject<FX.ColourPalette>(message.Values[0].StringValue);
+                fxPaletteManager.SetPalette(palette);
             }
 
             else if (address.ToUpper() == "/TAGCONFIGURATIONLIST/GET")
@@ -656,6 +691,15 @@ namespace FX
             {
                 if (node.SendParamChanges) SendOSCMessage(address, node, affector.ToString());
             }         
+        }
+
+        void OnFXColourParamGlobalColourPaletteIndexChanged(string address, int index)
+        {
+            address += "/globalColourPaletteIndex";
+            foreach (var node in oscNodes)
+            {
+                if (node.SendParamChanges) SendOSCMessage(address, node, index);
+            }
         }
 
         void OnFXGroupChanged(FXGroupData data)

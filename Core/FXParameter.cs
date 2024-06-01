@@ -48,6 +48,12 @@ namespace FX
         public List<string> availableNames = new List<string>();
     }
 
+    [System.Serializable]
+    public class FXColourParameterData : FXParameterData<Color>
+    {
+        public int globalColourPaletteIndex;
+    }
+
 
     [System.Serializable]
     public class FXParameter<T> : IFXParameter
@@ -72,6 +78,9 @@ namespace FX
         public event Action<T> OnValueChanged;
 
         protected FXManager fxManager_;
+
+        public int globalColourPaletteIndex; // For Color type only
+
 
         public virtual T Value
         {
@@ -169,6 +178,7 @@ namespace FX
             SetMaxValue(maxValue);
         }
 
+
         public bool HasMinValue
         {
             get { return hasMinValue_; }
@@ -227,18 +237,79 @@ namespace FX
 
         public virtual FXParameterData<T> GetData()
         {
-            return new FXParameterData<T>
+            if (typeof(T) == typeof(Color))
             {
-                key          = this.Address,
-                value        = this.Value,
-                defaultValue = this.GetDefaultValue(),
-                minValue     = this.GetMinValue(),
-                maxValue     = this.GetMaxValue(),
-                hasMinValue  = this.HasMinValue,
-                hasMaxValue  = this.HasMaxValue,
-                isScaled     = false
-            };
+                var data = new FXColourParameterData
+                {
+                    key                      = this.Address,
+                    value                    = (Color)(object)this.Value,
+                    defaultValue             = (Color)(object)this.GetDefaultValue(),
+                    minValue                 = (Color)(object)this.GetMinValue(),
+                    maxValue                 = (Color)(object)this.GetMaxValue(),
+                    hasMinValue              = this.HasMinValue,
+                    hasMaxValue              = this.HasMaxValue,
+                    isScaled                 = false,
+                    globalColourPaletteIndex = this.globalColourPaletteIndex 
+                };
+                return (FXParameterData<T>)(object)data;
+            }
+            else
+            {
+                return new FXParameterData<T>
+                {
+                    key          = this.Address,
+                    value        = this.Value,
+                    defaultValue = this.GetDefaultValue(),
+                    minValue     = this.GetMinValue(),
+                    maxValue     = this.GetMaxValue(),
+                    hasMinValue  = this.HasMinValue,
+                    hasMaxValue  = this.HasMaxValue,
+                    isScaled     = false
+                };
+            }
         }
+
+        public int GlobalColourPaletteIndex
+        {
+            get
+            {
+                if (typeof(T) == typeof(Color))
+                {
+                    return globalColourPaletteIndex;
+                }
+                throw new InvalidOperationException("GlobalColourPaletteIndex is only available for Color type parameters.");
+            }
+            set
+            {
+                if (typeof(T) == typeof(Color))
+                {
+                    globalColourPaletteIndex = value;
+                    fxManager_.OnGlobalColourPaletteIndexChanged(address_, globalColourPaletteIndex);
+                }
+                else
+                {
+                    throw new InvalidOperationException("GlobalColourPaletteIndex is only available for Color type parameters.");
+                }
+            }
+        }
+
+        public bool UsesGlobalColorPaletteIndex(int index)
+        {
+            if (typeof(T) == typeof(Color))
+            {
+                return globalColourPaletteIndex == index;
+            }
+            return false;
+        }
+
+        public void UpdateColorValue(Color color)
+        {
+            if (typeof(T) == typeof(Color))
+            {
+                SetValue((T)(object)color, false);
+            }
+        }
+
     }
 
 

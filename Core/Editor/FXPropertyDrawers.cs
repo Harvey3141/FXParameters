@@ -63,7 +63,8 @@ namespace FX
                     }
                     GUI.backgroundColor = Color.white;
                 }
-                else {
+                else
+                {
                     bool newValue = EditorGUI.Toggle(position, label, boolParam.Value);
                     if (newValue != boolParam.Value) boolParam.Value = newValue;
                 }
@@ -82,9 +83,35 @@ namespace FX
             }
             else if (fxParam is FXParameter<Color> colorParam)
             {
-                Color newValue = EditorGUI.ColorField(position, label, colorParam.Value);
+                Rect colorFieldRect = new Rect(position.x, position.y, position.width - 30, position.height);
+                Rect buttonRect = new Rect(position.x + position.width - 25, position.y, 25, position.height);
+
+                Color newValue = EditorGUI.ColorField(colorFieldRect, label, colorParam.Value);
                 if (newValue != colorParam.Value)
                     colorParam.Value = newValue;
+
+                if (GUI.Button(buttonRect, "G", EditorStyles.miniButton))
+                {
+                    GenericMenu menu = new GenericMenu();
+                    FXColourPaletteManager colourPaletteManager = FXColourPaletteManager.Instance;
+                    if (colourPaletteManager != null && colourPaletteManager.activePalette != null)
+                    {
+                        for (int i = 0; i < colourPaletteManager.activePalette.colours.Count; i++)
+                        {
+                            Color col = colourPaletteManager.activePalette.colours[i];
+                            int capturedIndex = i;
+                            // TODO - Fix this - it should be setting the menu item colour... 
+                            Texture2D colorTexture = CreateColorTexture(col);
+                            GUIContent content = new GUIContent(ColorUtility.ToHtmlStringRGBA(col), colorTexture);
+
+                            menu.AddItem(content, false, () =>
+                            {
+                                colorParam.GlobalColourPaletteIndex = capturedIndex;
+                            });
+                        }
+                    }
+                    menu.ShowAsContext();
+                }
             }
             else
             {
@@ -101,16 +128,29 @@ namespace FX
                         fxParam.ObjectValue = selectedEnum;
                     }
                 }
-                else 
+                else
                 {
                     EditorGUI.LabelField(position, label, new GUIContent("Unsupported FXParameter type"));
 
                 }
             }
-            EditorGUI.EndProperty();
-    
+            EditorGUI.EndProperty();  
         }
-    
+
+        private Texture2D CreateColorTexture(Color color)
+        {
+            Texture2D texture = new Texture2D(16, 16);
+            for (int y = 0; y < texture.height; y++)
+            {
+                for (int x = 0; x < texture.width; x++)
+                {
+                    texture.SetPixel(x, y, color);
+                }
+            }
+            texture.Apply();
+            return texture;
+        }
+
         private IFXParameter GetFXParameterFromProperty(SerializedProperty property)
         {
             string propertyPath = property.propertyPath;
