@@ -83,14 +83,15 @@ namespace FX
             }
             else if (fxParam is FXParameter<Color> colorParam)
             {
-                Rect colorFieldRect = new Rect(position.x, position.y, position.width - 30, position.height);
-                Rect buttonRect = new Rect(position.x + position.width - 25, position.y, 25, position.height);
+                Rect colorFieldRect = new Rect(position.x, position.y, position.width - 60, position.height);
+                Rect buttonRect = new Rect(position.x + position.width - 55, position.y, 25, position.height);
+                Rect toggleRect = new Rect(position.x + position.width - 30, position.y, 25, position.height);
 
                 Color newValue = EditorGUI.ColorField(colorFieldRect, label, colorParam.Value);
                 if (newValue != colorParam.Value)
                     colorParam.Value = newValue;
 
-                if (GUI.Button(buttonRect, "G", EditorStyles.miniButton))
+                if (GUI.Button(buttonRect, "P", EditorStyles.miniButton))
                 {
                     GenericMenu menu = new GenericMenu();
                     FXColourPaletteManager colourPaletteManager = FXColourPaletteManager.Instance;
@@ -100,11 +101,11 @@ namespace FX
                         {
                             Color col = colourPaletteManager.activePalette.colours[i];
                             int capturedIndex = i;
-                            // TODO - Fix this - it should be setting the menu item colour... 
                             Texture2D colorTexture = CreateColorTexture(col);
-                            GUIContent content = new GUIContent(ColorUtility.ToHtmlStringRGBA(col), colorTexture);
+                            GUIContent content = new GUIContent($"Color {i}", colorTexture);
+                            bool selected = colorParam.GlobalColourPaletteIndex == capturedIndex;
 
-                            menu.AddItem(content, false, () =>
+                            menu.AddItem(content, selected, () =>
                             {
                                 colorParam.GlobalColourPaletteIndex = capturedIndex;
                             });
@@ -112,7 +113,11 @@ namespace FX
                     }
                     menu.ShowAsContext();
                 }
+
+                colorParam.UseGlobalColourPalette = GUI.Toggle(toggleRect, colorParam.UseGlobalColourPalette, "");
             }
+
+
             else
             {
                 // TODO - this should also be cached to prevent runtime reflection
@@ -137,16 +142,16 @@ namespace FX
             EditorGUI.EndProperty();  
         }
 
+
         private Texture2D CreateColorTexture(Color color)
         {
             Texture2D texture = new Texture2D(16, 16);
-            for (int y = 0; y < texture.height; y++)
+            Color[] pixels = new Color[16 * 16];
+            for (int i = 0; i < pixels.Length; i++)
             {
-                for (int x = 0; x < texture.width; x++)
-                {
-                    texture.SetPixel(x, y, color);
-                }
+                pixels[i] = Color.green;
             }
+            texture.SetPixels(pixels);
             texture.Apply();
             return texture;
         }

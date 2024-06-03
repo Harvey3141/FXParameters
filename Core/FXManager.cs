@@ -71,6 +71,9 @@ namespace FX
         public delegate void OnFXColourParamGlobalColourPaletteIndexChanged(string address, int index);
         public event OnFXColourParamGlobalColourPaletteIndexChanged onFXColourParamGlobalColourPaletteIndexChanged;
 
+        public delegate void OnFXColourParamUseGlobalPaletteChanged(string address, bool value);
+        public event OnFXColourParamUseGlobalPaletteChanged onFXColourParamUseGlobalPaletteChanged;
+
         public delegate void OnPresetLoaded(string name);
         public event OnPresetLoaded onPresetLoaded;
 
@@ -524,37 +527,112 @@ namespace FX
 
         public void OnGlobalColourPaletteIndexChanged(string address, int index)
         {
-            SetColorParameterToGlobalPaletteColour(address, index);
+            UpdateColorParameterFromGlobalPalette(address);
             if (onFXColourParamGlobalColourPaletteIndexChanged != null) onFXColourParamGlobalColourPaletteIndexChanged.Invoke(address, index);
         }
-        
 
-        public void UpdateColorParameters(int paletteIndex, Color color)
+        public void OnUseGlobalPaletteChanged(string address, bool value)
+        {
+            UpdateColorParameterFromGlobalPalette(address);
+            if (onFXColourParamUseGlobalPaletteChanged != null) onFXColourParamUseGlobalPaletteChanged.Invoke(address, value);
+        }
+
+        /// <summary>
+        /// Updates color parameters that use the global color palette with the specified color at the given palette index.
+        /// If 'force' is true, it will override the useGlobalColourPalette setting.
+        /// </summary>
+        /// <param name="paletteIndex">The index of the color in the global color palette.</param>
+        /// <param name="color">The color to set for the parameters that match the palette index.</param>
+        /// <param name="force">If true, overrides the useGlobalColourPalette setting and forces the update.</param>
+        public void UpdateColorParametersWithPaletteIndex(int paletteIndex, Color color, bool force = false)
         {
             foreach (var item in fxItemsByAddress_)
             {
                 if (item.Value.type == FXItemInfoType.Parameter && item.Value.item is FXParameter<Color> colorParam)
                 {
-                    if (colorParam.GlobalColourPaletteIndex == paletteIndex)
+                    if (force || colorParam.UseGlobalColourPalette)
                     {
-                        colorParam.SetValue(color, false); 
+                        if (colorParam.GlobalColourPaletteIndex == paletteIndex)
+                        {
+                            colorParam.SetValue(color, false);
+                        }
                     }
                 }
             }
         }
 
-        public void SetColorParameterToGlobalPaletteColour (string address, int colourIndex)
+
+        /// <summary>
+        /// Updates all color parameters to the colors from the given palette.
+        /// If 'force' is true, it will override the useGlobalColourPalette setting.
+        /// </summary>
+        /// <param name="palette">The color palette to update the parameters with.</param>
+        /// <param name="force">If true, overrides the useGlobalColourPalette setting and forces the update.</param>
+        public void UpdateAllColorParametersToPalette(FX.ColourPalette palette, bool force = false)
+        {
+            foreach (var item in fxItemsByAddress_)
+            {
+                if (item.Value.type == FXItemInfoType.Parameter && item.Value.item is FXParameter<Color> colorParam)
+                {
+                    if (force || colorParam.UseGlobalColourPalette)
+                    {
+                        int index = colorParam.GlobalColourPaletteIndex;
+                        if (index >= 0 && index < palette.colours.Count)
+                        {
+                            colorParam.SetValue(palette.colours[index], false);
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"GlobalColourPaletteIndex {colorParam.GlobalColourPaletteIndex} is out of range for palette {palette.name}.");
+                            colorParam.ResetToSceneDefaultValue();
+                        }
+                    }
+                    else
+                    {
+                        colorParam.ResetToSceneDefaultValue();
+                    }
+                }
+            }
+        }
+
+
+
+        /// <summary>
+        /// Updates the color parameter at the specified address using the global color palette.
+        /// If the global color palette is not in use or the index is out of range, the parameter is reset to its scene default value.
+        /// </summary>
+        /// <param name="address">The address of the color parameter to update.</param>
+        /// <param name="force">If true, overrides the useGlobalColourPalette setting and forces the update.</param>
+        public void UpdateColorParameterFromGlobalPalette(string address, bool force = false)
         {
             if (fxItemsByAddress_.TryGetValue(address, out var fxItem))
             {
                 if (fxItem.type == FXItemInfoType.Parameter && fxItem.item is FXParameter<Color> colorParam)
                 {
-                    Color c = FXColourPaletteManager.Instance.activePalette.colours[colourIndex];
-                    colorParam.SetValue(c, false);
-                    
+                    if (force || colorParam.UseGlobalColourPalette)
+                    {
+                        var palette = FXColourPaletteManager.Instance.activePalette;
+                        if (palette != null && colorParam.GlobalColourPaletteIndex >= 0 && colorParam.GlobalColourPaletteIndex < palette.colours.Count)
+                        {
+                            Color c = palette.colours[colorParam.GlobalColourPaletteIndex];
+                            colorParam.SetValue(c, false);
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"GlobalColourPaletteIndex {colorParam.GlobalColourPaletteIndex} is out of range for palette {palette?.name}.");
+                            colorParam.ResetToSceneDefaultValue();
+                        }
+                    }
+                    else
+                    {
+                        colorParam.ResetToSceneDefaultValue();
+                    }
                 }
-            }            
+            }
         }
+
+
+
 
         public void OnGroupChanged(FXGroupData data)
         {

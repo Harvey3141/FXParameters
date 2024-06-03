@@ -82,10 +82,14 @@ namespace FX
             fXManager.onFXGroupListChanged       += OnFXGroupListChanged;
             fXManager.onFXGroupEnabled           += OnFXGroupEnabled;
 
-
             fxSceneManager.onSceneListUpdated        += OnSceneListUpdated;
             fxSceneManager.onCurrentSceneChanged     += OnCurrentSceneChanged;
             fxSceneManager.onTagConfigurationUpdated += OnTagConfigurationUpdated;
+
+            fxPaletteManager.onPaletteChanged           += OnPaletteChanged;
+            fxPaletteManager.onUseForceUpdateChanged    += OnUseForceUpdateChanged;
+            fxPaletteManager.onUsePaletteManagerChanged += OnUsePaletteManagerChanged;
+            fxPaletteManager.onActivePaletteChanged     += OnActivePaletteChanged;
 
             bpmManager.OnBeat       += OnBeat;
             bpmManager.OnBpmChanged += OnBPMChanged;
@@ -327,6 +331,40 @@ namespace FX
                 fxSceneManager.SetTag(tag);
             }
 
+
+            else if (address.ToUpper() == "/COLOURPALETTEMANAGER/ENABLED/GET")
+            {
+                OnUsePaletteManagerChanged(fxPaletteManager.usePaletteManager);
+            }
+            else if (address.ToUpper() == "/COLOURPALETTEMANAGER/ENABLED/SET")
+            {
+                if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.True || message.Values[0].Type == OSCValueType.False)
+                {
+                    fxPaletteManager.usePaletteManager = message.Values[0].BoolValue;
+                }
+            }
+            else if (address.ToUpper() == "/COLOURPALETTEMANAGER/FORCE/GET")
+            {
+                OnUseForceUpdateChanged(fxPaletteManager.useForceUpdate);
+            }
+            else if (address.ToUpper() == "/COLOURPALETTEMANAGER/FORCE/SET")
+            {
+                if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.True || message.Values[0].Type == OSCValueType.False)
+                {
+                    fxPaletteManager.useForceUpdate = message.Values[0].BoolValue;
+                }
+            }
+            else if (address.ToUpper() == "/COLOURPALETTEMANAGER/ACTIVEPALETTE/GET")
+            {
+                OnActivePaletteChanged(fxPaletteManager.activePalette.id);
+            }
+            else if (address.ToUpper() == "/COLOURPALETTEMANAGER/ACTIVEPALETTE/SET")
+            {               
+                if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
+                {
+                    fxPaletteManager.SetActivePalette(message.Values[0].StringValue);
+                }
+            }
             else if (address.ToUpper() == "/COLOURPALETTE/NEW")
             {
                 if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
@@ -356,6 +394,7 @@ namespace FX
                 FX.ColourPalette palette = JsonConvert.DeserializeObject<FX.ColourPalette>(message.Values[0].StringValue);
                 fxPaletteManager.SetPalette(palette);
             }
+
 
             else if (address.ToUpper() == "/TAGCONFIGURATIONLIST/GET")
             {
@@ -774,6 +813,48 @@ namespace FX
                 if (node.SendParamChanges) SendOSCMessage("/tagConfigurationList/get", node, json);
             }
         }
+
+        private void OnUsePaletteManagerChanged(bool value)
+        {
+            foreach (var node in oscNodes)
+            {
+                if (node.SendParamChanges) SendOSCMessage("/colourPaletteManager/enabled/get", node, value);
+            }
+        }
+
+        private void OnUseForceUpdateChanged(bool value)
+        {
+            foreach (var node in oscNodes)
+            {
+                if (node.SendParamChanges) SendOSCMessage("/colourPaletteManager/force/get", node, value);
+            }
+        }
+
+        private void OnActivePaletteChanged(string id)
+        {
+            foreach (var node in oscNodes)
+            {
+                if (node.SendParamChanges) SendOSCMessage("/colourPaletteManager/activePalette/get", node, id);
+            }
+        }
+
+        private void OnPaletteChanged(ColourPalette palette)
+        {
+            var settings = new JsonSerializerSettings
+            {
+                Converters = new List<JsonConverter> {
+                new ColourHandler()
+                },
+            };
+
+            string json = JsonConvert.SerializeObject(palette, settings);
+
+            foreach (var node in oscNodes)
+            {
+                if (node.SendParamChanges) SendOSCMessage("/colourPalette/get", node, json);
+            }
+        }
+
 
         void OnBeat() {
 

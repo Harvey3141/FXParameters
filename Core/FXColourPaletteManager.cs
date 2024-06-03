@@ -2,7 +2,6 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using UnityEngine;
 
 namespace FX
@@ -14,7 +13,7 @@ namespace FX
         public string name { get; set; }
         public List<Color> colours;
 
-        public event System.Action<int, Color> OnColourChanged;
+        public event Action<int, Color> OnColourChanged;
 
         public ColourPalette(string name, List<Color> paletteColors)
         {
@@ -38,6 +37,43 @@ namespace FX
         public List<ColourPalette> palettes;
         public ColourPalette activePalette;
 
+        public event Action<bool> onUsePaletteManagerChanged;
+        public event Action<bool> onUseForceUpdateChanged;
+        public event Action<ColourPalette> onPaletteChanged;
+        public event Action<string> onActivePaletteChanged;
+
+        private bool usePaletteManager_ = true;
+        public bool usePaletteManager
+        {
+            get => usePaletteManager_;
+            set
+            {
+                if (usePaletteManager_ != value)
+                {
+                    usePaletteManager_ = value;
+                    onUsePaletteManagerChanged?.Invoke(value);
+                }
+            }
+        }
+
+        private bool useForceUpdate_;
+        public bool useForceUpdate
+        {
+            get => useForceUpdate_;
+            set
+            {
+                if (useForceUpdate_ != value)
+                {
+                    useForceUpdate_ = value;
+                    onUseForceUpdateChanged?.Invoke(value);
+                    fXManager.UpdateAllColorParametersToPalette(activePalette, useForceUpdate_);
+                }
+            }
+        }
+
+        private FXManager fXManager;
+
+
         public static FXColourPaletteManager Instance { get; private set; }
 
         private void Awake()
@@ -53,6 +89,9 @@ namespace FX
             }
 
             palettes = LoadGlobalColourPalettes();
+
+            fXManager = FXManager.Instance;
+            fXManager.onPresetLoaded += HandleSceneChanged;
 
             if (palettes != null && palettes.Count > 0)
             {
@@ -74,16 +113,24 @@ namespace FX
                 activePalette.OnColourChanged += HandleColorChanged;
             }
 
-            for (int i = 0; i < activePalette.colours.Count; i++) 
-            { 
-                HandleColorChanged(i, activePalette.colours[i]);
-            }
+            fXManager.UpdateAllColorParametersToPalette(activePalette, useForceUpdate);
+            onActivePaletteChanged?.Invoke(activePalette.id);
         }
 
         private void HandleColorChanged(int index, Color color)
         {
-            FXManager.Instance.UpdateColorParameters(index, color);
+            fXManager.UpdateColorParametersWithPaletteIndex(index, color, useForceUpdate);
+            onPaletteChanged?.Invoke(activePalette);
         }
+
+        private void HandleSceneChanged(string name)
+        {
+            if (usePaletteManager)
+            {
+                fXManager.UpdateAllColorParametersToPalette(activePalette, useForceUpdate);
+            }
+        }
+
 
         public int GetActiveColourPaletteSize()
         {
@@ -140,6 +187,7 @@ namespace FX
                 }
 
                 SaveGlobalColourPalettes();
+                onPaletteChanged?.Invoke(palette);
 
                 return true;
             }
@@ -166,8 +214,9 @@ namespace FX
             }
             return new List<ColourPalette>
             {
-                new ColourPalette("Two", new List<Color> { Color.white, Color.green}),
-                new ColourPalette("Three",new List<Color> {Color.white, Color.red, Color.blue})
+                new ColourPalette("White", new List<Color> { Color.white, Color.white}),
+                new ColourPalette("Blue Red",new List<Color> {Color.blue, Color.red}),
+                new ColourPalette("Green White",new List<Color> {Color.green, Color.white})
             };
         }
 

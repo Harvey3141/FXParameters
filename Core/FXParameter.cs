@@ -52,6 +52,7 @@ namespace FX
     public class FXColourParameterData : FXParameterData<Color>
     {
         public int globalColourPaletteIndex;
+        public bool useGlobalColourPalette;
     }
 
 
@@ -79,8 +80,9 @@ namespace FX
 
         protected FXManager fxManager_;
 
-        public int globalColourPaletteIndex; // For Color type only
-
+        // For Color type only
+        private int globalColourPaletteIndex = 0; 
+        private bool useGlobalColourPalette = false;
 
         public virtual T Value
         {
@@ -249,7 +251,8 @@ namespace FX
                     hasMinValue              = this.HasMinValue,
                     hasMaxValue              = this.HasMaxValue,
                     isScaled                 = false,
-                    globalColourPaletteIndex = this.globalColourPaletteIndex 
+                    globalColourPaletteIndex = this.globalColourPaletteIndex,
+                    useGlobalColourPalette   = this.useGlobalColourPalette,
                 };
                 return (FXParameterData<T>)(object)data;
             }
@@ -293,6 +296,30 @@ namespace FX
             }
         }
 
+        public bool UseGlobalColourPalette
+        {
+            get
+            {
+                if (typeof(T) == typeof(Color))
+                {
+                    return useGlobalColourPalette;
+                }
+                throw new InvalidOperationException("UseGlobalColourPalette is only available for Color type parameters.");
+            }
+            set
+            {
+                if (typeof(T) == typeof(Color))
+                {
+                    useGlobalColourPalette = value;
+                    fxManager_.OnUseGlobalPaletteChanged(address_, useGlobalColourPalette);
+                }
+                else
+                {
+                    throw new InvalidOperationException("UseGlobalColourPalette is only available for Color type parameters.");
+                }
+            }
+        }
+
         public bool UsesGlobalColorPaletteIndex(int index)
         {
             if (typeof(T) == typeof(Color))
@@ -309,7 +336,6 @@ namespace FX
                 SetValue((T)(object)color, false);
             }
         }
-
     }
 
 

@@ -19,6 +19,9 @@ namespace FX
 
         public override void OnInspectorGUI()
         {
+            manager.usePaletteManager = EditorGUILayout.Toggle("Use Palette Manager", manager.usePaletteManager);
+            manager.useForceUpdate = EditorGUILayout.Toggle("Use Force Update", manager.useForceUpdate);
+
             if (manager.palettes != null && manager.palettes.Count > 0)
             {
                 UpdatePaletteNames(); 

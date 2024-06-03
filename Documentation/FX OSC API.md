@@ -161,6 +161,58 @@ The FX API offers functionalities that include:
         "value": "1"
       }```
 
+### Colour Palette Manager Messages
+
+- **/COLOURPALETTEMANAGER/ENABLED/GET**  
+  Retrieves the current state of the colour palette manager (enabled/disabled). 
+  
+  **Format**: `/COLOURPALETTEMANAGER/ENABLED/GET`
+
+- **/COLOURPALETTEMANAGER/ENABLED/SET**  
+  Sets the enabled state of the colour palette manager.  
+  
+  **Format**: `/COLOURPALETTEMANAGER/ENABLED/SET [true/false]`  
+  **Example**: `/COLOURPALETTEMANAGER/ENABLED/SET true`
+
+- **/COLOURPALETTEMANAGER/FORCE/GET**  
+  Retrieves the current state of the force update setting.  
+  
+  **Format**: `/COLOURPALETTEMANAGER/FORCE/GET`
+
+- **/COLOURPALETTEMANAGER/FORCE/SET**  
+  Sets the state of the force update setting.  
+  
+  **Format**: `/COLOURPALETTEMANAGER/FORCE/SET [true/false]`  
+  **Example**: `/COLOURPALETTEMANAGER/FORCE/SET true`
+
+- **/COLOURPALETTEMANAGER/ACTIVEPALETTE/GET**  
+  Retrieves the ID of the currently active colour palette.  
+  
+  **Format**: `/COLOURPALETTEMANAGER/ACTIVEPALETTE/GET`
+
+- **/COLOURPALETTEMANAGER/ACTIVEPALETTE/SET**  
+  Sets the active colour palette by ID.  
+  
+  **Format**: `/COLOURPALETTEMANAGER/ACTIVEPALETTE/SET [palette_id]`  
+  **Example**: `/COLOURPALETTEMANAGER/ACTIVEPALETTE/SET 123e4567-e89b-12d3-a456-426614174000`
+
+- **/COLOURPALETTE/NEW**  
+  Creates a new colour palette from a JSON string.  
+  
+  **Usage**: `/COLOURPALETTE/NEW [palette_json]`  
+  **Example**: `/COLOURPALETTE/NEW`
+
+- **/COLOURPALETTE/REMOVE**  
+  Removes an existing colour palette by ID.  
+  
+  **Usage**: `/COLOURPALETTE/REMOVE [palette_id]`  
+  **Example**: `/COLOURPALETTE/REMOVE 123e4567-e89b-12d3-a456-426614174000`
+
+- **/COLOURPALETTE/SET**  
+  Updates an existing colour palette with new data from a JSON string.  
+  
+  **Usage**: `/COLOURPALETTE/SET [palette_json]`  
+  **Example**: `/COLOURPALETTE/SET `
 
 ### Group Management
 

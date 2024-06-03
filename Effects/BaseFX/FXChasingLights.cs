@@ -4,7 +4,7 @@ using FX;
 public class FXChasingLights : FXBaseWithEnabled, IFXTriggerable
 {
     public Light[] lightsArray;
-    public enum LightPattern { SineWave, EveryOther, MiddleOut }
+    public enum LightPattern { SineWave, EveryOther, MiddleOut, Random}
     public FXParameter<LightPattern> currentPattern = new FXParameter<LightPattern>(LightPattern.SineWave);
 
     public float spanProportion = 0.99f;
@@ -12,6 +12,7 @@ public class FXChasingLights : FXBaseWithEnabled, IFXTriggerable
     public FXParameter<bool> forwardDirection       = new FXParameter<bool>(true);
     public FXScaledParameter<float> fadeSpeed       = new FXScaledParameter<float>(0.05f, 1.0f, 100.0f);
     public FXScaledParameter<float> targetIntensity = new FXScaledParameter<float>(0.5f, 0.0f, 2.0f);
+    public FXParameter<Color> colour = new FXParameter<Color>(Color.white);
 
     private int currentLeadIndex = 0;
     private float timeSinceLastTrigger = 0; 
@@ -22,6 +23,7 @@ public class FXChasingLights : FXBaseWithEnabled, IFXTriggerable
     {
         base.Awake();
         chaseSpeed.OnValueChanged += SetChaseSpeed;
+        colour.OnValueChanged += SetColour;
 
         if (lightsArray.Length == 0)
         {
@@ -92,8 +94,6 @@ public class FXChasingLights : FXBaseWithEnabled, IFXTriggerable
                     targetIntensities[i] = sinValue > spanProportion ? targetIntensity.ScaledValue : 0f;
                 }
                 break;
-
-
             case LightPattern.EveryOther:
                 for (int i = 0; i < lightsArray.Length; i++)
                 {
@@ -107,8 +107,6 @@ public class FXChasingLights : FXBaseWithEnabled, IFXTriggerable
                     }
                 }
                 break;
-
-
             case LightPattern.MiddleOut:
                 int middle = lightsArray.Length / 2;
                 int offset = currentLeadIndex % middle;
@@ -149,6 +147,16 @@ public class FXChasingLights : FXBaseWithEnabled, IFXTriggerable
                 targetIntensities[i] = 0.0f;
             }
         }
+    }
+
+    private void SetColour(Color value)
+    {
+
+        for (int i = 0; i < lightsArray.Length; i++)
+        {
+            lightsArray[i].color = value;   
+        }
+      
     }
 
     protected override void OnFXEnabled(bool state)
