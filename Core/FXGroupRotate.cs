@@ -66,7 +66,7 @@ namespace FX
             {
                 if (!rotationCoroutines.ContainsKey(obj) || rotationCoroutines[obj] == null)
                 {
-                    rotationCoroutines[obj] = StartCoroutine(RotateObjectLocal(obj.transform, rotationDuration.Value, directionMultiplier));
+                    rotationCoroutines[obj] = StartCoroutine(RotateObjectLocal(obj.transform, rotationDuration.ScaledValue, directionMultiplier));
                 }
             }
         }

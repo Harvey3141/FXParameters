@@ -1,4 +1,6 @@
+
 using FX;
+using IE.RichFX;
 using Kino.PostProcessing;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -10,8 +12,8 @@ using UnityEngine.Rendering.HighDefinition;
 public class FXPostProcessVolume : FXBase
 {
     private Volume volume;
-    private Glitch glitchEffect;
-    private Slice sliceEffect;
+    private Kino.PostProcessing.Glitch glitchEffect;
+    private Kino.PostProcessing.Slice sliceEffect;
     private ChromaticAberration chromaticAberrationEffect;
     private LimitlessDistortion1Vol_2 limitlessDistortion1Vol_2;
     private LimitlessDistortion10Vol_2 limitlessDistortion10Vol_2;
@@ -19,6 +21,7 @@ public class FXPostProcessVolume : FXBase
 
     private Limitless_Distortion_2 limitless_Distortion2;
 
+    private ScreenGlitch screenGlitchEffect;
 
     public FXParameter<bool> blockEnabled = new FXParameter<bool>(false, "", true);
     public FXScaledParameter<float> block = new FXScaledParameter<float>(0, 0, 1.0f,"", false);
@@ -53,6 +56,9 @@ public class FXPostProcessVolume : FXBase
     public FXParameter<bool> wetEnabled = new FXParameter<bool>(false, "", true);
     public FXScaledParameter<float> wetness = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
 
+    public FXParameter<bool> screenGlitchEnabled = new FXParameter<bool>(false, "", true);
+    public FXScaledParameter<float> screenGlitch = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
+
 
     protected override void Awake()
     {
@@ -64,12 +70,12 @@ public class FXPostProcessVolume : FXBase
             Debug.LogError("Volume component not found on the GameObject");
         }
 
-        if (!volume.profile.TryGet<Glitch>(out glitchEffect))
+        if (!volume.profile.TryGet<Kino.PostProcessing.Glitch>(out glitchEffect))
         {
             Debug.LogError("Glitch effect not found in the Volume profile");
         }
 
-        if (!volume.profile.TryGet<Slice>(out sliceEffect))
+        if (!volume.profile.TryGet<Kino.PostProcessing.Slice>(out sliceEffect))
         {
             Debug.LogError("Slice effect not found in the Volume profile");
         }
@@ -99,6 +105,11 @@ public class FXPostProcessVolume : FXBase
             Debug.LogError("limitlessDistortion2 effect not found in the Volume profile");
         }
 
+        if (!volume.profile.TryGet<ScreenGlitch>(out screenGlitchEffect))
+        {
+            Debug.LogError("screenGlitchEffect effect not found in the Volume profile");
+        }
+
 
         blockEnabled.OnValueChanged               += SetBlockEnabled;
         driftEnabled.OnValueChanged               += SetDriftEnbled;
@@ -111,6 +122,8 @@ public class FXPostProcessVolume : FXBase
         wobbleEnabled.OnValueChanged              += SetWobbleEnabled;
         splitRotateEnabled.OnValueChanged         += SetSplitRotateEnabled;
         wetEnabled.OnValueChanged                 += SetWetEnabled;
+        screenGlitchEnabled.OnValueChanged += SetScreenGlitchEnabled;
+
 
 
         block.OnScaledValueChanged  += SetBlock;
@@ -124,6 +137,8 @@ public class FXPostProcessVolume : FXBase
         wobble.OnScaledValueChanged              += SetWobble;
         splitRotate.OnScaledValueChanged         += SetSplitRotate;
         wetness.OnScaledValueChanged             += SetWetness;
+        screenGlitch.OnScaledValueChanged += SetScreenGlitch;
+
 
     }
 
@@ -299,6 +314,22 @@ public class FXPostProcessVolume : FXBase
         if (limitless_Distortion2 != null)
         {
             limitless_Distortion2.size.value = value;
+        }
+    }
+
+    private void SetScreenGlitchEnabled(bool value)
+    {
+        if (screenGlitchEffect != null)
+        {
+            screenGlitchEffect.active = value;
+        }
+    }
+
+    private void SetScreenGlitch(float value)
+    {
+        if (screenGlitchEffect != null)
+        {
+            screenGlitchEffect.intensity.value = value;
         }
     }
 
