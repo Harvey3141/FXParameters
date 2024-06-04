@@ -77,6 +77,7 @@ namespace FX
             fXManager.onPresetLoaded             += OnPresetLoaded;
 
             fXManager.onFXColourParamGlobalColourPaletteIndexChanged += OnFXColourParamGlobalColourPaletteIndexChanged;
+            fXManager.onFXColourParamUseGlobalPaletteChanged         += OnFXColourParamUseGlobalColourPaletteChanged;
 
             fXManager.onFXGroupChanged           += OnFXGroupChanged;
             fXManager.onFXGroupListChanged       += OnFXGroupListChanged;

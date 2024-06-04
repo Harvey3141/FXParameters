@@ -114,7 +114,11 @@ namespace FX
                     menu.ShowAsContext();
                 }
 
-                colorParam.UseGlobalColourPalette = GUI.Toggle(toggleRect, colorParam.UseGlobalColourPalette, "");
+                bool newUseGlobalColourPaletteValue = GUI.Toggle(toggleRect, colorParam.UseGlobalColourPalette, "");
+                if (colorParam.UseGlobalColourPalette != newUseGlobalColourPaletteValue)
+                {
+                    colorParam.UseGlobalColourPalette = newUseGlobalColourPaletteValue;
+                }
             }
 
 
