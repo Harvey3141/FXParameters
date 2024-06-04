@@ -90,6 +90,7 @@ namespace FX
             fxPaletteManager.onUseForceUpdateChanged    += OnUseForceUpdateChanged;
             fxPaletteManager.onUsePaletteManagerChanged += OnUsePaletteManagerChanged;
             fxPaletteManager.onActivePaletteChanged     += OnActivePaletteChanged;
+            fxPaletteManager.onPaletteListChanged       += OnPaletteListChanged;
 
             bpmManager.OnBeat       += OnBeat;
             bpmManager.OnBpmChanged += OnBPMChanged;
@@ -200,6 +201,44 @@ namespace FX
                     }
                 }
                 fXManager.SetFX(fxAddress, args, true);
+            }
+            else if (address.ToUpper() == "/FX/GLOBALCOLOURPALETTEINDEX/SET")
+            {
+                string fxAddress = message.Values[0].StringValue;
+                int index = message.Values[1].IntValue;
+                fXManager.SetParameterGlobalColourIndex(fxAddress, index);
+            }
+            else if (address.ToUpper() == "/FX/USEGLOBALCOLOURPALETTE/SET")
+            {
+                string fxAddress = message.Values[0].StringValue;
+                bool value = message.Values[1].BoolValue;
+                fXManager.SetParameterUseGlobalColourPalette(fxAddress, value);
+            }
+            else if (address.ToUpper() == "/FX/GLOBALCOLOURPALETTEINDEX/GET")
+            {
+                string fxAddress = message.Values[0].StringValue;
+                int index;
+                if (fXManager.TryGetParameterGlobalColourIndex(address, out index))
+                { 
+                    OnFXColourParamGlobalColourPaletteIndexChanged(fxAddress, index);
+                }
+                else
+                {
+                    Debug.LogWarning($"No color parameter found at address {address} or the parameter is not a Color type.");
+                }
+            }
+            else if (address.ToUpper() == "/FX/USEGLOBALCOLOURPALETTE/GET")
+            {
+                string fxAddress = message.Values[0].StringValue;
+                bool useGlobal;
+                if (fXManager.TryGetParameterUseGlobalColourPalette(address, out useGlobal))
+                {
+                    OnFXColourParamUseGlobalColourPaletteChanged(fxAddress, useGlobal);
+                }
+                else
+                {
+                    Debug.LogWarning($"No color parameter found at address {address} or the parameter is not a Color type.");
+                }
             }
             else if (address == "/FX/RESET")
             {
@@ -393,6 +432,10 @@ namespace FX
                 };
                 FX.ColourPalette palette = JsonConvert.DeserializeObject<FX.ColourPalette>(message.Values[0].StringValue);
                 fxPaletteManager.SetPalette(palette);
+            }
+            else if (address.ToUpper() == "/COLOURPALETTELIST/GET")
+            {
+                OnPaletteListChanged(fxPaletteManager.palettes);
             }
 
 
@@ -741,6 +784,15 @@ namespace FX
             }
         }
 
+        void OnFXColourParamUseGlobalColourPaletteChanged(string address, bool value)
+        {
+            address += "/useGlobalColourPalette";
+            foreach (var node in oscNodes)
+            {
+                if (node.SendParamChanges) SendOSCMessage(address, node, value);
+            }
+        }
+
         void OnFXGroupChanged(FXGroupData data)
         {
             var message = new OSCMessage("/group/get");
@@ -852,6 +904,23 @@ namespace FX
             foreach (var node in oscNodes)
             {
                 if (node.SendParamChanges) SendOSCMessage("/colourPalette/get", node, json);
+            }
+        }
+
+        private void OnPaletteListChanged(List<ColourPalette> palettes)
+        {
+            var settings = new JsonSerializerSettings
+            {
+                Converters = new List<JsonConverter> {
+                new ColourHandler()
+                },
+            };
+
+            string json = JsonConvert.SerializeObject(palettes, settings);
+
+            foreach (var node in oscNodes)
+            {
+                if (node.SendParamChanges) SendOSCMessage("/colourPaletteList/get", node, json);
             }
         }
 

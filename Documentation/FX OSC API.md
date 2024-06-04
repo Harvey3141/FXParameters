@@ -30,6 +30,32 @@ The FX API offers functionalities that include:
   **Format**: `/FX/RESET [parameter_address]`
   **Example**: `/FX/RESET FXLight/intensity`
 
+### Colour FX Parameter Messages
+
+- **/FX/COLOUR/GLOBALCOLOURPALETTEINDEX/SET**
+  Sets the global colour palette index for the specified color parameter.
+
+  **Format**: `/FX/COLOUR/GLOBALCOLOURPALETTEINDEX/SET [parameter_address] [index]`  
+  **Example**: `/FX/COLOUR/GLOBALCOLOURPALETTEINDEX/SET /FXLight/color 2`
+
+- **/FX/COLOUR/USEGLOBALCOLOURPALETTE/SET**
+  Sets whether a specified color parameter should use the global colour palette.
+
+  **Format**: `/FX/COLOUR/USEGLOBALCOLOURPALETTE/SET [parameter_address] [true/false]`  
+  **Example**: `/FX/COLOUR/USEGLOBALCOLOURPALETTE/SET /FXLight/color true`
+
+- **/FX/COLOUR/GLOBALCOLOURPALETTEINDEX/GET**
+  Retrieves the global colour palette index for the specified color parameter.
+
+  **Format**: `/FX/COLOUR/GLOBALCOLOURPALETTEINDEX/GET [parameter_address]`  
+  **Example**: `/FX/COLOUR/GLOBALCOLOURPALETTEINDEX/GET /FXLight/color`
+
+- **/FX/COLOUR/USEGLOBALCOLOURPALETTE/GET**
+  Retrieves whether the specified color parameter is using the global colour palette.
+
+  **Format**: `/FX/COLOUR/USEGLOBALCOLOURPALETTE/GET [parameter_address]`  
+  **Example**: `/FX/COLOUR/USEGLOBALCOLOURPALETTE/GET /FXLight/color`
+
 ### Scene Management
 
 - **/SCENE/LOAD**  
@@ -161,7 +187,7 @@ The FX API offers functionalities that include:
         "value": "1"
       }```
 
-### Colour Palette Manager Messages
+### Colour Palette Manager
 
 - **/COLOURPALETTEMANAGER/ENABLED/GET**  
   Retrieves the current state of the colour palette manager (enabled/disabled). 
@@ -199,20 +225,26 @@ The FX API offers functionalities that include:
 - **/COLOURPALETTE/NEW**  
   Creates a new colour palette from a JSON string.  
   
-  **Usage**: `/COLOURPALETTE/NEW [palette_json]`  
+  **Format**: `/COLOURPALETTE/NEW [palette_json]`  
   **Example**: `/COLOURPALETTE/NEW`
 
 - **/COLOURPALETTE/REMOVE**  
   Removes an existing colour palette by ID.  
   
-  **Usage**: `/COLOURPALETTE/REMOVE [palette_id]`  
+  **Format**: `/COLOURPALETTE/REMOVE [palette_id]`  
   **Example**: `/COLOURPALETTE/REMOVE 123e4567-e89b-12d3-a456-426614174000`
 
 - **/COLOURPALETTE/SET**  
   Updates an existing colour palette with new data from a JSON string.  
   
-  **Usage**: `/COLOURPALETTE/SET [palette_json]`  
+  **Format**: `/COLOURPALETTE/SET [palette_json]`  
   **Example**: `/COLOURPALETTE/SET `
+  
+- **/COLOURPALETTELIST/GET**  
+  Retrieves the all palette data as json.
+  
+  **Format**: `/COLOURPALETTELIST/GET`  
+
 
 ### Group Management
 

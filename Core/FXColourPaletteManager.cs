@@ -41,6 +41,8 @@ namespace FX
         public event Action<bool> onUseForceUpdateChanged;
         public event Action<ColourPalette> onPaletteChanged;
         public event Action<string> onActivePaletteChanged;
+        public event Action<List<ColourPalette>> onPaletteListChanged;
+
 
         private bool usePaletteManager_ = true;
         public bool usePaletteManager
@@ -89,6 +91,7 @@ namespace FX
             }
 
             palettes = LoadGlobalColourPalettes();
+            onPaletteListChanged?.Invoke(palettes);
 
             fXManager = FXManager.Instance;
             fXManager.onPresetLoaded += HandleSceneChanged;

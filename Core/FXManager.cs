@@ -515,6 +515,56 @@ namespace FX
             }
         }
 
+        public void SetParameterGlobalColourIndex(string address, int index)
+        {
+            if (fxItemsByAddress_.TryGetValue(address, out var fxItem))
+            {
+                if (fxItem.type == FXItemInfoType.Parameter && fxItem.item is FXParameter<Color> colorParam)
+                {
+                    colorParam.GlobalColourPaletteIndex = index;
+                }
+            }
+        }
+
+        public void SetParameterUseGlobalColourPalette(string address, bool value)
+        {
+            if (fxItemsByAddress_.TryGetValue(address, out var fxItem))
+            {
+                if (fxItem.type == FXItemInfoType.Parameter && fxItem.item is FXParameter<Color> colorParam)
+                {
+                    colorParam.UseGlobalColourPalette = value;
+                }
+            }
+        }
+
+        public bool TryGetParameterGlobalColourIndex(string address, out int index)
+        {
+            index = -1; 
+            if (fxItemsByAddress_.TryGetValue(address, out var fxItem))
+            {
+                if (fxItem.type == FXItemInfoType.Parameter && fxItem.item is FXParameter<Color> colorParam)
+                {
+                    index = colorParam.GlobalColourPaletteIndex;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public bool TryGetParameterUseGlobalColourPalette(string address, out bool value)
+        {
+            value = false; 
+            if (fxItemsByAddress_.TryGetValue(address, out var fxItem))
+            {
+                if (fxItem.type == FXItemInfoType.Parameter && fxItem.item is FXParameter<Color> colorParam)
+                {
+                    value = colorParam.UseGlobalColourPalette;
+                    return true;
+                }
+            }
+            return false;
+        }
+
 
         public void OnParameterValueChanged<T>(string address, T value) {
             if (onFXParamValueChanged != null) onFXParamValueChanged.Invoke(address, value);
