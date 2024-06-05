@@ -1,7 +1,6 @@
 
 using FX;
 using IE.RichFX;
-using Kino.PostProcessing;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
@@ -20,8 +19,14 @@ public class FXPostProcessVolume : FXBase
     private LimitlessDistortion7Vol_2 limitlessDistortion7Vol_2;
 
     private Limitless_Distortion_2 limitless_Distortion2;
+    private Limitless_Distortion_10 limitless_Distortion10;
+
 
     private ScreenGlitch screenGlitchEffect;
+    private ChromaLines chromaLinesEffect;
+    private DisplaceView displaceViewEffect;
+    private ScreenFuzz screenFuzzEffect;
+    private ColorEdges colorEdgesEffect;
 
     public FXParameter<bool> blockEnabled = new FXParameter<bool>(false, "", true);
     public FXScaledParameter<float> block = new FXScaledParameter<float>(0, 0, 1.0f,"", false);
@@ -58,6 +63,23 @@ public class FXPostProcessVolume : FXBase
 
     public FXParameter<bool> screenGlitchEnabled = new FXParameter<bool>(false, "", true);
     public FXScaledParameter<float> screenGlitch = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
+
+    public FXParameter<bool> soundWaveEnabled = new FXParameter<bool>(false, "", true);
+    public FXScaledParameter<float> soundWave = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
+
+    public FXParameter<bool> chromaLinesEnabled = new FXParameter<bool>(false, "", true);
+    public FXScaledParameter<float> chromaLines = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
+
+    public FXParameter<bool> displaceViewEnabled = new FXParameter<bool>(false, "", true);
+    public FXScaledParameter<float> displaceView = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
+
+    public FXParameter<bool> screenFuzzEnabled = new FXParameter<bool>(false, "", true);
+    public FXScaledParameter<float> screenFuzz = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
+
+    public FXParameter<bool> colourEdgesEnabled = new FXParameter<bool>(false, "", true);
+    public FXScaledParameter<float> colourEdges = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
+    public FXParameter<Color> colourEdgeColour = new FXParameter<Color>(Color.white);
+
 
 
     protected override void Awake()
@@ -105,9 +127,34 @@ public class FXPostProcessVolume : FXBase
             Debug.LogError("limitlessDistortion2 effect not found in the Volume profile");
         }
 
+        if (!volume.profile.TryGet<Limitless_Distortion_10>(out limitless_Distortion10))
+        {
+            Debug.LogError("limitless_Distortion10 effect not found in the Volume profile");
+        }
+
         if (!volume.profile.TryGet<ScreenGlitch>(out screenGlitchEffect))
         {
             Debug.LogError("screenGlitchEffect effect not found in the Volume profile");
+        }
+
+        if (!volume.profile.TryGet<ChromaLines>(out chromaLinesEffect))
+        {
+            Debug.LogError("ChromaLines effect not found in the Volume profile");
+        }
+
+        if (!volume.profile.TryGet<DisplaceView>(out displaceViewEffect))
+        {
+            Debug.LogError("DisplaceView effect not found in the Volume profile");
+        }
+
+        if (!volume.profile.TryGet<ScreenFuzz>(out screenFuzzEffect))
+        {
+            Debug.LogError("ScreenFuzz effect not found in the Volume profile");
+        }
+
+        if (!volume.profile.TryGet<ColorEdges>(out colorEdgesEffect))
+        {
+            Debug.LogError("ColorEdges effect not found in the Volume profile");
         }
 
 
@@ -122,22 +169,33 @@ public class FXPostProcessVolume : FXBase
         wobbleEnabled.OnValueChanged              += SetWobbleEnabled;
         splitRotateEnabled.OnValueChanged         += SetSplitRotateEnabled;
         wetEnabled.OnValueChanged                 += SetWetEnabled;
-        screenGlitchEnabled.OnValueChanged += SetScreenGlitchEnabled;
+        screenGlitchEnabled.OnValueChanged        += SetScreenGlitchEnabled;
+        soundWaveEnabled.OnValueChanged           += SetSoundWaveEnabled;
+        chromaLinesEnabled.OnValueChanged         += SetChromaLinesEnabled;
+        displaceViewEnabled.OnValueChanged        += SetDisplaceViewEnabled;
+        screenFuzzEnabled.OnValueChanged          += SetScreenFuzzEnabled;
+        colourEdgesEnabled.OnValueChanged          += SetColorEdgesEnabled;
 
 
 
-        block.OnScaledValueChanged  += SetBlock;
-        drift.OnScaledValueChanged  += SetDrift;
-        jitter.OnScaledValueChanged += SetJitter;
-        jump.OnScaledValueChanged   += SetJump;
-        shake.OnScaledValueChanged  += SetShake;
-        slice.OnScaledValueChanged               += SetSlice;
-        chromaticAberration.OnScaledValueChanged += SetChromaticAberration;
-        trippy.OnScaledValueChanged          += SetTrippy;
-        wobble.OnScaledValueChanged              += SetWobble;
-        splitRotate.OnScaledValueChanged         += SetSplitRotate;
-        wetness.OnScaledValueChanged             += SetWetness;
-        screenGlitch.OnScaledValueChanged += SetScreenGlitch;
+        block.OnScaledValueChanged                += SetBlock;
+        drift.OnScaledValueChanged                += SetDrift;
+        jitter.OnScaledValueChanged               += SetJitter;
+        jump.OnScaledValueChanged                 += SetJump;
+        shake.OnScaledValueChanged                += SetShake;
+        slice.OnScaledValueChanged                += SetSlice;
+        chromaticAberration.OnScaledValueChanged  += SetChromaticAberration;
+        trippy.OnScaledValueChanged               += SetTrippy;
+        wobble.OnScaledValueChanged               += SetWobble;
+        splitRotate.OnScaledValueChanged          += SetSplitRotate;
+        wetness.OnScaledValueChanged              += SetWetness;
+        screenGlitch.OnScaledValueChanged         += SetScreenGlitch;
+        soundWave.OnScaledValueChanged            += SetSoundWave;
+        chromaLines.OnScaledValueChanged          += SetChromaLines;
+        displaceView.OnScaledValueChanged         += SetDisplaceView;
+        screenFuzz.OnScaledValueChanged           += SetScreenFuzz;
+        colourEdges.OnScaledValueChanged          += SetColorEdges;
+        colourEdgeColour.OnValueChanged           += SetColorEdgesColor;
 
 
     }
@@ -297,7 +355,7 @@ public class FXPostProcessVolume : FXBase
     {
         if (limitlessDistortion7Vol_2 != null)
         {
-            limitlessDistortion7Vol_2.speed.value = value;
+            limitlessDistortion7Vol_2.lineWidth.value = value;
         }
     }
 
@@ -330,6 +388,94 @@ public class FXPostProcessVolume : FXBase
         if (screenGlitchEffect != null)
         {
             screenGlitchEffect.intensity.value = value;
+        }
+    }
+
+    private void SetSoundWaveEnabled(bool value)
+    {
+        if (limitless_Distortion10 != null)
+        {
+            limitless_Distortion10.active = value;
+        }
+    }
+
+    private void SetSoundWave(float value)
+    {
+        if (limitless_Distortion10 != null)
+        {
+            limitless_Distortion10.Intensity.value = value;
+        }
+    }
+
+    private void SetChromaLines(float value)
+    {
+        if (chromaLinesEffect != null)
+        {
+            chromaLinesEffect.intensity.value = value;
+        }
+    }
+
+    private void SetChromaLinesEnabled(bool value)
+    {
+        if (chromaLinesEffect != null)
+        {
+            chromaLinesEffect.active = value;
+        }
+    }
+
+    private void SetDisplaceView(float value)
+    {
+        if (displaceViewEffect != null)
+        {
+            displaceViewEffect.amount.value = new Vector2(value,value);
+        }
+    }
+
+    private void SetDisplaceViewEnabled(bool value)
+    {
+        if (displaceViewEffect != null)
+        {
+            displaceViewEffect.active = value;
+        }
+    }
+
+    private void SetScreenFuzz(float value)
+    {
+        if (screenFuzzEffect != null)
+        {
+            screenFuzzEffect.intensity.value = value;
+        }
+    }
+
+    private void SetScreenFuzzEnabled(bool value)
+    {
+        if (screenFuzzEffect != null)
+        {
+            screenFuzzEffect.active = value;
+        }
+    }
+
+    private void SetColorEdges(float value)
+    {
+        if (colorEdgesEffect != null)
+        {
+            colorEdgesEffect.edgeWidth.value = value;
+        }
+    }
+
+    private void SetColorEdgesEnabled(bool value)
+    {
+        if (colorEdgesEffect != null)
+        {
+            colorEdgesEffect.active = value;
+        }
+    }
+
+    private void SetColorEdgesColor(Color colour)
+    {
+        if (colorEdgesEffect != null)
+        {
+            colorEdgesEffect.edgeColor.value = colour;
         }
     }
 

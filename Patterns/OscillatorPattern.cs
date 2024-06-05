@@ -10,6 +10,7 @@ namespace FX.Patterns
         public List<float> pattern = new List<float>();
         float beatDuration;
         float frequency;
+        private float previousValue = 0f;
         public enum OscillatorType
         {
             Sine,
@@ -73,6 +74,7 @@ namespace FX.Patterns
                 case OscillatorType.Square:
                     float squareValue = Mathf.Sign(Mathf.Sin(2f * Mathf.PI * phase));
                     currentValue = (squareValue + 1f) / 2f;
+                    if (previousValue != currentValue) Trigger();
                     break;
                 case OscillatorType.Triangle:
                     float triangleValue = Mathf.Abs(2f * (phase - Mathf.Floor(0.5f + phase)));
@@ -86,6 +88,7 @@ namespace FX.Patterns
                     Debug.LogError("Invalid oscillator type!");
                     break;
             }
+            previousValue = currentValue;
             return currentValue;
         }
 
