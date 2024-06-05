@@ -930,10 +930,20 @@ namespace FX
                 }
 
                 foreach (var param in preset.stringParameters) { SetFX(param.key, param.value, true); }
-                foreach (var param in preset.intParameters) { SetFX(param.key, param.value, true); }
-                foreach (var param in preset.floatParameters) { SetFX(param.key, param.value, true); }
-                foreach (var param in preset.boolParameters) { SetFX(param.key, param.value, true); }
-                foreach (var param in preset.colorParameters) { SetFX(param.key, param.value, true); }
+                foreach (var param in preset.intParameters)    { SetFX(param.key, param.value, true); }
+                foreach (var param in preset.floatParameters)  { SetFX(param.key, param.value, true); }
+                foreach (var param in preset.boolParameters)   { SetFX(param.key, param.value, true); }
+                foreach (var param in preset.colorParameters) {
+                    if (fxItemsByAddress_.TryGetValue(param.key, out var fxItem))
+                    {
+                        if (fxItem.type == FXItemInfoType.Parameter && fxItem.item is FXParameter<Color> colorParam)
+                        {
+                            colorParam.UseGlobalColourPalette   = param.useGlobalColourPalette;
+                            colorParam.GlobalColourPaletteIndex = param.globalColourPaletteIndex;
+                            colorParam.SetValue(param.value, true);
+                        }
+                    }                    
+                }
                 foreach (var param in preset.enumParameters) { SetFX(param.key, param.value, true); }
 
                 HashSet<string> presetAddresses = new HashSet<string>(
