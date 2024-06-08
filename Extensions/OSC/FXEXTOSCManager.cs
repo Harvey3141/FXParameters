@@ -14,7 +14,6 @@ using System.IO;
 using System;
 using FX.Patterns;
 using Newtonsoft.Json;
-using Unity.VisualScripting;
 
 namespace FX
 {
@@ -85,6 +84,8 @@ namespace FX
 
             fxSceneManager.onSceneListUpdated        += OnSceneListUpdated;
             fxSceneManager.onCurrentSceneChanged     += OnCurrentSceneChanged;
+            fxSceneManager.onCurrentSceneNameChanged += OnCurrentSceneNameChanged;
+
             fxSceneManager.onTagConfigurationUpdated += OnTagConfigurationUpdated;
 
             fxPaletteManager.onPaletteChanged           += OnPaletteChanged;
@@ -265,6 +266,17 @@ namespace FX
                     fxSceneManager.LoadScene(sceneName);
                 }
             }
+            else if (address.ToUpper() == "/SCENE/INFO/GET")
+            {
+                OSCNode matchingNode = oscNodes.Find(node => node.Receiver.LocalPort == port);
+                if (matchingNode != null)
+                {
+                    string senderIp = matchingNode.Transmitter.RemoteHost.ToString();
+                    int senderPort = matchingNode.Transmitter.RemotePort;
+                    string json = JsonConvert.SerializeObject(fxSceneManager.CurrentScene);
+                    SendOSCMessage("/scene/info/get", matchingNode, json);
+                }
+            }
             else if (address.ToUpper() == "/SCENE/NAME/GET")
             {
                 OSCNode matchingNode = oscNodes.Find(node => node.Receiver.LocalPort == port);
@@ -341,7 +353,14 @@ namespace FX
             }
             else if (address.ToUpper() == "/SCENE/TAGS/CLEAR")
             {
-                fxSceneManager.RemoveAllTagsFromCurrentScene();
+                if (message.Values.Count == 0)
+                {
+                    fxSceneManager.RemoveAllTagsFromCurrentScene();
+                }               
+                else if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
+                {
+                    fxSceneManager.RemoveTagFromCurrentScene(message.Values[0].StringValue);
+                }
             }
 
             else if (address.ToUpper() == "/SCENE/GETCURRENTSTATE")
@@ -849,11 +868,21 @@ namespace FX
             }
         }
 
-        void OnCurrentSceneChanged(Scene scene)
+        void OnCurrentSceneNameChanged(string name)
         {
             foreach (var node in oscNodes)
             {
-                if (node.SendParamChanges) SendOSCMessage("/scene/name/get", node, scene.Name);
+                if (node.SendParamChanges) SendOSCMessage("/scene/name/get", node, name);
+            }
+        }
+
+        void OnCurrentSceneChanged(Scene scene)
+        {
+            string json = JsonConvert.SerializeObject(scene);
+
+            foreach (var node in oscNodes)
+            {
+                if (node.SendParamChanges) SendOSCMessage("/scene/info/get", node, json);
             }
         }
 

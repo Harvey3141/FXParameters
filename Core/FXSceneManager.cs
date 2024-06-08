@@ -79,6 +79,8 @@ namespace FX
                 {
                     currentScene = value;
                     onCurrentSceneChanged?.Invoke(currentScene);
+                    onCurrentSceneNameChanged?.Invoke(currentScene.Name);
+
                 }
             }
         }
@@ -88,6 +90,9 @@ namespace FX
 
         public delegate void OnCurrentSceneChanged(Scene newScene);
         public event OnCurrentSceneChanged onCurrentSceneChanged;
+
+        public delegate void OnCurrentSceneNameChanged(string name);
+        public event OnCurrentSceneNameChanged onCurrentSceneNameChanged;
 
         public delegate void OnSceneRemoved(string sceneName);
         public event OnSceneRemoved onSceneRemoved;
@@ -257,6 +262,7 @@ namespace FX
                     }
 
                     CurrentScene.TagIds = validTagIds;
+                    onCurrentSceneChanged?.Invoke(currentScene);
                     return true;
                 }
             }
@@ -331,7 +337,8 @@ namespace FX
             }
 
             fXManager.ResetAllParamsToDefault();
-            currentScene = new Scene(string.IsNullOrEmpty(name) ? "Untitled" : name)  ;
+            currentScene = new Scene(string.IsNullOrEmpty(name) ? "Untitled" : name);
+            onCurrentSceneChanged?.Invoke(currentScene);
         }
 
         public bool AddTagToConfiguration(string type, string value)
@@ -434,13 +441,31 @@ namespace FX
             }
 
             Debug.Log($"Adding tag {tagId} to scene {sceneName}");
-            return scene.AddTag(tagId);
+            bool addedOK = scene.AddTag(tagId);
+            if (addedOK && scene.Name == currentScene.Name) onCurrentSceneChanged.Invoke(currentScene);   
+            return addedOK;
         }
 
-        public void RemoveAllTagsFromCurrentScene()
+        public void RemoveAllTagsFromCurrentScene(string tagType = null)
         {
-            CurrentScene.TagIds.Clear();
+            if (tagType == null)
+            {
+                CurrentScene.TagIds.Clear();
+                onCurrentSceneChanged?.Invoke(currentScene);
+            }
+            else
+            {
+                var tagsToRemove = tagConfigurations
+                    .Where(tc => tc.type == tagType)
+                    .SelectMany(tc => tc.tags)
+                    .Select(t => t.id)
+                    .ToList();
+
+                CurrentScene.TagIds.RemoveAll(tagId => tagsToRemove.Contains(tagId));
+                onCurrentSceneChanged?.Invoke(currentScene);
+            }
         }
+
 
         public bool RemoveTagFromCurrentScene(string tagId)
         {
@@ -466,7 +491,9 @@ namespace FX
             }
 
             Debug.Log($"Removing tag {tagId} from scene {sceneName}");
-            return scene.RemoveTag(tagId);
+            bool removedOK = scene.RemoveTag(tagId);
+            if (removedOK && scene.Name == currentScene.Name) onCurrentSceneChanged.Invoke(currentScene);
+            return removedOK;
         }
 
         private void SaveTagConfigurations()
