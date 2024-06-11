@@ -110,64 +110,25 @@ namespace FX
 
         private void Start()
         {
-            FXGroupData g = new FXGroupData();
-            g.label = "Default";
-            g.isPinned = true;
-            g.signalSource = GroupFXController.SignalSource.Default;
-            fXManager.CreateGroup(g);
 
-            g = new FXGroupData();
-            g.label = "Audio - Low";
-            g.isPinned = true;
-            g.signalSource = GroupFXController.SignalSource.Audio;
-            g.audioFrequency = GroupFXController.AudioFrequency.Low;
-            fXManager.CreateGroup(g);
+            string directoryPath = Path.Combine(Application.streamingAssetsPath, "FX");
+            string filePath = Path.Combine(directoryPath, "DefaultGroups.json");
 
-            g = new FXGroupData();
-            g.label = "Audio - Mid";
-            g.isPinned = true;
-            g.signalSource = GroupFXController.SignalSource.Audio;
-            g.audioFrequency = GroupFXController.AudioFrequency.Mid;
-            fXManager.CreateGroup(g);
+            if (File.Exists(filePath))
+            {
+                string json = File.ReadAllText(filePath);
+                var settings = new JsonSerializerSettings
+                {
+                    Converters = new List<JsonConverter> {
+                        new ColourHandler()
+                    },
+                };
 
-            g = new FXGroupData();
-            g.label = "Audio - High";
-            g.isPinned = true;
-            g.signalSource = GroupFXController.SignalSource.Audio;
-            g.audioFrequency = GroupFXController.AudioFrequency.High;
-            fXManager.CreateGroup(g);
-
-            g = new FXGroupData();
-            g.label = "Oscillator - Sine";
-            g.isPinned = true;
-            g.signalSource = GroupFXController.SignalSource.Pattern;
-            g.patternType = GroupFXController.PatternType.Oscillator;
-            g.oscillatorType = OscillatorPattern.OscillatorType.Sine;
-            fXManager.CreateGroup(g);
-
-            g = new FXGroupData();
-            g.label = "Oscillator - Square";
-            g.isPinned = true;
-            g.signalSource = GroupFXController.SignalSource.Pattern;
-            g.patternType = GroupFXController.PatternType.Oscillator;
-            g.oscillatorType = OscillatorPattern.OscillatorType.Square;
-            fXManager.CreateGroup(g);
-
-            g = new FXGroupData();
-            g.label = "Tap";
-            g.isPinned = true;
-            g.signalSource = GroupFXController.SignalSource.Pattern;
-            g.patternType = GroupFXController.PatternType.Tap;
-            g.numBeats = 1;
-            fXManager.CreateGroup(g);
-
-            g = new FXGroupData();
-            g.label = "Arpeggiator";
-            g.isPinned = true;
-            g.signalSource = GroupFXController.SignalSource.Pattern;
-            g.patternType = GroupFXController.PatternType.Arpeggiator;
-            g.numBeats = 1;
-            fXManager.CreateGroup(g);
+                List<FXGroupData> fxGroupPresets = JsonConvert.DeserializeObject<List<FXGroupData>>(json, settings);
+                foreach (var group in fxGroupPresets) {
+                    fXManager.CreateGroup(group);
+                }
+            }   
 
             if (exportParameterListOnStart) ExportParameterList();
             CreateNewScene();
