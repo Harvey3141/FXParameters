@@ -343,9 +343,9 @@ namespace FX
                     RemoveFXTrigger(address);
                 }
                 fxTriggerAddresses.Clear();
-
             } 
         }
+
 
         public void AddFXParam(string address)
         {
@@ -370,6 +370,18 @@ namespace FX
                 fxManager.ResetParameterToSceneDefault(itemToRemove.FxAddress);
                 fxParameterControllers.Remove(itemToRemove);
                 OnGroupChanged();
+            }
+        }
+
+        public void RemoveFXParams()
+        {
+            if (fxParameterControllers != null)
+            {
+                foreach (var a in fxParameterControllers)
+                {
+                    fxManager.ResetParameterToSceneDefault(a.FxAddress);
+                }
+                fxParameterControllers.Clear();
             }
         }
 

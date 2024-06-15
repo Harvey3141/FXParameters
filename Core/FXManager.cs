@@ -1024,13 +1024,14 @@ namespace FX
             GroupFXController group = FindGroupByAddress(groupAddress);
             if (group != null)
             {
-                group.ClearFXAdresses();
+                group.RemoveFXParams();
             }
             else
             {
                 Debug.LogWarning($"Group with address {groupAddress} not found.");
             }
         }
+
 
         public FXParameterControllerData GetGroupFXParamData(string groupAddress, string fxAddress)
         {
