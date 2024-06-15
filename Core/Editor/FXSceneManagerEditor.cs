@@ -264,6 +264,17 @@ namespace FX
         {
             fxSceneManager.SaveScene();
             fxSceneManager.PopulateScenesList();
+
+            if (selectedFilterTagIndex == 0)
+            {
+                filteredScenes = fxSceneManager.scenes;
+            }
+            else
+            {
+                filteredScenes = fxSceneManager.FilterScenesByTag(filterTagId);
+            }
+
+            Repaint();
         }
 
         private void LoadScene(string sceneName)
@@ -274,6 +285,19 @@ namespace FX
         private void RemoveScene(string sceneName)
         {
             fxSceneManager.RemoveScene(sceneName);
+            fxSceneManager.PopulateScenesList();
+
+            if (selectedFilterTagIndex == 0)
+            {
+                filteredScenes = fxSceneManager.scenes;
+            }
+            else
+            {
+                filteredScenes = fxSceneManager.FilterScenesByTag(filterTagId);
+            }
+
+            Repaint();
+
         }
 
         private void DisplayScenes(List<Scene> scenes)
