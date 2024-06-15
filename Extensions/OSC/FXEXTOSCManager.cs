@@ -293,15 +293,19 @@ namespace FX
                 {
                     string sceneName = message.Values[0].StringValue;
                     fxSceneManager.CurrentScene.Name = sceneName;
+                    fxSceneManager.SaveScene();
                 }
             }
             else if (address.ToUpper() == "/SCENE/SAVE")
             {
                 if (message.Values.Count == 0) fxSceneManager.SaveScene();
-                else if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
+            }
+            else if (address.ToUpper() == "/SCENE/SAVEAS")
+            {
+                if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
                 {
                     string sceneName = message.Values[0].StringValue;
-                    fxSceneManager.SaveScene();
+                    fxSceneManager.SaveCurrentSceneAs(sceneName);
                 }
             }
             else if (address.ToUpper() == "/SCENE/REMOVE")

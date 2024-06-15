@@ -16,6 +16,8 @@ namespace FX
 
         private string newTagValue = "";
 
+        private string saveAsName = ""; 
+
         private string filterTagId = "";
         private int selectedFilterTagIndex = 0;
         private List<FX.Scene> filteredScenes;
@@ -58,6 +60,15 @@ namespace FX
                 SaveScene();
             }
 
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            saveAsName = EditorGUILayout.TextField("Save As", saveAsName);
+            if (GUILayout.Button("Save As", GUILayout.Width(70)))
+            {
+                fxSceneManager.SaveCurrentSceneAs(saveAsName);
+                saveAsName = ""; 
+            }
             GUILayout.EndHorizontal();
 
             GUILayout.Space(20);

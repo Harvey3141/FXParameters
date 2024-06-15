@@ -65,10 +65,16 @@ The FX API offers functionalities that include:
   **Example**: `/SCENE/LOAD MyPresetScene`
 
 - **/SCENE/SAVE**  
-  Saves the current scene. If a scene name is provided, saves with the specified name.
+  Saves the current scene. If the scene name has been modified since loading, the scene filename will also be updated.
   
-  **Format**: `/SCENE/SAVE [optional_scene_name]`  
-  **Example**: `/SCENE/SAVE MySavedScene`
+  **Format**: `/SCENE/SAVE`  
+  **Example**: `/SCENE/SAVE`
+  
+- **/SCENE/SAVEAS**  
+  Saves the current scene as a new scene with the specified name. 
+  
+  **Format**: `/SCENE/SAVE [scene_name]`  
+  **Example**: `/SCENE/SAVE NewSceneName`
 
 - **/SCENE/REMOVE**  
   Removes a preset scene by name.

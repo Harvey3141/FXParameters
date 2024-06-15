@@ -35,11 +35,14 @@ namespace FX
     public class Scene
     {
         public string Name { get; set; }
+        public string OriginalName { get; set; }
+
         public List<string> TagIds { get; set; }
 
         public Scene(string name)
         {
             Name = name;
+            OriginalName = name; 
             TagIds = new List<string>();
         }
 
@@ -208,6 +211,7 @@ namespace FX
 
                 if (CurrentScene != null)
                 {
+                    CurrentScene.OriginalName = name;
                     // Only add tags which exist in the tagConfigurations
                     var validTagIds = loadedTagIds
                         .Where(tagId => tagConfigurations.Any(tc => tc.tags.Any(t => t.id == tagId)))
@@ -240,9 +244,74 @@ namespace FX
 
         public void SaveScene(FX.Scene scene)
         {
+
+            if (scene.Name != scene.OriginalName)
+            {
+                string scenesFolderPath = Path.Combine(Application.streamingAssetsPath, "FX Scenes");
+                string oldScenePath = Path.Combine(scenesFolderPath, scene.OriginalName + ".json");
+                string oldMetaPath = oldScenePath + ".meta";
+
+                if (File.Exists(oldScenePath))
+                {
+                    try
+                    {
+                        File.Delete(oldScenePath);
+                        if (File.Exists(oldMetaPath))
+                        {
+                            File.Delete(oldMetaPath);
+                        }
+                        scene.OriginalName = scene.Name;
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError("Failed to delete old scene file: " + ex.Message);
+                        return;
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("Old scene file does not exist: " + oldScenePath);
+                }
+            }
+
             fXManager.SaveScene(scene);
             PopulateScenesList();
         }
+
+        public void SaveCurrentSceneAs(string newName)
+        {
+            if (CurrentScene != null)
+            {
+                string scenesFolderPath = Path.Combine(Application.streamingAssetsPath, "FX Scenes");
+                string newScenePath = Path.Combine(scenesFolderPath, newName + ".json");
+
+                if (File.Exists(newScenePath))
+                {
+                    Debug.LogWarning($"A scene with the name '{newName}' already exists.");
+                    return;
+                }
+
+                try
+                {
+                    string originalName = CurrentScene.Name;
+                    CurrentScene.Name = newName;
+                    CurrentScene.OriginalName = newName;
+
+                    fXManager.SaveScene(CurrentScene);
+
+                    //CurrentScene.Name = originalName;
+                    //CurrentScene.OriginalName = originalName;
+
+                    PopulateScenesList();
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError("Failed to save scene with new name: " + ex.Message);
+                }
+            }
+        }
+
+
 
         public void ExportParameterList()
         {
@@ -298,7 +367,13 @@ namespace FX
             }
 
             fXManager.ResetAllParamsToDefault();
-            currentScene = new Scene(string.IsNullOrEmpty(name) ? "Untitled" : name);
+            currentScene = new Scene(string.IsNullOrEmpty(name) ? "Untitled" : name)
+            {
+                OriginalName = string.IsNullOrEmpty(name) ? "Untitled" : name
+            };
+
+            if (!string.IsNullOrEmpty(name)) SaveScene();
+
             onCurrentSceneChanged?.Invoke(currentScene);
         }
 
