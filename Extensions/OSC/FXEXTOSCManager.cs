@@ -361,7 +361,7 @@ namespace FX
                     int senderPort = matchingNode.Transmitter.RemotePort;
 
                     string uuid = Guid.NewGuid().ToString();
-                    SendOSCMessage("/sceneList/get/chunked/start", matchingNode, "start");
+                    SendOSCMessage("/sceneList/get/chunked/start", matchingNode, uuid);
                     for (int i = 0; i < jsonChunks.Count; i++)
                     {
                         string chunk = jsonChunks[i];
@@ -369,7 +369,7 @@ namespace FX
                         SendOSCMessage(messageAddress, matchingNode, uuid, chunk);
                     }
 
-                    SendOSCMessage("/sceneList/get/chunked/end", matchingNode, "end");
+                    SendOSCMessage("/sceneList/get/chunked/end", matchingNode, uuid);
                 }
             }
 
@@ -895,12 +895,27 @@ namespace FX
 
         void OnSceneListUpdated(List<Scene> scenes) 
         {
-
             string json = JsonConvert.SerializeObject(scenes);
+            List<string> jsonChunks = new List<string>();
+            for (int i = 0; i < json.Length; i += maxLength)
+            {
+                jsonChunks.Add(json.Substring(i, Math.Min(maxLength, json.Length - i)));
+            }
 
             foreach (var node in oscNodes)
             {
-                if (node.SendParamChanges) SendOSCMessage("/sceneList/get", node, json);
+                if (node.SendParamChanges)
+                {
+                    string uuid = Guid.NewGuid().ToString();
+                    SendOSCMessage("/sceneList/get/chunked/start", node, uuid);
+                    for (int i = 0; i < jsonChunks.Count; i++)
+                    {
+                        string chunk = jsonChunks[i];
+                        string messageAddress = $"/sceneList/get/chunked/{i + 1}/{jsonChunks.Count}";
+                        SendOSCMessage(messageAddress, node, uuid, chunk);
+                    }
+                    SendOSCMessage("/sceneList/get/chunked/end", node, uuid);
+                }              
             }
         }
 
