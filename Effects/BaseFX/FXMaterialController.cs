@@ -1,6 +1,5 @@
 using FX;
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public enum MaterialType
@@ -12,7 +11,8 @@ public enum MaterialType
     DISSOLVE,
     WIREFRAME,
     HOLOFX,
-    RESOLUME
+    RESOLUME,
+    BLOCKS
 }
 public enum DissolveType
 {
@@ -25,13 +25,6 @@ public enum WireframType
 {
     LIT,
     EMISSIVE
-}
-
-public enum CutoutPattern
-{
-    CHECKERBOARD,
-    HORIZONTAL,
-    CAMO
 }
 
 public enum HoloFXType
@@ -58,8 +51,7 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
     public Material Wireframe;
     public Material[] HoloFXMaterials;
     public Material Resolume;
-
-
+    public Material Blocks;
 
     public FXParameter<Color> color = new FXParameter<Color>(Color.white);
 
@@ -83,6 +75,10 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
     public FXParameter<HoloFXType> holoType  = new FXParameter<HoloFXType>(HoloFXType.ONE);
 
     public FXParameter<WireframType> wireframeType = new FXParameter<WireframType>(WireframType.LIT);
+
+    public FXScaledParameter<float> blockCount = new FXScaledParameter<float>(0.0f, 2.0f, 20.0f);
+
+
 
     private Light[] lightComponents;
     private Renderer[] rendererComponents;
@@ -125,6 +121,8 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
         holoType.OnValueChanged += SetHoloType;
 
         wireframeType.OnValueChanged += SetWireframeType;
+
+        blockCount.OnScaledValueChanged += SetBlockCount;
 
 
         if (HoloFXMaterials == null || HoloFXMaterials.Length < 3)
@@ -226,6 +224,8 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
                 break;
             case MaterialType.RESOLUME:
                 break;
+            case MaterialType.BLOCKS:
+                break;
             default:
                 break;
         }
@@ -279,6 +279,11 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
             case MaterialType.RESOLUME:
                 ApplyMaterial(Resolume);
                 break;
+            case MaterialType.BLOCKS:
+                ApplyMaterial(Blocks);
+                SetBlockCount(blockCount.ScaledValue);
+                SetColor(color.Value);
+                break;
             default:
                 break;
         }
@@ -313,6 +318,9 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
                     break;
                 case MaterialType.DISSOLVE:
                         renderer.material.SetFloat("_EdgeColorIntensity", Mathf.GammaToLinearSpace(intensity * 2.0f));                       
+                    break;
+                case MaterialType.BLOCKS:
+                    renderer.material.SetColor("_EmissiveColor", color.Value * Mathf.GammaToLinearSpace(intensity * 2.0f));
                     break;
                 default:
                     break;
@@ -363,6 +371,9 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
                         break;
                     case MaterialType.DISSOLVE:
                         renderer.material.SetColor("_EdgeColor", value * Mathf.GammaToLinearSpace(triggerValue.ScaledValue*2.0f));
+                        break;
+                    case MaterialType.BLOCKS:
+                        renderer.material.SetColor("_EmissiveColor", value * Mathf.GammaToLinearSpace(triggerValue.ScaledValue * 2.0f));
                         break;
 
                 }                 
@@ -515,6 +526,10 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
                 break;
             default: break;
         }
+    }
+
+    public void SetBlockCount(float value) {
+        if (materialType.Value == MaterialType.BLOCKS) SetPropertyFloat("_Size", value);
     }
 
     public void SetHoloIntensity(float value)

@@ -61,6 +61,8 @@ namespace FX
         public List<OSCNode> oscNodes = new List<OSCNode>();
         public float sendInterval = 0.1f;
         public int maxMessagesPerInterval = 10;
+        public int maxLength = 1500;
+
 
         private FXManager fXManager;
         public FXSceneManager fxSceneManager;
@@ -328,19 +330,49 @@ namespace FX
             {
                 fxSceneManager.ResetCurrentScene();
             }
-            else if (address.ToUpper() == "/SCENELIST/GET")
+            // Use /SCENELIST/GET/CHUNKED instead as packet size is liklely to exceed OSC limits
+            //else if (address.ToUpper() == "/SCENELIST/GET")
+            //{
+            //
+            //    string json = JsonConvert.SerializeObject(fxSceneManager.scenes);
+            //
+            //    OSCNode matchingNode = oscNodes.Find(node => node.Receiver.LocalPort == port);
+            //    if (matchingNode != null)
+            //    {
+            //        string senderIp = matchingNode.Transmitter.RemoteHost.ToString();
+            //        int senderPort = matchingNode.Transmitter.RemotePort;
+            //        SendOSCMessage("/sceneList/get", matchingNode, json);
+            //    }
+            //}
+            else if (address.ToUpper() == "/SCENELIST/GET/CHUNKED")
             {
-
                 string json = JsonConvert.SerializeObject(fxSceneManager.scenes);
+
+                List<string> jsonChunks = new List<string>();
+                for (int i = 0; i < json.Length; i += maxLength)
+                {
+                    jsonChunks.Add(json.Substring(i, Math.Min(maxLength, json.Length - i)));
+                }
 
                 OSCNode matchingNode = oscNodes.Find(node => node.Receiver.LocalPort == port);
                 if (matchingNode != null)
                 {
                     string senderIp = matchingNode.Transmitter.RemoteHost.ToString();
                     int senderPort = matchingNode.Transmitter.RemotePort;
-                    SendOSCMessage("/sceneList/get", matchingNode, json);
+
+                    string uuid = Guid.NewGuid().ToString();
+                    SendOSCMessage("/sceneList/get/chunked/start", matchingNode, "start");
+                    for (int i = 0; i < jsonChunks.Count; i++)
+                    {
+                        string chunk = jsonChunks[i];
+                        string messageAddress = $"/sceneList/get/chunked/{i + 1}/{jsonChunks.Count}";
+                        SendOSCMessage(messageAddress, matchingNode, uuid, chunk);
+                    }
+
+                    SendOSCMessage("/sceneList/get/chunked/end", matchingNode, "end");
                 }
             }
+
             else if (address.ToUpper() == "/SCENE/TAG/ADD")
             {
                 if (message.Values.Count > 0 && message.Values[0].Type == OSCValueType.String)
