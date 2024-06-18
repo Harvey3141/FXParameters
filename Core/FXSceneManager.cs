@@ -228,6 +228,8 @@ namespace FX
 
                     CurrentScene.TagIds = validTagIds;
                     onCurrentSceneChanged?.Invoke(currentScene);
+                    onCurrentSceneNameChanged?.Invoke(currentScene.Name);
+
                     return true;
                 }
             }
@@ -275,6 +277,8 @@ namespace FX
             }
 
             fXManager.SaveScene(scene);
+            onCurrentSceneChanged?.Invoke(currentScene);
+            onCurrentSceneNameChanged?.Invoke(currentScene.Name);
             PopulateScenesList();
         }
 
@@ -298,6 +302,8 @@ namespace FX
                     CurrentScene.OriginalName = newName;
 
                     fXManager.SaveScene(CurrentScene);
+                    onCurrentSceneChanged?.Invoke(currentScene);
+                    onCurrentSceneNameChanged?.Invoke(currentScene.Name);
 
                     //CurrentScene.Name = originalName;
                     //CurrentScene.OriginalName = originalName;
