@@ -11,15 +11,15 @@ public class FXDirectionalLight : FXBaseWithEnabled, IFXTriggerable
     public FXScaledParameter<float> intensity = new FXScaledParameter<float>(0.0f, 0.0f, 2.0f);
     public FXParameter<Color> color = new FXParameter<Color>(Color.white);
 
-    public FXParameter<float> rotationX = new FXParameter<float>(0.0f, 0.0f, 360f);
-    public FXParameter<float> rotationY = new FXParameter<float>(0.0f, 0.0f, 360f);
+    public FXScaledParameter<float> rotationX = new FXScaledParameter<float>(0.0f, 0.0f, 360f);
+    public FXScaledParameter<float> rotationY = new FXScaledParameter<float>(0.0f, 0.0f, 360f);
     public FXScaledParameter<float> rotationSpeedX = new FXScaledParameter<float>(0.0f,0.0f,100.0f);
     public FXScaledParameter<float> rotationSpeedY = new FXScaledParameter<float>(0.0f, 0.0f, 100.0f);
 
     private Light lightComp;
     private Vector3 initRot;
-    public float clampX = 360f;
-    public float clampY = 360f;
+    //public float clampX = 360f;
+    //public float clampY = 360f;
 
     public Vector3[] rotationSet; 
 
@@ -48,12 +48,12 @@ public class FXDirectionalLight : FXBaseWithEnabled, IFXTriggerable
     {
         if (rotationSpeedX.ScaledValue != 0 || rotationSpeedY.ScaledValue != 0) {
             rotationX.Value += rotationSpeedX.ScaledValue;
-            if (rotationX.Value > clampX) rotationX.Value = 0;
+            if (rotationX.Value > 1.0f) rotationX.Value = 0;
             rotationY.Value += rotationSpeedY.ScaledValue;
-            if (rotationY.Value > clampY) rotationY.Value = 0;
+            if (rotationY.Value > 1.0f) rotationY.Value = 0;
         }
 
-        transform.localEulerAngles = new Vector3(rotationX.Value, rotationY.Value, 0.0f);
+        transform.localEulerAngles = new Vector3(rotationX.ScaledValue, rotationY.ScaledValue, 0.0f);
         
         lightComp.color = color.Value;
     }
@@ -91,9 +91,11 @@ public class FXDirectionalLight : FXBaseWithEnabled, IFXTriggerable
         currentRotation.y = rotationSet[index].y;
         currentRotation.z = rotationSet[index].z;
 
-        rotationX.Value = rotationSet[index].x;
-        rotationY.Value = rotationSet[index].y;
-        transform.localEulerAngles = new Vector3(rotationX.Value, rotationY.Value, 0.0f);
+        rotationX.Value = rotationSet[index].x / 360.0f;
+        rotationY.Value = rotationSet[index].y / 360.0f;
+
+        transform.localEulerAngles = new Vector3(rotationX.ScaledValue, rotationY.ScaledValue, 0.0f);
+
 
 
     }
