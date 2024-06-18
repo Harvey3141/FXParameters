@@ -274,7 +274,6 @@ namespace FX
         private void SaveScene()
         {
             fxSceneManager.SaveScene();
-            fxSceneManager.PopulateScenesList();
 
             if (selectedFilterTagIndex == 0)
             {
