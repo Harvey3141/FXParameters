@@ -54,7 +54,17 @@ public class FXLight : FXBaseWithEnabled
 
     void SetIntensity(float value)
     {
-        lightData.intensity = value;
+        
+
+        switch (lightType.Value)
+        {
+            case FXLightType.SPOT:
+                lightData.intensity = value;
+                break;
+            case FXLightType.POINT:
+                lightData.intensity = value * 2.0f;
+                break;
+        }
     }
 
     void SetLightColour(Color value)
