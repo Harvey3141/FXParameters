@@ -907,7 +907,7 @@ namespace FX
                 if (node.SendParamChanges)
                 {
                     string uuid = Guid.NewGuid().ToString();
-                    SendOSCMessage("/sceneList/get/chunked/start", node, uuid);
+                    SendOSCMessage("/sceneList/get/chunked/start", node, uuid, jsonChunks.Count);
                     for (int i = 0; i < jsonChunks.Count; i++)
                     {
                         string chunk = jsonChunks[i];

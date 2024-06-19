@@ -12,7 +12,8 @@ public enum MaterialType
     WIREFRAME,
     HOLOFX,
     RESOLUME,
-    BLOCKS
+    BLOCKS,
+    XRAY
 }
 public enum DissolveType
 {
@@ -52,6 +53,9 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
     public Material[] HoloFXMaterials;
     public Material Resolume;
     public Material Blocks;
+    public Material Xray;
+
+
 
     public FXParameter<Color> color = new FXParameter<Color>(Color.white);
 
@@ -212,6 +216,10 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
             case MaterialType.CUTOUT:
                 break;
             case MaterialType.DISSOLVE:
+                SetEmissiveIntensityAll(triggerValue.ScaledValue);
+                SetDissolveEdgeWidth(dissolveEdgeWidth.ScaledValue);
+                SetDissolveOffset(dissolveOffset.ScaledValue);
+                SetColor(color.Value);
                 break;
             case MaterialType.HOLOFX:
                 SetHoloDeform(holoDeform.ScaledValue);
@@ -284,6 +292,10 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
                 SetBlockCount(blockCount.ScaledValue);
                 SetColor(color.Value);
                 break;
+            case MaterialType.XRAY:
+                ApplyMaterial(Xray);
+                SetColor(color.Value);
+                break;
             default:
                 break;
         }
@@ -321,6 +333,9 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
                     break;
                 case MaterialType.BLOCKS:
                     renderer.material.SetColor("_EmissiveColor", color.Value * Mathf.GammaToLinearSpace(intensity * 2.0f));
+                    break;
+                case MaterialType.XRAY:
+                    renderer.material.SetColor("_EmissiveColor", color.Value * Mathf.GammaToLinearSpace(intensity));
                     break;
                 default:
                     break;
@@ -374,6 +389,9 @@ public class FXMaterialController : FXGroupObjectController, IFXTriggerable
                         break;
                     case MaterialType.BLOCKS:
                         renderer.material.SetColor("_EmissiveColor", value * Mathf.GammaToLinearSpace(triggerValue.ScaledValue * 2.0f));
+                        break;
+                    case MaterialType.XRAY:
+                        renderer.material.SetColor("_EmissiveColor", value * Mathf.GammaToLinearSpace(triggerValue.ScaledValue));
                         break;
 
                 }                 
