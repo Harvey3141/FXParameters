@@ -368,7 +368,7 @@ namespace FX
                 }
                 else
                 {
-                    group.ClearFXAdresses();
+                    group.Reset();
                 }
             }
 

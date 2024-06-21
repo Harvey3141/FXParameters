@@ -861,6 +861,7 @@ namespace FX
             foreach (var group in allFXGroups)
             {
                 preset.fxGroupPresets.Add(group.GetData());
+                group.CacheLastLoadedState();
             }
 
             var settings = new JsonSerializerSettings
@@ -922,11 +923,15 @@ namespace FX
                     if (existingGroup != null)
                     {
                         existingGroup.SetData(groupPreset.Value);
+                        existingGroup.CacheLastLoadedState();
                     }
                     else
                     {
-                        CreateGroup(groupPreset.Value);
+                        GroupFXController g = CreateGroup(groupPreset.Value);
+                        g.CacheLastLoadedState();
                     }
+                    
+
                 }
 
                 foreach (var param in preset.stringParameters) { SetFX(param.key, param.value, true); }

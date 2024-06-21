@@ -214,7 +214,7 @@ namespace FX
         [SerializeField]
         public PatternType patternType= PatternType.None;
 
-        public enum AudioFrequency {Low, Mid, High }
+        public enum AudioFrequency {Low, Mid, High, Transient }
         public AudioFrequency audioFrequency = AudioFrequency.Low;
 
         public PatternBase pattern;
@@ -238,6 +238,7 @@ namespace FX
             if (pattern == null) SetPatternType(patternType);
 
             audioManager = FindObjectOfType<FX.AudioManager>();
+            audioManager.onTransient += FXTriggerTransient;
 
             fxManager.OnGroupListChanged();
         }
@@ -313,6 +314,12 @@ namespace FX
             }
         }
 
+        public void FXTriggerTransient() {
+            if (signalSource == SignalSource.Audio && audioFrequency == AudioFrequency.Transient) { 
+                FXTrigger();
+            }
+        }
+            
         public void FXTrigger()
         {
             if (!active) return;
@@ -326,6 +333,13 @@ namespace FX
             }
 
             OnFXTriggered?.Invoke();
+        }
+
+        public void Reset()
+        {
+            ClearFXAdresses();
+            value.ValueAtZero = 0.0f;
+            value.ValueAtOne = 1.0f;
         }
 
         public void ClearFXAdresses() 
@@ -461,7 +475,7 @@ namespace FX
           
             presetLoaded    = true;
             Active          = data.isEnabled;
-            lastLoadedState = data;
+            //lastLoadedState = data;
 
             OnGroupChanged();
         }
@@ -512,6 +526,10 @@ namespace FX
             {
                 SetData(lastLoadedState);
             }
+        }
+
+        public void CacheLastLoadedState() {
+            lastLoadedState = GetData();
         }
 
         public void SetPatternType(PatternType newPatternType)
