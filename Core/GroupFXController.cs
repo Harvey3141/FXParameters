@@ -241,7 +241,10 @@ namespace FX
             audioManager = FindObjectOfType<FX.AudioManager>();
             audioManager.onTransient += FXTriggerTransient;
 
-            fxManager.OnGroupListChanged();
+            FXManager.trackedGroups.Add(this);
+
+            fxManager.OnGroupListChanged();       
+            
         }
 
         void Update () {
@@ -295,6 +298,9 @@ namespace FX
                                 isAboveAudioThreshold = false;
                             }
                             break;
+                        case AudioFrequency.Transient:
+                            value.Value = audioManager.TransientLevel;
+                            break;
                     }
                     break;
             }     
@@ -334,6 +340,7 @@ namespace FX
             }
 
             OnFXTriggered?.Invoke();
+            fxManager.OnGroupTriggered(this.address);
         }
 
         public void Reset()
@@ -753,6 +760,7 @@ namespace FX
         void OnDestroy()
         {
             ClearFXAdresses();
+            FXManager.trackedGroups.Remove(this);
             fxManager.OnGroupListChanged();
         }
 
