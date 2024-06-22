@@ -30,7 +30,7 @@ namespace FX
 
 
         private bool isIndicatorOn = false;
-        private float indicatorDuration = 0.05f;
+        private float indicatorDuration = 0.1f;
         private float timeSinceTriggered = 0f;
 
         GroupFXController controller;

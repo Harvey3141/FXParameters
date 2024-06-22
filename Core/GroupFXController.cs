@@ -294,6 +294,9 @@ namespace FX
                                 isAboveAudioThreshold = false;
                             }
                             break;
+                        case AudioFrequency.Transient:
+                            value.Value = audioManager.TransientLevel;
+                            break;
                     }
                     break;
             }     
