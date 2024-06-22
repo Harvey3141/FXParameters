@@ -83,8 +83,16 @@ namespace FX
         public delegate void OnFXGroupEnabled(string address, bool state);
         public event OnFXGroupEnabled onFXGroupEnabled;
 
+        public delegate void OnFXGroupTriggered(string address);
+        public event OnFXGroupTriggered onFXGroupTriggered;
+
         public delegate void OnFXGroupListChanged(List<string> groupList);
         public event OnFXGroupListChanged onFXGroupListChanged;
+
+        // Last minute addition, this should probably be used in place of FindObjectsOfType<GroupFXController>() but needs more
+        // testing time than available right now
+        public static List<GroupFXController> trackedGroups = new List<GroupFXController>();
+
 
         public enum FXItemInfoType
         {
@@ -1217,6 +1225,11 @@ namespace FX
         public void OnGroupEnabled(string address, bool state)
         {
             if (onFXGroupEnabled != null) onFXGroupEnabled(address,state);
+        }
+
+        public void OnGroupTriggered(string address)
+        {
+            if (onFXGroupTriggered != null) onFXGroupTriggered(address);
         }
     }
 

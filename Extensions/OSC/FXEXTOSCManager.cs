@@ -26,14 +26,15 @@ namespace FX
         public int remotePort;
         public bool sendParamChanges;
         public bool sendColoursAsJson;
-
+        public bool sendPeriodicData;
     }
 
     [System.Serializable]
     public class OSCNodeList
     {
         public float sendInterval = 0.1f; 
-        public int maxMessagesPerInterval = 10; 
+        public int maxMessagesPerInterval = 10;
+        public float periodicDataInterval = 0.1f;
         public List<OSCNodeData> nodes;
     }
 
@@ -45,14 +46,17 @@ namespace FX
 
         public bool SendParamChanges = true;
         public bool SendColoursAsJson = false;
+        public bool SendPeriodicData = false;
 
-        public OSCNode(OSCReceiver receiver, OSCTransmitter transmitter, bool sendParamChanges, bool sendColoursAsJson)
+
+        public OSCNode(OSCReceiver receiver, OSCTransmitter transmitter, bool sendParamChanges, bool sendColoursAsJson, bool sendPeriodicData)
         {
             Receiver          = receiver;
             MessageQueue      = new Queue<OSCMessage>();
             Transmitter       = transmitter;
             SendParamChanges  = sendParamChanges;
             SendColoursAsJson = sendColoursAsJson;
+            SendPeriodicData  = sendPeriodicData;
         }
     }
 
@@ -69,6 +73,9 @@ namespace FX
         public BPMManager bpmManager;
         public FXColourPaletteManager fxPaletteManager;
 
+        private GroupDataPeriodic groupDataPeriodic = new GroupDataPeriodic();
+        public float periodicDataInterval = 1.0f;
+
         private void Start()
         {
             SetupNodes();
@@ -83,6 +90,7 @@ namespace FX
             fXManager.onFXGroupChanged           += OnFXGroupChanged;
             fXManager.onFXGroupListChanged       += OnFXGroupListChanged;
             fXManager.onFXGroupEnabled           += OnFXGroupEnabled;
+            fXManager.onFXGroupTriggered         += OnFXGroupTriggered;
 
             fxSceneManager.onSceneListUpdated        += OnSceneListUpdated;
             fxSceneManager.onCurrentSceneChanged     += OnCurrentSceneChanged;
@@ -100,6 +108,8 @@ namespace FX
             bpmManager.OnBpmChanged += OnBPMChanged;
 
             StartCoroutine(SendMessagesAtInterval(sendInterval));
+            StartCoroutine(SendPeriodicUpdates(periodicDataInterval));
+
         }
 
         private void SetupNodes()
@@ -112,8 +122,9 @@ namespace FX
                 string json = File.ReadAllText(filePath);
                 OSCNodeList nodeList = JsonUtility.FromJson<OSCNodeList>(json);
 
-                sendInterval = nodeList.sendInterval;
+                sendInterval           = nodeList.sendInterval;
                 maxMessagesPerInterval = nodeList.maxMessagesPerInterval;
+                periodicDataInterval   = nodeList.periodicDataInterval;
 
                 foreach (OSCNodeData nodeData in nodeList.nodes)
                 {
@@ -125,7 +136,7 @@ namespace FX
                     transmitter.RemoteHost = nodeData.remoteHost;
                     transmitter.RemotePort = nodeData.remotePort;
 
-                    OSCNode node = new OSCNode(receiver, transmitter, nodeData.sendParamChanges, nodeData.sendColoursAsJson);
+                    OSCNode node = new OSCNode(receiver, transmitter, nodeData.sendParamChanges, nodeData.sendColoursAsJson, nodeData.sendPeriodicData);
                     oscNodes.Add(node);
                 }
             }
@@ -140,6 +151,8 @@ namespace FX
             int port = 8000;
             MessageReceived(message, port);
         }
+
+
 
         protected void MessageReceived(OSCMessage message, int port)
         {
@@ -871,6 +884,16 @@ namespace FX
             }
         }
 
+        void OnFXGroupTriggered(string adress)
+        {
+            var message = new OSCMessage("/group/onTriggered");
+            message.AddValue(OSCValue.String(adress));
+            foreach (var node in oscNodes)
+            {
+                if (node.SendParamChanges) node.MessageQueue.Enqueue(message);
+            }
+        }
+
         void OnFXGroupListChanged(List<string> groupListIn)
         {
 
@@ -1041,6 +1064,37 @@ namespace FX
             }
         }
 
+        IEnumerator SendPeriodicUpdates(float interval)
+        {
+            while (true)
+            {
+                groupDataPeriodic.entries.Clear();
+
+                foreach (GroupFXController g in FXManager.trackedGroups)
+                {
+                    float value = g.value.ScaledValue;
+                    string address = g.address.ToString();
+
+                    GroupDataPeriodicEntry entry = new GroupDataPeriodicEntry
+                    {
+                        value = value,
+                        address = address
+                    };
+
+                    groupDataPeriodic.entries.Add(entry);
+                }
+
+                string json = JsonUtility.ToJson(groupDataPeriodic);
+
+                foreach (var node in oscNodes)
+                {
+                    if (node.SendPeriodicData) SendOSCMessage("/groups/periodicData", node, json);
+                }
+
+                yield return new WaitForSeconds(interval);
+            }
+        }
+
         void SendOSCMessage(string address, OSCNode node, object value = null)
         {
             var message = new OSCMessage(address);
@@ -1126,6 +1180,20 @@ namespace FX
             public float b;
             public float a = 1;
         }
+
+        [System.Serializable]
+        public class GroupDataPeriodicEntry
+        {
+            public float value;
+            public string address;
+        }
+
+        [System.Serializable]
+        public class GroupDataPeriodic
+        {
+            public List<GroupDataPeriodicEntry> entries = new List<GroupDataPeriodicEntry>();
+        }
+
 
     }
 }
