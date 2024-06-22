@@ -360,15 +360,10 @@ namespace FX
             {
                 if (kvp.Value.type == FXManager.FXItemInfoType.Parameter || kvp.Value.type == FXManager.FXItemInfoType.ScaledParameter)
                 {
-                    if (kvp.Value.item is FXParameter<float> ||
-                        kvp.Value.item is FXParameter<bool> ||
-                        kvp.Value.item is FXParameter<Color> ||
-                        kvp.Value.item is FXParameter<MaterialType> ||
-                        kvp.Value.item is FXParameter<int>)
+                    if (kvp.Value.item is IFXParameter fxParameter)
                     {
                         string address = kvp.Key;
 
-                        
                         if (address.StartsWith("/"))
                         {
                             address = address.Substring(1);
@@ -378,9 +373,9 @@ namespace FX
                         {
                             addressList.Add(address);
                         }
-                       
                     }
                 }
+            
                 else if (kvp.Value.type == FXManager.FXItemInfoType.Method)
                 {
                     MethodInfo method = kvp.Value.item as MethodInfo;

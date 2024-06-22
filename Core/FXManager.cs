@@ -423,7 +423,7 @@ namespace FX
                     else if (parameterType.IsEnum)
                     {
                         if (arg is float f) {
-                            if (f > 0.0f && f < 1.0f)
+                            if (f > 0.0f && f <= 1.0f)
                             {
                                 var enumValues = Enum.GetValues(parameterType);
                                 int numValues = enumValues.Length;
