@@ -1006,11 +1006,11 @@ namespace FX
         }
 
 
-        void OnBeat() {
+        void OnBeat(float bpm) {
 
             foreach (var node in oscNodes)
             {
-                if (node.SendParamChanges) SendOSCMessage("/audio/BPM/onBeat", node);
+                if (node.SendParamChanges) SendOSCMessage("/audio/BPM/onBeat", node, bpm);
             }
         }
 

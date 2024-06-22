@@ -29,55 +29,55 @@ public class FXPostProcessVolume : FXBase
     private ColorEdges colorEdgesEffect;
 
     public FXParameter<bool> blockEnabled = new FXParameter<bool>(false, "", true);
-    public FXScaledParameter<float> block = new FXScaledParameter<float>(0, 0, 1.0f,"", false);
+    public FXScaledParameter<float> block = new FXScaledParameter<float>(0, 0, 1.0f);
 
     public FXParameter<bool> driftEnabled = new FXParameter<bool>(false);
-    public FXScaledParameter<float> drift = new FXScaledParameter<float>(0, 0, 1.0f,"", false);
+    public FXScaledParameter<float> drift = new FXScaledParameter<float>(0, 0, 1.0f);
 
     public FXParameter<bool> jitterEnabled = new FXParameter<bool>(false, "", true);
-    public FXScaledParameter<float> jitter = new FXScaledParameter<float>(0, 0, 1.0f,"", false);
+    public FXScaledParameter<float> jitter = new FXScaledParameter<float>(0, 0, 1.0f);
 
     public FXParameter<bool> jumpEnabled = new FXParameter<bool>(false, "", true);
-    public FXScaledParameter<float> jump = new FXScaledParameter<float>(0, 0, 1.0f,"", false);
+    public FXScaledParameter<float> jump = new FXScaledParameter<float>(0, 0, 1.0f);
     
     public FXParameter<bool> shakeEnabled = new FXParameter<bool>(false, "", true);
-    public FXScaledParameter<float> shake = new FXScaledParameter<float>(0, 0, 1.0f,"", false);
+    public FXScaledParameter<float> shake = new FXScaledParameter<float>(0, 0, 1.0f);
 
     public FXParameter<bool> sliceEnabled = new FXParameter<bool>(false, "", true);
-    public FXScaledParameter<float> slice = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
+    public FXScaledParameter<float> slice = new FXScaledParameter<float>(0, 0, 1.0f);
 
     public FXParameter<bool> chromaticAberrationEnabled = new FXParameter<bool>(false, "", true);
-    public FXScaledParameter<float> chromaticAberration = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
+    public FXScaledParameter<float> chromaticAberration = new FXScaledParameter<float>(0, 0, 1.0f);
 
     public FXParameter<bool> trippyEnabled = new FXParameter<bool>(false, "", true);
-    public FXScaledParameter<float> trippy = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
+    public FXScaledParameter<float> trippy = new FXScaledParameter<float>(0, 0, 1.0f);
 
     public FXParameter<bool> wobbleEnabled = new FXParameter<bool>(false, "", true);
-    public FXScaledParameter<float> wobble = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
+    public FXScaledParameter<float> wobble = new FXScaledParameter<float>(0, 0, 1.0f);
 
     public FXParameter<bool> splitRotateEnabled = new FXParameter<bool>(false, "", true);
-    public FXScaledParameter<float> splitRotate = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
+    public FXScaledParameter<float> splitRotate = new FXScaledParameter<float>(0, 0, 1.0f);
 
     public FXParameter<bool> wetEnabled = new FXParameter<bool>(false, "", true);
-    public FXScaledParameter<float> wetness = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
+    public FXScaledParameter<float> wetness = new FXScaledParameter<float>(0, 0, 1.0f);
 
     public FXParameter<bool> screenGlitchEnabled = new FXParameter<bool>(false, "", true);
-    public FXScaledParameter<float> screenGlitch = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
+    public FXScaledParameter<float> screenGlitch = new FXScaledParameter<float>(0, 0, 1.0f);
 
     public FXParameter<bool> soundWaveEnabled = new FXParameter<bool>(false, "", true);
-    public FXScaledParameter<float> soundWave = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
+    public FXScaledParameter<float> soundWave = new FXScaledParameter<float>(0, 0, 1.0f);
 
     public FXParameter<bool> chromaLinesEnabled = new FXParameter<bool>(false, "", true);
-    public FXScaledParameter<float> chromaLines = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
+    public FXScaledParameter<float> chromaLines = new FXScaledParameter<float>(0, 0, 1.0f);
 
     public FXParameter<bool> displaceViewEnabled = new FXParameter<bool>(false, "", true);
-    public FXScaledParameter<float> displaceView = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
+    public FXScaledParameter<float> displaceView = new FXScaledParameter<float>(0, 0, 1.0f);
 
     public FXParameter<bool> screenFuzzEnabled = new FXParameter<bool>(false, "", true);
-    public FXScaledParameter<float> screenFuzz = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
+    public FXScaledParameter<float> screenFuzz = new FXScaledParameter<float>(0, 0, 1.0f);
 
     public FXParameter<bool> colourEdgesEnabled = new FXParameter<bool>(false, "", true);
-    public FXScaledParameter<float> colourEdges = new FXScaledParameter<float>(0, 0, 1.0f, "", false);
+    public FXScaledParameter<float> colourEdges = new FXScaledParameter<float>(0, 0, 1.0f);
     public FXParameter<Color> colourEdgeColour = new FXParameter<Color>(Color.white);
 
 

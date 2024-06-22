@@ -1134,7 +1134,10 @@ namespace FX
 
         public GroupFXController CreateGroup(FXGroupData data) {
             GroupFXController group = CreateGroup();
-            group.SetData(data);
+            if (group != null) group.SetData(data);
+            else {
+                Debug.LogError($"Group Creation failed");
+            }
             return group;
         }
 

@@ -67,7 +67,7 @@ namespace FX
         private T defaultSceneValue_;
 
 
-        [SerializeField]
+        //[SerializeField]
         private bool shouldSave_ = true;
 
 

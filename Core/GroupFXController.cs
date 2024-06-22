@@ -149,6 +149,7 @@ namespace FX
         public float numBeats = 4;
         public FX.Patterns.OscillatorPattern.OscillatorType oscillatorType;
         public FX.Patterns.ArpeggiatorPattern.PatternStyle arpeggiatorStyle;
+        public int numArpSteps = 4;
     }
 
     public class GroupFXController : MonoBehaviour, IFXTriggerable
@@ -468,6 +469,7 @@ namespace FX
                         case PatternType.Arpeggiator:
                             ArpeggiatorPattern arp = (ArpeggiatorPattern)pattern;
                             arp.Style = data.arpeggiatorStyle;
+                            arp.NumSteps = data.numArpSteps;
                             break;
                     }
                     break;
@@ -512,6 +514,7 @@ namespace FX
                         case PatternType.Arpeggiator:
                             ArpeggiatorPattern arp = (ArpeggiatorPattern)pattern;
                             data.arpeggiatorStyle = arp.Style;
+                            data.numArpSteps = arp.NumSteps;
                             break;
                     }
                     break;

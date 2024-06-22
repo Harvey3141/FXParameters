@@ -78,6 +78,7 @@ namespace FX.Patterns
             if (Time.time >= nextTriggerTime)
             {
                 TriggerFunction();
+                Trigger();
                 nextTriggerTime += GetTriggerInterval();
             }
         }

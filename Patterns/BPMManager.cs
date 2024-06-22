@@ -16,7 +16,7 @@ namespace FX.Patterns
 
         public event Action<float> OnBpmChanged;
         public event Action OnResetPhase;
-        public event Action OnBeat;
+        public event Action<float> OnBeat;
 
         private float lastBeatTime;
         [HideInInspector]
@@ -69,7 +69,7 @@ namespace FX.Patterns
             if (timeSinceLastBeat >= (60.0f / bpm))
             {
                 lastBeatTime = Time.time;
-                OnBeat?.Invoke();
+                OnBeat?.Invoke(bpm);
             }
 
             if (cachedBpm != bpm)
@@ -79,7 +79,7 @@ namespace FX.Patterns
             }
         }
 
-        private void HandleBeat()
+        private void HandleBeat(float bpm)
         {
             if (beatIndicatorCoroutine != null)
             {
