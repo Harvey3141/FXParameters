@@ -1,4 +1,5 @@
 using FX;
+using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 
@@ -32,17 +33,17 @@ public class FXAreaLight : FXBaseWithEnabled
 
     protected override void OnFXEnabled(bool state)
     {
-        lightComp.enabled = state;
+        if (lightComp != null) lightComp.enabled = state;
     }
 
     void SetIntensity(float value)
     {
-        lightData.intensity = value;
+        if (lightData != null) lightData.intensity = value;
     }
 
     void SetLightColor(Color newColor)
     {
         color.Value = newColor;
-        lightData.color = newColor;
+        if (lightData != null)  lightData.color = newColor;
     }
 }
