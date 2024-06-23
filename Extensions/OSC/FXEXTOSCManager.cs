@@ -157,7 +157,7 @@ namespace FX
         protected void MessageReceived(OSCMessage message, int port)
         {
             string address = message.Address;
-            if (address == "/FX/GET")
+            if (address.ToUpper() == "/FX/GET")
             {
                 if (message.Values.Count > 0)
                 {
@@ -166,13 +166,17 @@ namespace FX
 
                     if (value != null)
                     {
-                        OSCNode matchingNode = oscNodes.Find(node => node.Receiver.LocalPort == port);
-                        if (matchingNode != null)
-                        {
-                            string senderIp = matchingNode.Transmitter.RemoteHost.ToString();
-                            int senderPort = matchingNode.Transmitter.RemotePort;
-                            SendOSCMessage(fxAddress, matchingNode, value);
+                        //OSCNode matchingNode = oscNodes.Find(node => node.Receiver.LocalPort == port);
+                        //if (matchingNode != null)
+                        //{
+                        //    string senderIp = matchingNode.Transmitter.RemoteHost.ToString();
+                        //    int senderPort = matchingNode.Transmitter.RemotePort;
+                        //    SendOSCMessage("/fx/get", matchingNode, fxAddress, value);
+                        //}
 
+                        foreach (var node in oscNodes)
+                        {
+                            SendOSCMessage("/fx/get", node, fxAddress, value);
                         }
                         // TODO - create a transmitter here to send back a response.
                     }
