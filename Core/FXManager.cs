@@ -970,13 +970,13 @@ namespace FX
 
                 foreach (var fxItem in fxItemsByAddress_)
                 {
-                    if (fxItem.Value.type == FXItemInfoType.Parameter)
+                    if (fxItem.Value.type == FXItemInfoType.Parameter || fxItem.Value.type == FXItemInfoType.ScaledParameter)
                     {
                         IFXParameter parameter = fxItem.Value.item as IFXParameter;
                         if (parameter != null && parameter.ShouldSave && !presetAddresses.Contains(fxItem.Key))
                         {
                             parameter.ResetToDefaultValue();
-                            Debug.Log($"Parameter '{fxItem.Key}' not found in the preset. Resetting to default value");
+                            //Debug.Log($"Parameter '{fxItem.Key}' not found in the preset. Resetting to default value");
                         }
                     }
                 }
