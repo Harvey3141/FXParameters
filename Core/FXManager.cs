@@ -198,6 +198,18 @@ namespace FX
                 {
                     return ((FXParameter<float>)parameter).Value;
                 }
+                if (parameterType == typeof(bool))
+                {
+                    return ((FXParameter<bool>)parameter).Value;
+                }
+                if (parameterType == typeof(int))
+                {
+                    return ((FXParameter<int>)parameter).Value;
+                }
+                if (parameterType == typeof(string))
+                {
+                    return ((FXParameter<string>)parameter).Value;
+                }
 
                 //return parameter?.ObjectValue;
             }
