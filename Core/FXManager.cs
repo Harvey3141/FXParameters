@@ -779,7 +779,7 @@ namespace FX
             public string key;
         }
 
-        public void SaveScene(FX.Scene scene, bool includeAll = false)
+        public void SaveScene(FX.Scene scene, bool includeAll = false, string customFolderName = null)
         {
             FXData preset = new FXData();
 
@@ -881,7 +881,9 @@ namespace FX
 
             string json = JsonConvert.SerializeObject(preset, settings);
 
-            string directoryPath = Path.Combine(Application.streamingAssetsPath, "FX Scenes");
+            string folderName = !string.IsNullOrEmpty(customFolderName) ? customFolderName : "FX Scenes";
+            string directoryPath = Path.Combine(Application.streamingAssetsPath, folderName);
+
             if (!Directory.Exists(directoryPath))
             {
                 Directory.CreateDirectory(directoryPath);

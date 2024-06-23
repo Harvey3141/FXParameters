@@ -322,7 +322,7 @@ namespace FX
         public void ExportParameterList()
         {
             Scene parameterListScene = new Scene("ParameterList");
-            fXManager.SaveScene(parameterListScene, true);
+            fXManager.SaveScene(parameterListScene, true, "FX");
         }
 
         public void RemoveScene(string name)
