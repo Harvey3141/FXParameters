@@ -465,6 +465,10 @@ namespace FX
                 {
                     fxPaletteManager.useForceUpdate = message.Values[0].BoolValue;
                 }
+                else if ((message.Values.Count > 0 && message.Values[0].Type == OSCValueType.Float))
+                {
+                    fxPaletteManager.useForceUpdate = message.Values[0].FloatValue == 1.0f ? true : false;
+                }
             }
             else if (address.ToUpper() == "/COLOURPALETTEMANAGER/ACTIVEPALETTE/GET")
             {
