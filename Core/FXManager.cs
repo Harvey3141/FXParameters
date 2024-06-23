@@ -435,13 +435,24 @@ namespace FX
                     else if (parameterType.IsEnum)
                     {
                         if (arg is float f) {
-                            if (f > 0.0f && f <= 1.0f)
+                            if (f > 0.0f && f < 1.0f)
                             {
                                 var enumValues = Enum.GetValues(parameterType);
                                 int numValues = enumValues.Length;
 
-                                int enumIndex = (int)(f * (numValues - 1));
-                                arg = enumIndex;
+                                float step = 1.0f  / numValues;
+
+                                int enumIndex = 0;
+                                for (int i = 1; i <= numValues; i++) 
+                                {
+                                    if (f < i * step) 
+                                    {
+                                        enumIndex = i - 1;
+                                        break;
+                                    }
+        
+                                 }
+                                arg = enumValues.GetValue(enumIndex);
                             }
                             else {
                                 arg = (int)f;
