@@ -487,9 +487,9 @@ namespace FX
                 {
                     var settings = new JsonSerializerSettings
                     {
-                        Converters = new List<JsonConverter> { new ColourHandler() },
+                        Converters = new List<JsonConverter> { new ColourHandler255() },
                     };
-                    FX.ColourPalette palette = JsonConvert.DeserializeObject<FX.ColourPalette>(message.Values[0].StringValue);
+                    FX.ColourPalette palette = JsonConvert.DeserializeObject<FX.ColourPalette>(message.Values[0].StringValue, settings);
 
                     fxPaletteManager.NewPalette(palette);
                 }
@@ -505,9 +505,9 @@ namespace FX
             {
                 var settings = new JsonSerializerSettings
                 {
-                    Converters = new List<JsonConverter> {new ColourHandler()},
+                    Converters = new List<JsonConverter> {new ColourHandler255()},
                 };
-                FX.ColourPalette palette = JsonConvert.DeserializeObject<FX.ColourPalette>(message.Values[0].StringValue);
+                FX.ColourPalette palette = JsonConvert.DeserializeObject<FX.ColourPalette>(message.Values[0].StringValue, settings);
                 fxPaletteManager.SetPalette(palette);
             }
             else if (address.ToUpper() == "/COLOURPALETTELIST/GET")
@@ -1007,7 +1007,7 @@ namespace FX
             var settings = new JsonSerializerSettings
             {
                 Converters = new List<JsonConverter> {
-                new ColourHandler()
+                new ColourHandler255()
                 },
             };
 
@@ -1024,7 +1024,7 @@ namespace FX
             var settings = new JsonSerializerSettings
             {
                 Converters = new List<JsonConverter> {
-                new ColourHandler()
+                new ColourHandler255()
                 },
             };
 
