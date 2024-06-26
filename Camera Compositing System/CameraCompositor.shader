@@ -70,6 +70,18 @@ Shader "Hidden/FX/CameraCompositor"
         float3 maskColor = SAMPLE_TEXTURE2D(_TextureMask, sampler_TextureMask, input.texcoord).xyz;
 
         bool isKeyColorPink = (colorKey.r == 1.0) && (colorKey.g == 0.0) && (colorKey.b == 1.0);
+
+        //float3 pink = float3(1.0, 0.0, 1.0); //
+
+        //float tolerance = 0.2f;
+        //
+        //bool isCloseToPink = abs(colorKey.r - pink.r) <= (tolerance / 255.0) &&
+        ////                             abs(colorKey.g - pink.g) <= (tolerance / 255.0) &&
+        ////                             abs(colorKey.b - pink.b) <= (tolerance / 255.0);
+        //
+        //float3 outputColor = isCloseToPink ? colorA : colorB;
+        
+                
         float3 outputColor = isKeyColorPink ? colorA : colorB;
 
         outputColor *= maskColor * _Brightness;
