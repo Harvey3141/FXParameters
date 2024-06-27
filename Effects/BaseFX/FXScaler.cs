@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using FX;
+using System.Linq;
 
 public class FXScaler : FXBaseWithEnabled
 {
@@ -79,7 +80,7 @@ public class FXScaler : FXBaseWithEnabled
         {
             if (transform != null)
             {
-                if (initialScales != null) {
+                if (initialScales != null && initialScales.Length > i) {
                     if (initialScales[i] != null) transform.localScale = initialScales[i];
                 }
                 //scale.ScaledValue* initialScales[i].y
